@@ -92,40 +92,44 @@
         document.getElementById('edit-editbar-input').focus()
       },
       newDoc: function (n) {
-        // this.$store.commit('EDIT_SET_CHAT_TYPE', true);
-        this.$store.commit('EDIT_SET_DOC_INDEX', [0, true])
-        this.$store.commit('EDIT_SET_FILE_INDEX', this.$store.state.Edit.file.length)
-        this.$store.commit('EDIT_SET_LEFT_PANEL', 'doc')
-        this.$store.commit('EDIT_SET_RIGHT_TYPE', 'left')
-        this.$store.commit('EDIT_SET_RIGHT_PANELS', '编辑病案')
-        if (n) {
-          this.$store.commit('EDIT_SET_DOC_TYPE', n)
-        } else { n = this.$store.state.Edit.docType }
-        this.$store.commit('SET_NOTICE', n);
-        if (this.$store.state.Edit.rightPanel === 'server') {
-          getDocContent(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.System.user.username, n)
-        } else if (global.hitbmodel[n] !== undefined) {
-          this.$store.commit('EDIT_LOAD_DOC', global.hitbmodel[n])
-          this.$store.commit('EDIT_ADD_DOC', '');
-        } else { this.$store.commit('EDIT_SET_DOC'); }
-        // if (fileName.includes('@')) {
-        //   saveEdit(this, [this.$store.state.System.server, this.$store.state.System.port, this.$store.state.Edit.files[this.$store.state.Edit.filesIndex], [''], this.$store.state.System.user.username, 2])
-        // }
-        const date = new Date();
-        let month = date.getMonth() + 1;
-        let strDate = date.getDate();
-        if (month >= 1 && month <= 9) {
-          month = `0${month}`;
+        if (this.$store.state.Edit.fileName) {
+          // this.$store.commit('EDIT_SET_CHAT_TYPE', true);
+          this.$store.commit('EDIT_SET_DOC_INDEX', [0, true])
+          this.$store.commit('EDIT_SET_FILE_INDEX', this.$store.state.Edit.file.length)
+          this.$store.commit('EDIT_SET_LEFT_PANEL', 'doc')
+          this.$store.commit('EDIT_SET_RIGHT_TYPE', 'left')
+          this.$store.commit('EDIT_SET_RIGHT_PANELS', '编辑病案')
+          if (n) {
+            this.$store.commit('EDIT_SET_DOC_TYPE', n)
+          } else { n = this.$store.state.Edit.docType }
+          this.$store.commit('SET_NOTICE', n);
+          if (this.$store.state.Edit.rightPanel === 'server') {
+            getDocContent(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.System.user.username, n)
+          } else if (global.hitbmodel[n] !== undefined) {
+            this.$store.commit('EDIT_LOAD_DOC', global.hitbmodel[n])
+            this.$store.commit('EDIT_ADD_DOC', '');
+          } else { this.$store.commit('EDIT_SET_DOC'); }
+          // if (fileName.includes('@')) {
+          //   saveEdit(this, [this.$store.state.System.server, this.$store.state.System.port, this.$store.state.Edit.files[this.$store.state.Edit.filesIndex], [''], this.$store.state.System.user.username, 2])
+          // }
+          const date = new Date();
+          let month = date.getMonth() + 1;
+          let strDate = date.getDate();
+          if (month >= 1 && month <= 9) {
+            month = `0${month}`;
+          }
+          if (strDate >= 0 && strDate <= 9) {
+            strDate = `0${strDate}`
+          }
+          const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+          this.$store.commit('EDIT_UPDATE_DOC_HEADER', ['创建时间', currentdate]);
+          this.$store.commit('EDIT_SET_DOC_STATE');
+          this.docType = n
+          this.saveDoc()
+          document.getElementById('edit-editbar-input').focus()
+        } else {
+          this.$store.commit('SET_NOTICE', '请选择保存病案的文件！')
         }
-        if (strDate >= 0 && strDate <= 9) {
-          strDate = `0${strDate}`
-        }
-        const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-        this.$store.commit('EDIT_UPDATE_DOC_HEADER', ['创建时间', currentdate]);
-        this.$store.commit('EDIT_SET_DOC_STATE');
-        this.docType = n
-        this.saveDoc()
-        document.getElementById('edit-editbar-input').focus()
       },
       page: function (n) {
         let page = 0

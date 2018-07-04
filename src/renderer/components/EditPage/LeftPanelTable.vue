@@ -194,7 +194,11 @@
           // }
           if (type === 'string') {
             h.split(',').forEach((key, i) => {
-              r.push(`${key} ${data[i]}`)
+              if (data[i] !== undefined) {
+                r.push(`${key} ${data[i]}`)
+              } else {
+                r.push(`${key}`)
+              }
             });
           } else {
             h.forEach((key, i) => {
@@ -204,6 +208,7 @@
           // } else {
           //   r = data.split(',')
           // }
+          console.log(r)
           this.$store.commit('EDIT_LOAD_DOC', r)
           if (this.$store.state.Edit.helpType === '在线交流') {
             this.$store.commit('EDIT_SET_CHAT_TYPE', true)

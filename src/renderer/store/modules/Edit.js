@@ -302,13 +302,11 @@ const mutations = {
     let a = obj1['修改时间']
     let b = obj1['缓存时间']
     let c = obj1['保存时间']
-    if (a && a.includes('-')) {
+    if (a && b && c) {
       a = a.replace(/-/g, '/')
       a = new Date(Date.parse(a))
-    } else if (b && b.includes('-')) {
       b = b.replace(/-/g, '/')
       b = new Date(Date.parse(b))
-    } else if (c && c.includes('-')) {
       c = c.replace(/-/g, '/')
       c = new Date(Date.parse(c))
     }

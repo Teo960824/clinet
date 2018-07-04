@@ -1,111 +1,22 @@
 <template>
   <div>
     <right-bar></right-bar>
-    <div v-if="this.$store.state.Stat.chartIsShow !== 'chart'">
-      <div class="row" v-show="this.$store.state.Stat.chartIsShow === 'menu'">
-        <div class="col">
-          <left-panel></left-panel>
-        </div>
-        <div class="col">
-          <table>
-            <tr>
-              <th class="table-danger"> 数据分析文件</th>
-            </tr>
-            <tr class="stat-left-file-tr" v-for="(data, index) in serverMenu.second" v-bind:key='index' v-on:click="loadFile(data, ['second', index])" v-bind:class="{'table-danger':fileIndex.second == index}" v-bind:id="'stat-left-twofile-tr'+index">
-              <td>{{data}}</td>
-            </tr>
-          </table>
-        </div>
-        <div class="col">
-          <table>
-            <tr>
-              <th class="table-danger"> 数据分析文件</th>
-            </tr>
-            <tr class="stat-left-file-tr" v-for="(data, index) in serverMenu.third" v-bind:key='index' v-on:click="loadFile(data, ['third', index])" v-bind:class="{'table-danger':fileIndex.third == index}" v-bind:id="'stat-left-thrfile-tr'+index">
-              <td>{{data}}</td>
-            </tr>
-          </table>
-        </div>
-        <div class="col">
-          <div class="alert alert-danger" id="stat-right-prompt" role="alert" style="height:100%; overflow-y:auto;">
-            <h4 class="alert-heading">数据分析提示</h4>
-            <ol class="">
-              <li v-for="(data, index) in notice" v-bind:key='index'>{{data}}</li>
-            </ol>
-          </div>
-        </div>
+    <div class="row" v-if="this.$store.state.Stat.chartIsShow === 'chart'">
+      <div class="col">
+        <left-panel></left-panel>
       </div>
-      <div class="row" v-show="this.$store.state.Stat.chartIsShow === 'chart'">
-        <div class="col">
-          <left-panel></left-panel>
-        </div>
-        <div class="col">
-          <div id="chartLeft" style="width: 600px; height:400px;" v-on:dblclick="chart('left')"></div>
-        </div>
-        <div class="col">
-          <div id="chartRight" style="width: 600px; height:400px;" v-on:dblclick="chart('right')"></div>
-        </div>
-        <div class="col">
-          <div class="alert alert-danger" id="stat-right-prompt" role="alert" style="height:100%; overflow-y:auto;">
-            <h4 class="alert-heading">数据分析提示</h4>
-            <ol class="">
-              <li v-for="(data, index) in notice" v-bind:key='index'>{{data}}</li>
-            </ol>
-          </div>
-        </div>
+      <div class="col">
+        <div id="chartLeft" style="width: 600px; height:400px;" v-on:dblclick="chart('left')"></div>
       </div>
-    </div>
-    <div v-if="this.$store.state.Stat.chartIsShow === 'chart'">
-      <div class="row" v-show="this.$store.state.Stat.chartIsShow === 'chart'">
-        <div class="col">
-          <left-panel></left-panel>
-        </div>
-        <div class="col">
-          <div id="chartLeft" style="width: 600px; height:400px;" v-on:dblclick="chart('left')"></div>
-        </div>
-        <div class="col">
-          <div id="chartRight" style="width: 600px; height:400px;" v-on:dblclick="chart('right')"></div>
-        </div>
-        <div class="col">
-          <div class="alert alert-danger" id="stat-right-prompt" role="alert" style="height:100%; overflow-y:auto;">
-            <h4 class="alert-heading">数据分析提示</h4>
-            <ol class="">
-              <li v-for="(data, index) in notice" v-bind:key='index'>{{data}}</li>
-            </ol>
-          </div>
-        </div>
+      <div class="col">
+        <div id="chartRight" style="width: 600px; height:400px;" v-on:dblclick="chart('right')"></div>
       </div>
-      <div class="row" v-show="this.$store.state.Stat.chartIsShow === 'menu'">
-        <div class="col">
-          <left-panel></left-panel>
-        </div>
-        <div class="col">
-          <table>
-            <tr>
-              <th class="table-danger"> 数据分析文件</th>
-            </tr>
-            <tr class="stat-left-file-tr" v-for="(data, index) in serverMenu.second" v-bind:key='index' v-on:click="loadFile(data, ['second', index])" v-bind:class="{'table-danger':fileIndex.second == index}" v-bind:id="'stat-left-twofile-tr'+index">
-              <td>{{data}}</td>
-            </tr>
-          </table>
-        </div>
-        <div class="col">
-          <table>
-            <tr>
-              <th class="table-danger"> 数据分析文件</th>
-            </tr>
-            <tr class="stat-left-file-tr" v-for="(data, index) in serverMenu.third" v-bind:key='index' v-on:click="loadFile(data, ['third', index])" v-bind:class="{'table-danger':fileIndex.third == index}" v-bind:id="'stat-left-thrfile-tr'+index">
-              <td>{{data}}</td>
-            </tr>
-          </table>
-        </div>
-        <div class="col">
-          <div class="alert alert-danger" id="stat-right-prompt" role="alert" style="height:100%; overflow-y:auto;">
-            <h4 class="alert-heading">数据分析提示</h4>
-            <ol class="">
-              <li v-for="(data, index) in notice" v-bind:key='index'>{{data}}</li>
-            </ol>
-          </div>
+      <div class="col">
+        <div class="alert alert-danger" id="stat-right-prompt" role="alert" style="height:100%; overflow-y:auto;">
+          <h4 class="alert-heading">数据分析提示</h4>
+          <ol class="">
+            <li v-for="(data, index) in notice" v-bind:key='index'>{{data}}</li>
+          </ol>
         </div>
       </div>
     </div>
@@ -127,8 +38,8 @@
           </ol>
         </div>
       </div>
-    </div>
-    <div class="row" v-show="this.$store.state.Stat.chartIsShow === 'menu'">
+    </div> -->
+    <div class="row" v-if="this.$store.state.Stat.chartIsShow === 'menu'">
       <div class="col">
         <left-panel></left-panel>
       </div>
@@ -160,7 +71,7 @@
           </ol>
         </div>
       </div>
-    </div> -->
+    </div>
     <div class="row" v-if="this.$store.state.Stat.chartIsShow === 'dimension'">
       <div class="col" style="max-width:400px">
         <left-panel></left-panel>
@@ -504,8 +415,8 @@
         // 图表
         if (index[0] === 'third') {
           this.$store.commit('STAT_SET_CHART_IS_SHOW', 'chart');
-          chartBar('chartLeft', null)
-          chartLine('chartRight', null)
+          // chartBar('chartLeft', null)
+          // chartLine('chartRight', null)
         }
         this.$store.commit('STAT_SET_TABLE_PAGE', 1)
         if (this.$store.state.Stat.isServer) {

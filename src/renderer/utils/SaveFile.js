@@ -69,6 +69,17 @@ export default function saveFile(obj, x, p) {
         }
       })
     }
+  } else if (x && x.endsWith('.cdh')) {
+    const fileName = path.format({
+      dir: dir,
+      base: x
+    });
+    fs.writeFile(fileName, obj.$store.state.Library.downFile, (err) => {
+      // console.log()
+      if (!err) {
+        obj.$store.commit('SET_NOTICE', `文件成功保存到《${fileName}》！`)
+      }
+    })
   } else {
     obj.$store.commit('SET_NOTICE', '请先打开一个本地或者远程的CDA文件！');
     // console.log(x)

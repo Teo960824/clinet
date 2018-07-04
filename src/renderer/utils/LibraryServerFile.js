@@ -1,5 +1,7 @@
+
+import { saveFile } from './SaveFile';
 const axios = require('axios');
-// const qs = require('qs');
+// const fs = require('fs');
 // this, [url, port, serverType]
 export function getLibraryFiles(obj, data, serverType = 'server') {
   axios({
@@ -70,3 +72,35 @@ export function getList(obj, url, tableName, type, username, serverType = 'serve
     obj.$store.commit('LIBRARY_SET_LEFT_PANEL', ['dimension', type, []])
   })
 }
+export function librarDown(obj, url, filename) {
+  axios({
+    method: 'get',
+    url: `http://${url[0]}:${url[1]}/library/rule_down?filename=${filename}`,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    responseType: 'json'
+  }).then((res) => {
+    if (res.status === 200) {
+      console.log(res)
+      console.log('---------------------');
+      obj.$store.commit('SET_NOTICE', '下载成功')
+      obj.$store.commit('LIBRARY_GET_DOWN_FILE', res.data.result)
+      console.log(res.data.result)
+      saveFile(obj, 'mdc.cdh', '/library')
+      // fs.writeFile(fileNames, res.data.result, (err) => {
+      //   if (!err) {
+      //     obj.$store.commit('SET_NOTICE', '文件保存成功！')
+      //   }
+      // })
+      // obj.$store.commit('LIBRARY_SET_LEFT_PANEL', ['dimension', type, res.data.list])
+    } else {
+      obj.$store.commit('SET_NOTICE', '下载失败')
+      // obj.$store.commit('LIBRARY_SET_LEFT_PANEL', ['dimension', type, []])
+    }
+  }).catch((err) => {
+    console.log(err);
+    console.log('+++++++++++++++++++++');
+    obj.$store.commit('SET_NOTICE', '下载失败')
+    // obj.$store.commit('LIBRARY_SET_LEFT_PANEL', ['dimension', type, []])
+  })
+}
+

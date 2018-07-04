@@ -36,6 +36,9 @@
         <li class="nav-item active" v-on:click='page(1)' id="library-down">
           <a class="nav-link text-light" href="#" title="向后翻页"> 后页 <span class="sr-only">(current)</span></a>
         </li>
+        <li class="nav-item active" v-on:click='docDown()' id="library-doc-down">
+          <a class="nav-link text-light" href="#" title="下载该文件到本地"> 下载 <span class="sr-only">(current)</span></a>
+        </li>
         <li class="nav-item active" v-on:click='edit()' id="library-edit">
           <a class="nav-link text-light" href="#" title="跳转到编辑来编辑该文件"> 编辑数据 <span class="sr-only">(current)</span></a>
         </li>
@@ -62,7 +65,7 @@
 </template>
 
 <script>
-  import { getLibraryFiles, getLibrary, getList } from '../../utils/LibraryServerFile';
+  import { getLibraryFiles, getLibrary, getList, librarDown } from '../../utils/LibraryServerFile';
   import { share } from '../../utils/Server';
   import loadFile from '../../utils/LoadFile';
   export default {
@@ -230,6 +233,9 @@
         let array = []
         array = this.$store.state.Library.fieldIndex.map(n => this.$store.state.Library.serverTable.data[n])
         share(this, [this.$store.state.System.server, this.$store.state.System.port], 'library', this.$store.state.System.shareFileName, this.$store.state.System.user.username, array)
+      },
+      docDown: function () {
+        librarDown(this, [this.$store.state.System.server, this.$store.state.System.port], 'mdc');
       }
     },
   };

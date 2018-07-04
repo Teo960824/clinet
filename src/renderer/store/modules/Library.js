@@ -26,7 +26,8 @@ const state = {
   dimensionServer: '',
   title: [],
   fileTypes: ['本地', '远程', '区块链'],
-  dropdownTypes: ['年份', '版本', '全部']
+  dropdownTypes: ['年份', '版本', '全部'],
+  downFile: []
 };
 
 const mutations = {
@@ -197,6 +198,9 @@ const mutations = {
   // LIBRARY_SET_SERVER_TABLE_TITLE(state, n) {
   //   state.title = []
   // }
+  LIBRARY_GET_DOWN_FILE(state, value) {
+    state.downFile = value
+  }
 };
 
 const actions = {
@@ -219,6 +223,7 @@ const actions = {
     commit('LIBRARY_SET_SERVER_TABLE_TITLE');
     commit('LIBRARY_SET_FILE_TYPES');
     commit('LIBRARY_SET_DROPDOWN_TYPES');
+    commit('LIBRARY_GET_DOWN_FILE');
   },
 };
 
