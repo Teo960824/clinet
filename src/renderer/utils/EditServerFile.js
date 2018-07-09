@@ -44,7 +44,14 @@ export function getEdit(obj, data, filename, serverType = 'server', type = '') {
     responseType: 'json'
   }).then((res) => {
     if (res.status === 200) {
+      const docSummary = []
+      res.data.cda.header.split(';').forEach((x, index) => {
+        if (x.includes('创建时间')) {
+          docSummary.push([index, x])
+        }
+      })
       // obj.$store.commit('EDIT_LOAD_FILE', res.data)
+      obj.$store.commit('EDIT_SET_DOC_SUMMARY', docSummary)
       obj.$store.commit('EDIT_SERVER_ID', res.data.cda.id)
       obj.$store.commit('EDIT_LOAD_FILE', [res.data.cda.content])
       obj.$store.commit('SET_NOTICE', res.data.info);
@@ -71,7 +78,6 @@ export function saveEdit(obj, data, fileName, content, id, saveType, username, d
   }).then((res) => {
     if (res.status === 200) {
       if (res.data.success) {
-        console.log(res.data);
         obj.$store.commit('SET_NOTICE', res.data.info)
       } else {
         obj.$store.commit('SET_NOTICE', res.data.info)
@@ -241,15 +247,19 @@ export function editDocState(obj, doc) {
 }
 
 export function editDocShow(obj, data, value) {
-  const value2 = value.split(',').map(x => x.split(' ')[1])
+  console.log(value.join(' '))
+  const value2 = value.join(' ')
+  // const value2 = value[1].split(',').map(x => x.split(' ')[1])
   axios({
     method: 'post',
-    url: `http://${data[0]}:${data[1]}/edit/cda_consule`,
+    url: `http://${data[0]}:${data[1]}/stat/cda_consult`,
     headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-    data: qs.stringify({ diag: `["${value2.join('","')}"]` }),
+    // data: qs.stringify({ diag: `["${value2.join('","')}"]` }),
+    data: qs.stringify({ item: value2, server_type: 'server' }),
     responseType: 'json'
   }).then((res) => {
     console.log(res);
+    obj.$store.commit('EDIT_LOAD_DOC_SHOW', res.data.cda)
   }).catch((err) => {
     console.log(err);
     obj.$store.commit('SET_NOTICE', '病案历史查询失败')

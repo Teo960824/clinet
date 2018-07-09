@@ -33,6 +33,7 @@
 
 <script>
   import { message, join } from '../../utils/Socket'
+  import { getCaseHistory, editDocShow } from '../../utils/EditServerFile'
   export default {
     // mounted: function () {
     //   this.$nextTick(() => {
@@ -119,6 +120,12 @@
       },
       enter(e) {
         if (this.$store.state.Edit.editType === '病案编辑') {
+          if (this.$store.state.Edit.helpType === '病案历史') {
+            getCaseHistory(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Edit.doc, this.$store.state.System.user.username)
+          }
+          if (this.$store.state.Edit.helpType === '病案参考') {
+            editDocShow(this, [this.$store.state.System.server, this.$store.state.System.port], e.target.value)
+          }
           if (e.target.value.includes('~')) {
             this.$store.commit('EDIT_SET_MODEL_NAME', e.target.value.replace('~', ''));
             this.$store.commit('EDIT_SET_BAR_VALUE', '');

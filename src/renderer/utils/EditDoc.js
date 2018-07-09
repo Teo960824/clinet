@@ -37,13 +37,13 @@ function editDoc(x, sectionList) {
   let key = '标题'
   let n = 0
   obj[key] = []
-  let x1 = []
-  if (x[0] && x[0][0].includes('创建时间')) {
-    x1 = x.slice(1, -1)
-  } else {
-    x1 = x
-  }
-  x1.forEach((x) => {
+  // let x1 = []
+  // if (x[0] && x[0][0].includes('创建时间')) {
+  //   x1 = x.slice(1, -1)
+  // } else {
+  //   x1 = x
+  // }
+  x.forEach((x) => {
     x = [n].concat(x)
     n += 1
     let sectionList1 = sections
@@ -65,7 +65,6 @@ function editDoc(x, sectionList) {
       obj[key].push(x)
     }
   })
-  console.log(obj)
   return obj
 }
 

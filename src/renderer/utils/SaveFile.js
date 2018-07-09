@@ -1,7 +1,8 @@
 const fs = require('fs')
 const path = require('path');
 export default function saveFile(obj, x, p) {
-  // console.log(x)
+  console.log(x)
+  // console.log(p)
   let dir = global.hitbdata.path.home
   switch (p) {
     case '/edit':
@@ -18,13 +19,19 @@ export default function saveFile(obj, x, p) {
       break
     default: break
   }
-  if (x && x.endsWith('.csv')) {
+  if (x && x.endsWith('.csv') && !x.startsWith('cdh')) {
     const fileName = path.format({
       dir: dir,
       base: x
     });
     // const data = obj.$store.state.Edit.file.map(x => x.join(',')).join('\n')
-    const data = obj.$store.state.Edit.file.join('\n')
+    let data = []
+    if (p === '/library') {
+      data = obj.$store.state.Library.downFile.join('\n')
+    } else {
+      data = obj.$store.state.Edit.file.join('\n')
+    }
+    // const data = obj.$store.state.Edit.file.join('\n')
     fs.writeFile(fileName, data, (err) => {
       if (!err) {
         obj.$store.commit('SET_NOTICE', '文件保存成功！')
@@ -55,7 +62,6 @@ export default function saveFile(obj, x, p) {
         const data1 = arr.join('\n')
         // if (data1.length > 0) {
         fs.writeFile(fileName, data1, (err) => {
-          console.log(data1)
           if (!err) {
             obj.$store.commit('SET_NOTICE', `文件成功保存到《${fileName}》！`)
           }
@@ -69,12 +75,14 @@ export default function saveFile(obj, x, p) {
         }
       })
     }
-  } else if (x && x.endsWith('.cdh')) {
+  } else if (x && x.startsWith('cdh') && x.endsWith('.csv')) {
+    const b = x.split('.')
     const fileName = path.format({
-      dir: dir,
-      base: x
+      dir: global.hitbdata.path.system,
+      base: `${b[0]}.cdh`
     });
-    fs.writeFile(fileName, obj.$store.state.Library.downFile, (err) => {
+
+    fs.writeFile(fileName, obj.$store.state.Library.downFile.join('\n').split(',').join(' '), (err) => {
       // console.log()
       if (!err) {
         obj.$store.commit('SET_NOTICE', `文件成功保存到《${fileName}》！`)

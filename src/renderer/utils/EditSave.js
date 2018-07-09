@@ -43,6 +43,6 @@ export default function saveEditDoc(obj, data) {
     }
     p = obj.$store.state.Edit.lastNav
     saveFile(obj, x, p)
-    obj.$store.commit('EDIT_SET_DELETE_LOCAL', obj.$store.state.Edit.filesIndex)
+    obj.$store.commit('EDIT_SET_DELETE_LOCAL', obj.$store.state.Edit.fileIndex)
   }
 }

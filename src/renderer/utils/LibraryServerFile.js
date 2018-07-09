@@ -1,5 +1,5 @@
 
-import { saveFile } from './SaveFile';
+import saveFile from './SaveFile';
 const axios = require('axios');
 // const fs = require('fs');
 // this, [url, port, serverType]
@@ -80,12 +80,11 @@ export function librarDown(obj, url, filename) {
     responseType: 'json'
   }).then((res) => {
     if (res.status === 200) {
-      console.log(res)
       console.log('---------------------');
       obj.$store.commit('SET_NOTICE', '下载成功')
       obj.$store.commit('LIBRARY_GET_DOWN_FILE', res.data.result)
-      console.log(res.data.result)
-      saveFile(obj, 'mdc.cdh', '/library')
+      // console.log(res.data.result)
+      saveFile(obj, filename, '/library')
       // fs.writeFile(fileNames, res.data.result, (err) => {
       //   if (!err) {
       //     obj.$store.commit('SET_NOTICE', '文件保存成功！')
@@ -98,7 +97,6 @@ export function librarDown(obj, url, filename) {
     }
   }).catch((err) => {
     console.log(err);
-    console.log('+++++++++++++++++++++');
     obj.$store.commit('SET_NOTICE', '下载失败')
     // obj.$store.commit('LIBRARY_SET_LEFT_PANEL', ['dimension', type, []])
   })

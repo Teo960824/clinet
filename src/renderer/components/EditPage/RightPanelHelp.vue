@@ -135,6 +135,7 @@
     <right-panel-cdh v-if="this.$store.state.Edit.rightPanels.includes('输入框提示') || this.$store.state.Edit.rightPanels.includes('输入提示')"></right-panel-cdh>
     <!-- <right-panel-doc v-if="type === '病案参考'"></right-panel-doc> -->
     <right-panel-doc v-if="this.$store.state.Edit.rightPanels.includes('病案参考')"></right-panel-doc>
+    <right-panel-control v-if="this.$store.state.Edit.rightPanels.includes('病案质控')"></right-panel-control>
     <!-- <table v-if="type === 'DRG分析'"> -->
     <table v-if="this.$store.state.Edit.rightPanels.includes('DRG分析')">
       <tr>
@@ -170,9 +171,10 @@
   import RightPanelDoc from './RightPanelDoc';
   import RightPanelHis from './RightPanelHis';
   import RightPanelCdh from './RightPanelCdh';
+  import RightPanelControl from './RightPanelControl';
   import { invite } from '../../utils/Socket'
   export default {
-    components: { RightPanelDoc, RightPanelCdh, RightPanelHis },
+    components: { RightPanelDoc, RightPanelCdh, RightPanelHis, RightPanelControl },
     computed: {
       type: {
         get() {

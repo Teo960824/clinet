@@ -21,7 +21,7 @@ const state = {
   hintType: 'notice',
   hint: [],
   helpType: '编辑器使用帮助',
-  helpTypes: ['输入框提示', '病案参考', '病案历史', '在线交流', 'DRG分析', 'HIS接口'],
+  helpTypes: ['输入框提示', '病案参考', '病案历史', '在线交流', 'DRG分析', 'HIS接口', '病案质控'],
   serverType: 'user',
   docType: '自定义文档',
   docTypes: ['自定义文档', '病案首页（卫统四CSV）', '入院申请', '首次病程', '病程记录', '病案首页', '门诊病案', '健康体检'],
@@ -328,10 +328,9 @@ const mutations = {
     }
   },
   EDIT_SET_DELETE_LOCAL(state, value) {
-    if (state.docState !== '') {
-      if (state.isSaveLocal.includes(value)) {
-        state.isSaveLocal.splice(value, 1)
-      }
+    const index = state.isSaveLocal.indexOf(value)
+    if (state.isSaveLocal.includes(value)) {
+      state.isSaveLocal.splice(index, 1)
     }
   },
   EDIT_SET_IS_SAVE_SERVER(state, value) {

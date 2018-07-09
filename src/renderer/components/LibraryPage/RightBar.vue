@@ -36,7 +36,7 @@
         <li class="nav-item active" v-on:click='page(1)' id="library-down">
           <a class="nav-link text-light" href="#" title="向后翻页"> 后页 <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item active" v-on:click='docDown()' id="library-doc-down">
+        <li v-if="this.$store.state.Library.tableType === 'server'" class="nav-item active" v-on:click='docDown()' id="library-doc-down">
           <a class="nav-link text-light" href="#" title="下载该文件到本地"> 下载 <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active" v-on:click='edit()' id="library-edit">
@@ -235,7 +235,11 @@
         share(this, [this.$store.state.System.server, this.$store.state.System.port], 'library', this.$store.state.System.shareFileName, this.$store.state.System.user.username, array)
       },
       docDown: function () {
-        librarDown(this, [this.$store.state.System.server, this.$store.state.System.port], 'mdc');
+        if (this.$store.state.Library.tableType === 'server') {
+          const filename = this.$store.state.System.shareFileName
+          console.log(filename)
+          librarDown(this, [this.$store.state.System.server, this.$store.state.System.port], filename);
+        }
       }
     },
   };

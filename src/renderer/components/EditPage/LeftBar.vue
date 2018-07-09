@@ -214,7 +214,11 @@
               string = `${string};${x}:${a}`
             }
           })
-          doc.splice(0, 0, string);
+          if (doc[0] && doc[0].includes('创建时间')) {
+            doc.splice(0, 1, string);
+          } else {
+            doc.splice(0, 0, string);
+          }
           this.$store.commit('EDIT_SET_IS_SAVE_LOCAL', fileIndex);
           this.$store.commit('EDIT_SAVE_DOC', [fileIndex, doc.toString()]);
           const summary = []

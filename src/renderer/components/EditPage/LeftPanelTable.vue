@@ -96,7 +96,6 @@
           // if (this.$store.state.Edit.lastNav !== '/edit' && type !== 'object') {
           //   f = f.map(n => n.split(','))
           // }
-          // console.log(this.$store.state.Edit.docSummary)
           return this.$store.state.Edit.docSummary
         }
       },
@@ -135,6 +134,7 @@
         this.$store.commit('EDIT_DELETE_DOC', index);
         this.$store.commit('EDIT_DELETE_DOC_SUMMARY', index);
         this.$store.commit('SET_NOTICE', '删除成功');
+        this.$store.commit('EDIT_SET_DELETE_LOCAL', index[0])
       },
       uploadDoc: function (data, index) {
         if (!this.$store.state.System.user.login) {
@@ -208,7 +208,6 @@
           // } else {
           //   r = data.split(',')
           // }
-          console.log(r)
           this.$store.commit('EDIT_LOAD_DOC', r)
           if (this.$store.state.Edit.helpType === '在线交流') {
             this.$store.commit('EDIT_SET_CHAT_TYPE', true)
@@ -223,16 +222,17 @@
           this.$store.commit('EDIT_SET_DOC_INDEX', [0, true]);
           document.getElementById('edit-editbar-input').focus()
           doc = this.$store.state.Edit.doc
+          editDocState(this, doc)
         } else {
           this.$store.commit('EDIT_SET_RIGHT_PANELS', '病案参考');
           this.$store.commit('EDIT_SET_FILE_INDEX', index)
-          this.$store.commit('EDIT_LOAD_DOC_SHOW', data.split(','))
-          this.$store.commit('EDIT_SET_RIGHT_PANEL', 'help');
+          // this.$store.commit('EDIT_LOAD_DOC_SHOW', data.split(','))
+          // this.$store.commit('EDIT_SET_RIGHT_PANEL', 'help');
           this.$store.commit('EDIT_SET_HELP_TYPE', '病案参考');
           doc = this.$store.state.Edit.docShow
           editDocShow(this, [this.$store.state.System.server, this.$store.state.System.port], data)
         }
-        editDocState(this, doc)
+        // editDocState(this, doc)
         this.$store.commit('EDIT_SET_DOC_STATE')
       },
       close(data) {

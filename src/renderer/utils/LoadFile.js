@@ -175,15 +175,18 @@ export function sectionFile(obj) {
     dir: global.hitbdata.path.system,
     base: 'hitb_sections.cda'
   });
-  fs.lstat(file, () => {
-    const fRead = fs.createReadStream(file);
-    const fReadline = readline.createInterface({ input: fRead });
-    const f = [];
-    fReadline.on('close', () => {
-      obj.$store.commit('SYSTEM_SECTION', f)
-    });
-    fReadline.on('line', (line) => {
-      f.push(line)
+
+  if (fs.existsSync(file)) {
+    fs.lstat(file, () => {
+      const fRead = fs.createReadStream(file);
+      const fReadline = readline.createInterface({ input: fRead });
+      const f = [];
+      fReadline.on('close', () => {
+        obj.$store.commit('SYSTEM_SECTION', f)
+      });
+      fReadline.on('line', (line) => {
+        f.push(line)
+      })
     })
-  })
+  }
 }

@@ -94,6 +94,7 @@ describe('EditRemoteFile', function () {
         // console.log(editText);
         expect(editText).to.be.an('string');
       })
+      .pause(1000)
     // 2.3.2 点击左侧 第一行 td 删除按钮 edit-leftpaneltable-del0
       .click('#edit-rightbar-server')
       .click('#edit-leftpaneltable-del0')

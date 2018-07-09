@@ -31,7 +31,6 @@ describe('StatLocalFile', function () {
       .waitUntilWindowLoaded(1000)
       .getText('.stat-right-table-tr')
       .then(function (rightTableTr) {
-        // console.log(rightTableTr)
         expect(rightTableTr).to.be.an('array');
       })
     // 2.1.1.1.1 点击工具栏的加入对比 将rightPanel数据表中选中的数据加入到对比数据中
@@ -178,9 +177,11 @@ describe('StatLocalFile', function () {
     // 2.1.1.1.9.2 点击机构 leftPanel显示可选机构维度
       .click('#stat-right-dimension')
       .click('#stat-td-tr1')
+      .pause(1000)
       .getText('.stat-left-dimension-tr')
       .then(function (org) {
-        expect(org).to.be.an('array');
+        console.log(org)
+        expect(org).to.be.an('string');
       })
       .click('.stat-left-dimension-tr')
       .getText('.stat-right-table-tr')
