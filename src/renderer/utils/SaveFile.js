@@ -1,7 +1,6 @@
 const fs = require('fs')
 const path = require('path');
 export default function saveFile(obj, x, p) {
-  console.log(x)
   // console.log(p)
   let dir = global.hitbdata.path.home
   switch (p) {
@@ -78,7 +77,7 @@ export default function saveFile(obj, x, p) {
   } else if (x && x.startsWith('cdh') && x.endsWith('.csv')) {
     const b = x.split('.')
     const fileName = path.format({
-      dir: global.hitbdata.path.system,
+      dir: global.hitbdata.path.library,
       base: `${b[0]}.cdh`
     });
 
@@ -112,4 +111,25 @@ export default function saveFile(obj, x, p) {
     //   })
     // }
   }
+}
+
+export function unSaveFile(obj, x, p) {
+  const fileName = path.format({
+    dir: global.hitbdata.path.user,
+    base: x
+  });
+  // const data = obj.$store.state.Edit.file.map(x => `${x},\n`).toString()
+  let data = []
+  const a = typeof p
+  if (a === 'string') {
+    data = obj.$store.state.Edit.file.join('\n')
+  } else {
+    data = p.join('\n')
+  }
+  // const fileName = '2018年度病案.cda'
+  fs.writeFile(fileName, data, (err) => {
+    if (!err) {
+      obj.$store.commit('SET_NOTICE', `文件成功保存到《${fileName}》！`)
+    }
+  })
 }

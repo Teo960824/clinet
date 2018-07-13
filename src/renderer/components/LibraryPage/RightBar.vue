@@ -42,12 +42,28 @@
         <li class="nav-item active" v-on:click='edit()' id="library-edit">
           <a class="nav-link text-light" href="#" title="跳转到编辑来编辑该文件"> 编辑数据 <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item dropdown">
+        <li v-if="this.$store.state.Library.tableType === 'server' && libraryList.time.length !== 0" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-light" href="#" id="stat-right-dimension-value" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            时间
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="height: 10rem; overflow: auto">
+              <a v-for="(data, index) in libraryList.time" v-bind:key='index' v-on:click='selX(data, "time")' class="nav-link" href="#"  v-bind:id="'stat-td-tr'+index" > {{data}} <span class="sr-only">(current)</span></a>
+          </div>
+        </li>
+        <li v-if="this.$store.state.Library.tableType === 'server' && libraryList.version.length !== 0" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-light" href="#" id="stat-right-dimension-value" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            版本
+          </a>
+           <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="height: 10rem; overflow: auto">
+              <a v-for="(data, index) in libraryList.version" v-bind:key='index' v-on:click='selX(data, "version")' class="nav-link" href="#"  v-bind:id="'stat-td-tr'+index" > {{data}} <span class="sr-only">(current)</span></a>
+          </div>
+        </li>
+        <li class="nav-item dropdown" v-if="this.$store.state.Library.tableType !== 'server'">
           <a class="nav-link dropdown-toggle text-light" href="#" id="library-dropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             维度选择
           </a>
           <div class="dropdown-menu" aria-labelledby="library-dropdown1">
-            <a v-for="(data, index) in dropdownTypes" v-bind:key='index' class="nav-link" href="#" v-on:click='selX(data)' v-bind:id="'library-dropdown-'+data">{{data}}</a>
+            <a v-for="(data, index) in dropdownTypes" v-bind:key='index' class="nav-link" href="#" v-on:click='selX(data, "local")' v-bind:id="'library-dropdown-'+data">{{data}}</a>
             <!-- <a class="nav-link" href="#" v-on:click='selX("机构")' id="library-dropdown-org"> 机构 <span class="sr-only">(current)</span></a> -->
             <!-- <a class="nav-link" href="#" v-on:click='selX("year")' id="library-dropdown-time"> 年份 <span class="sr-only">(current)</span></a>
             <a class="nav-link" href="#" v-on:click='selX("version")' id="library-dropdown-version"> 版本 <span class="sr-only">(current)</span></a>
@@ -65,7 +81,7 @@
 </template>
 
 <script>
-  import { getLibraryFiles, getLibrary, getList, librarDown } from '../../utils/LibraryServerFile';
+  import { getLibraryFiles, getLibrary, librarDown, getLibrarySerach } from '../../utils/LibraryServerFile';
   import { share } from '../../utils/Server';
   import loadFile from '../../utils/LoadFile';
   export default {
@@ -86,6 +102,11 @@
           return this.$store.state.Library.dropdownTypes
         }
       },
+      libraryList: {
+        get() {
+          return this.$store.state.Library.libraryList
+        }
+      }
     },
     methods: {
       libraryFile: function (n) {
@@ -156,6 +177,8 @@
       edit: function () {
         let f = []
         if (this.$store.state.Library.tableType === 'local') {
+          this.$store.commit('EDIT_SET_RIGHT_PANELS', '本地文件');
+          this.$store.commit('EDIT_SET_RIGHT_FOLDS', '本地文件');
           if (this.$store.state.Library.localTable.includes(undefined)) {
             f = this.$store.state.Library.localTable.filter(x => x !== undefined)
           } else {
@@ -163,6 +186,8 @@
           }
         }
         if (this.$store.state.Library.tableType === 'server') {
+          this.$store.commit('EDIT_SET_RIGHT_PANELS', '远程文件');
+          this.$store.commit('EDIT_SET_RIGHT_FOLDS', '远程文件');
           this.$store.commit('EDIT_SET_LEFT_PANEL', 'table');
           this.$store.commit('EDIT_SET_RIGHT_PANEL', 'server');
           this.$store.commit('EDIT_SET_FILES_INDEX', 0);
@@ -179,19 +204,24 @@
         this.$router.push('/edit');
         this.$store.commit('EDIT_SET_BAR_VALUE', '');
       },
-      selX: function (x) {
+      selX: function (value, x) {
         switch (this.$store.state.Library.tableType) {
           case 'local': {
             if (this.$store.state.Library.localTable.length > 0) {
-              if (x === '全部') {
-                this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['file', null]);
-                loadFile(this, this.$store.state.Library.files[this.$store.state.Library.fileIndex], 'library')
-              } else if (x === '年份') {
-                this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['dimension', 'year']);
-                this.$store.commit('SET_NOTICE', '维度选择');
-              } else if (x === '版本') {
-                this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['dimension', 'version']);
-                this.$store.commit('SET_NOTICE', '维度选择');
+              switch (x) {
+                case '全部':
+                  this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['file', null]);
+                  loadFile(this, this.$store.state.Library.files[this.$store.state.Library.fileIndex], 'library')
+                  break;
+                case '年份':
+                  this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['dimension', 'year']);
+                  this.$store.commit('SET_NOTICE', '维度选择');
+                  break;
+                case '版本':
+                  this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['dimension', 'version']);
+                  this.$store.commit('SET_NOTICE', '维度选择');
+                  break;
+                default:
               }
             } else {
               this.$store.commit('SET_NOTICE', '请选择文件');
@@ -199,15 +229,23 @@
             break;
           }
           case 'server': {
-            if (this.$store.state.Library.serverTable.data.length > 0) {
-              if (x === '全部') {
-                this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['file', null]);
-                getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableNam, this.$store.state.Library.tablePage, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'library', 'block')
-              } else if (x === '年份') {
-                getList(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 'year', this.$store.state.System.user.username)
-              } else if (x === '版本') {
-                getList(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 'version', this.$store.state.System.user.username)
-              }
+            if (this.$store.state.Library.serverTable.tableName) {
+              this.$store.commit('LIBRARY_SET_SERVER_DIMENSION', [value, x]);
+              console.log(this.$store.state.Library.serverDimension)
+              getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 1, 'filter', this.$store.state.Library.serverDimension, 'edit', 'server')
+              // getList()
+              // switch (x) {
+              //   case '全部':
+              //     this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['file', null]);
+              //     getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.$store.state.Library.tablePage, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'library', 'block')
+              //     break;
+              //   case 'time': case 'version':
+              //     this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['file', null]);
+              //     getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 1, x, value, 'edit', 'server')
+              //     // getList(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 'time', this.$store.state.System.user.username)
+              //     break;
+              //   default:
+              // }
             } else {
               this.$store.commit('SET_NOTICE', '请选择文件');
             }
@@ -224,7 +262,10 @@
             this.$store.commit('LIBRARY_GET_SEARCH_TABLE', this.library)
             break;
           case 'server':
-            getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableNam, 1, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'library', 'block')
+            getLibrarySerach(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.library, 'server')
+            break;
+          case 'block':
+            getLibrarySerach(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.library, 'block')
             break;
           default:
         }
@@ -237,7 +278,6 @@
       docDown: function () {
         if (this.$store.state.Library.tableType === 'server') {
           const filename = this.$store.state.System.shareFileName
-          console.log(filename)
           librarDown(this, [this.$store.state.System.server, this.$store.state.System.port], filename);
         }
       }

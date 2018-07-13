@@ -100,6 +100,7 @@
     },
     methods: {
       help: function (n) {
+        console.log(n)
         if (n) {
           this.$store.commit('EDIT_SET_RIGHT_PANELS', n);
           this.$store.commit('SET_NOTICE', n);
@@ -117,7 +118,8 @@
             this.$store.commit('SET_NOTICE', n);
             this.helpType = n
             this.$store.commit('EDIT_SET_RIGHT_PANEL', 'help');
-          } else if (this.$store.state.Edit.rightPanel === '输入框提示') {
+          } else if (n === '输入框提示') {
+            this.$store.commit('EDIT_GET_CDH_FILE', 0);
             if (this.$store.state.Edit.rightPanel === 'server') {
               if (!this.$store.state.Edit.rightCdh) {
                 this.$store.commit('SET_NOTICE', '输入提示无内容！');
@@ -182,59 +184,69 @@
         this.$store.commit('EDIT_SET_RIGHT_PANEL', 'block');
       },
       page: function (n) {
-        if (this.$store.state.Edit.rightType === 'left') {
-          let page = 0
-          let countPage = 0
-          switch (this.$store.state.Edit.lastNav) {
-            case '/library':
-              page = this.$store.state.Library.tablePage
-              countPage = this.$store.state.Library.countPage
-              break;
-            case '/stat':
-              page = this.$store.state.Stat.tablePage
-              countPage = this.$store.state.Stat.countPage
-              break;
-            default:
-              page = this.$store.state.Edit.filePage
-              break;
-          }
-          if (page === 1 && n === -1) {
-            this.$store.commit('SET_NOTICE', '当前已是第一页')
-          } else if (countPage === page && n === 1 && ['/stat', '/library'].includes(this.$store.state.Edit.lastNav)) {
-            this.$store.commit('SET_NOTICE', '当前已是尾页');
-          } else {
+        if (this.$store.state.Edit.helpType !== '输入框提示') {
+          if (this.$store.state.Edit.rightType === 'left') {
+            let page = 0
+            let countPage = 0
             switch (this.$store.state.Edit.lastNav) {
               case '/library':
-                if (this.$store.state.Library.tableType === 'server') {
-                  this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
-                  getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.$store.state.Library.tablePage, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'edit', 'server')
-                } else {
-                  this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
-                  this.$store.commit('EDIT_LOAD_FILE', this.$store.state.Library.localTable)
-                  this.$store.commit('SET_NOTICE', `当前${this.$store.state.Library.tablePage}页,共${this.$store.state.Library.countPage}页`)
-                }
+                page = this.$store.state.Library.tablePage
+                countPage = this.$store.state.Library.countPage
                 break;
               case '/stat':
-                if (this.$store.state.Stat.tableType === 'server') {
-                  this.$store.commit('STAT_TABLE_PAGE', n);
-                  getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.serverTable.tableName, page: this.$store.state.Stat.tablePage, username: this.$store.state.System.user.username, type: this.$store.state.Stat.dimensionType, value: this.$store.state.Stat.dimensionServer }, 'edit')
-                } else {
-                  this.$store.commit('STAT_TABLE_PAGE', n);
-                  this.$store.commit('SET_NOTICE', `当前${this.$store.state.Stat.tablePage}页,共${this.$store.state.Stat.countPage}页`)
-                }
+                page = this.$store.state.Stat.tablePage
+                countPage = this.$store.state.Stat.countPage
                 break;
               default:
-                this.$store.commit('EDIT_SET_FILE_PAGE', n);
-                this.$store.commit('SET_NOTICE', '下一页')
+                page = this.$store.state.Edit.filePage
                 break;
             }
+            if (page === 1 && n === -1) {
+              this.$store.commit('SET_NOTICE', '当前已是第一页')
+            } else if (countPage === page && n === 1 && ['/stat', '/library'].includes(this.$store.state.Edit.lastNav)) {
+              this.$store.commit('SET_NOTICE', '当前已是尾页');
+            } else {
+              switch (this.$store.state.Edit.lastNav) {
+                case '/library':
+                  if (this.$store.state.Library.tableType === 'server') {
+                    this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
+                    getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.$store.state.Library.tablePage, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'edit', 'server')
+                  } else {
+                    this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
+                    this.$store.commit('EDIT_LOAD_FILE', this.$store.state.Library.localTable)
+                    this.$store.commit('SET_NOTICE', `当前${this.$store.state.Library.tablePage}页,共${this.$store.state.Library.countPage}页`)
+                  }
+                  break;
+                case '/stat':
+                  if (this.$store.state.Stat.tableType === 'server') {
+                    this.$store.commit('STAT_TABLE_PAGE', n);
+                    getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.serverTable.tableName, page: this.$store.state.Stat.tablePage, username: this.$store.state.System.user.username, type: this.$store.state.Stat.dimensionType, value: this.$store.state.Stat.dimensionServer }, 'edit')
+                  } else {
+                    this.$store.commit('STAT_TABLE_PAGE', n);
+                    this.$store.commit('SET_NOTICE', `当前${this.$store.state.Stat.tablePage}页,共${this.$store.state.Stat.countPage}页`)
+                  }
+                  break;
+                default:
+                  this.$store.commit('EDIT_SET_FILE_PAGE', n);
+                  this.$store.commit('SET_NOTICE', '下一页')
+                  break;
+              }
+            }
+          } else if (this.$store.state.Edit.rightPanel === 'edit') {
+            if (this.$store.state.Edit.filesPage === 0 && n === -1) {
+              this.$store.commit('SET_NOTICE', '当前已是第一页')
+            } else {
+              this.$store.commit('EDIT_SET_FILES_PAGE', n);
+              this.$store.commit('SET_NOTICE', '下一页')
+            }
           }
-        } else if (this.$store.state.Edit.rightPanel === 'edit') {
-          if (this.$store.state.Edit.filesPage === 0 && n === -1) {
-            this.$store.commit('SET_NOTICE', '当前已是第一页')
+        } else if (this.$store.state.Edit.helpType === '输入框提示') {
+          if (n === -1 && this.$store.state.Edit.cdhFilePage === 0) {
+            this.$store.commit('SET_NOTICE', '当前已经是第一页')
+          } else if (n === +1 && this.$store.state.Edit.cdhFilePage === this.$store.state.Edit.cdhFilePagecount) {
+            this.$store.commit('SET_NOTICE', '当前已经最后一页')
           } else {
-            this.$store.commit('EDIT_SET_FILES_PAGE', n);
-            this.$store.commit('SET_NOTICE', '下一页')
+            this.$store.commit('EDIT_GET_CDH_FILE', n);
           }
         }
       },

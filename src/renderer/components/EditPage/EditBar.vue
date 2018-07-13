@@ -1,8 +1,13 @@
 <template>
   <div>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div class="alert alert-warning" id="edit-bar-prompt" role="alert" style="width: 100%; position: fixed; bottom: 40px">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" v-if="this.$store.state.Edit.hintType === 'notice'">
+      <div v-bind:style="isShowStyle" class="alert alert-warning" id="edit-bar-prompt" role="alert" style="width: 100%; position: fixed; bottom: 40px">
         <span v-on:click='inviteUser(hint)'>{{hint}}</span>
+      </div>
+    </nav>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" v-if="this.$store.state.Edit.hintType === 'hint'">
+      <div class="alert alert-warning" id="edit-bar-prompt" role="alert" style="width: 100%; position: fixed; bottom: 40px">
+        <span v-for="(data, index) in hint" v-bind:key='index' v-bind:style="isShowStyle">{{data}}</span>
       </div>
     </nav>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-bottom">
@@ -23,10 +28,16 @@
       v-on:keydown.ctrl.up="itemUp()" v-on:keydown.ctrl.down="itemDown()"
       v-on:keyup.space="space()" v-on:keyup.left="space()" v-on:keyup.right="space()"
       v-on:keyup.ctrl.0="hintUp()" v-on:keyup.ctrl.110="hintDown()"
-      v-on:keyup.ctrl.97="hintSet(1)" v-on:keyup.ctrl.98="hintSet(2)"
-      v-on:keyup.ctrl.99="hintSet(3)" v-on:keyup.ctrl.100="hintSet(4)" v-on:keyup.ctrl.101="hintSet(5)"
-      v-on:keyup.ctrl.102="hintSet(6)" v-on:keyup.ctrl.103="hintSet(7)" v-on:keyup.ctrl.104="hintSet(8)"
-      v-on:keyup.ctrl.105="hintSet(9)" v-on:keyup.ctrl.space="changeEditType()" v-on:keyup.shift.46="empty()">
+      v-on:keyup.ctrl.97="hintSet(1)" v-on:keyup.ctrl.49="hintSet(1)"
+      v-on:keyup.ctrl.98="hintSet(2)" v-on:keyup.ctrl.50="hintSet(2)"
+      v-on:keyup.ctrl.99="hintSet(3)" v-on:keyup.ctrl.51="hintSet(3)"
+      v-on:keyup.ctrl.100="hintSet(4)" v-on:keyup.ctrl.52="hintSet(4)"
+      v-on:keyup.ctrl.101="hintSet(5)" v-on:keyup.ctrl.53="hintSet(5)"
+      v-on:keyup.ctrl.102="hintSet(6)" v-on:keyup.ctrl.54="hintSet(6)"
+      v-on:keyup.ctrl.103="hintSet(7)" v-on:keyup.ctrl.55="hintSet(7)"
+      v-on:keyup.ctrl.104="hintSet(8)" v-on:keyup.ctrl.56="hintSet(8)"
+      v-on:keyup.ctrl.105="hintSet(9)" v-on:keyup.ctrl.57="hintSet(9)"
+      v-on:keyup.ctrl.space="changeEditType()" v-on:keyup.shift.46="empty()">
     </nav>
   </div>
 </template>
@@ -112,7 +123,8 @@
                   }
                 });
               } else {
-                this.$store.commit('EDIT_DELETE_ITEM', n);
+                this.$store.commit('EDIT_UPDATE_DOC', [n, ' ', true]);
+                // this.$store.commit('EDIT_DELETE_ITEM', n);
               }
             }
           }
@@ -123,7 +135,7 @@
           if (this.$store.state.Edit.helpType === '病案历史') {
             getCaseHistory(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Edit.doc, this.$store.state.System.user.username)
           }
-          if (this.$store.state.Edit.helpType === '病案参考') {
+          if (this.$store.state.Edit.rightPanels.includes('病案参考')) {
             editDocShow(this, [this.$store.state.System.server, this.$store.state.System.port], e.target.value)
           }
           if (e.target.value.includes('~')) {
@@ -157,9 +169,10 @@
               const col = this.$store.state.Edit.selectedCol[0]
               this.$store.commit('EDIT_UPDATE_FILE', [col, cv[1]]);
             }
+            this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
             this.$store.commit('SET_NOTICE', '编辑 -> 缓存 -> 选择文件 -> 保存');
           }
-        } else {
+        } else if (this.$store.state.Edit.rightPanels.includes('病案编辑')) {
           message(this, e.target.value, this.$store.state.System.user.username, 'message')
           this.$store.commit('EDIT_SET_BAR_VALUE', '');
         }
@@ -216,14 +229,28 @@
         }
       },
       space() {
+        this.$store.commit('EDIT_SET_HINT_TYPE', 'hint');
         const aa = document.getElementById('edit-editbar-input')
         const start = aa.selectionStart;
         if (start > 0 && this.$store.state.Edit.editBarValue[start - 1] === ' ') {
           const value = this.$store.state.Edit.editBarValue.slice(0, start)
           const value1 = value.replace(/\s/ig, '')
+          const searchKeys = []
+          global.hitbdata.cdhHeader.forEach((n) => {
+            if (n.includes(value1)) {
+              searchKeys.push(n)
+            }
+          })
+          const obj = {}
+          searchKeys.forEach((n) => {
+            obj[n] = global.hitbdata.cdh[n]
+          })
+          this.$store.commit('EDIT_SET_CDH', 'search');
+          this.$store.commit('EDIT_GET_RIGHT_CDH', obj);
           if (global.hitbdata.cdh[value1] !== undefined) {
-            this.$store.commit('EDIT_SET_HINT', global.hitbdata.cdh[value1]);
             this.$store.commit('EDIT_SET_HINT_TYPE', 'hint');
+            this.$store.commit('EDIT_SET_HINT', global.hitbdata.cdh[value1]);
+            // this.$store.commit('EDIT_SET_HINT_TYPE', 'hint');
           } else {
             this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
             this.$store.commit('SET_NOTICE', '无提示信息');
@@ -249,6 +276,7 @@
           this.$store.commit('EDIT_SET_HINT_PAGE', 'up');
         } else if (this.$store.state.Home.notice === '当前提示已为第一页') {
           this.$store.commit('SET_NOTICE', '');
+          this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
           this.$store.commit('EDIT_SET_HINT_PAGE', '0');
         } else {
           this.$store.commit('SET_NOTICE', '当前提示已为最后一页');

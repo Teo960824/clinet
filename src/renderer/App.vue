@@ -14,8 +14,6 @@
     methods: {
       windowClose(e) {
         console.log(e)
-        console.log('222')
-        // alert('asdasdf')
         let x = ''
         let p = ''
         if (this.$store.state.Edit.lastNav === '/stat') {

@@ -107,5 +107,4 @@ export default function chartBar(id, opt = null) {
     };
   }
   myChart.setOption(option, true)
-  console.log(id)
 }

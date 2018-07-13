@@ -51,6 +51,7 @@ export function getEdit(obj, data, filename, serverType = 'server', type = '') {
         }
       })
       // obj.$store.commit('EDIT_LOAD_FILE', res.data)
+      console.log('----')
       obj.$store.commit('EDIT_SET_DOC_SUMMARY', docSummary)
       obj.$store.commit('EDIT_SERVER_ID', res.data.cda.id)
       obj.$store.commit('EDIT_LOAD_FILE', [res.data.cda.content])
@@ -65,7 +66,7 @@ export function getEdit(obj, data, filename, serverType = 'server', type = '') {
   })
 }
 
-export function saveEdit(obj, data, fileName, content, id, saveType, username, doctype, mouldtype) {
+export function saveEdit(obj, data, fileName, content, username, saveType, doctype, mouldtype, id) {
   content = content[0]
   const url = `http://${data[0]}:${data[1]}/edit/cda`
   const header = obj.$store.state.Edit.docHeader

@@ -34,41 +34,6 @@ export function getStatFiles(obj, data, filename, username, serverType = 'server
   })
 }
 
-export function getList(obj, data, tableName, type, username, serverType = 'server') {
-  obj.$store.commit('STAT_SET_TABLE_TYPE', serverType)
-  switch (type) {
-    case '机构':
-      type = 'org'
-      break;
-    case '时间':
-      type = 'time'
-      break;
-    case '病种':
-      type = 'drg2'
-      break;
-    default:
-      break;
-  }
-  let file = tableName
-  // 去除文件名中的.csv
-  file = tableName.split('.csv')[0]
-  axios({
-    method: 'get',
-    url: `http://${data[0]}:${data[1]}/stat/stat_client?type=${type}&username=${username}&page_type=${file}&server_type=${serverType}`,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-    responseType: 'json'
-  }).then((res) => {
-    if (res.status === 200) {
-      obj.$store.commit('STAT_SET_LEFT_PANEL', ['dimension', type, res.data.list])
-    } else {
-      obj.$store.commit('STAT_SET_LEFT_PANEL', ['dimension', type, []])
-    }
-  }).catch((err) => {
-    console.log(err);
-    obj.$store.commit('STAT_SET_LEFT_PANEL', ['dimension', type, []])
-  })
-}
-
 export function getStat(obj, data, opt, tableType, serverType = 'server') {
   obj.$store.commit('STAT_SET_TABLE_TYPE', serverType)
   let file = opt.tableName
@@ -95,25 +60,17 @@ export function getStat(obj, data, opt, tableType, serverType = 'server') {
         break;
     }
   }
-  let url = ''
-  if (opt.type === '机构' || opt.type === 'org') {
-    url = `&org=${opt.value}`
-  } else if (opt.type === '时间' || opt.type === 'time') {
-    url = `&time=${opt.value}`
-  } else if (opt.type === '病种' || opt.type === 'drg' || opt.type === 'drg2') {
-    url = `&drg=${opt.value}`
-  }
   axios({
     method: 'get',
-    url: `http://${data[0]}:${data[1]}/stat/stat_client?page=${opt.page}&server_type=${serverType}&page_type=${pageType}&tool_type=${toolType}&rows=20&username=${opt.username}${url}`,
+    url: `http://${data[0]}:${data[1]}/stat/stat_client?page=${opt.page}&server_type=${serverType}&page_type=${pageType}&tool_type=${toolType}&rows=20&username=${opt.username}&org=${opt.dimension.org}&time=${opt.dimension.time}&drg=${opt.dimension.drg}`,
     headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
     responseType: 'json'
   }).then((res) => {
     if (res.status === 200) {
       const stat = res.data.stat
-      // stat.splice(0, 1)
       obj.$store.commit('SET_NOTICE', `当前${opt.page}页,共${res.data.count}页`)
       const resObj = { page: parseInt(res.data.page, 10), countPage: res.data.count, data: stat, pageList: res.data.page_list, tableName: tableName, tableSel: res.data.num, dimensionOrg: res.data.org_num, dimensionTime: res.data.time_num, dimensionDrg: res.data.drg_num }
+      obj.$store.commit('STAT_SET_STAT_LIST', res.data.list, res.data.type)
       obj.$store.commit('STAT_SET_COUNT_PAGE', res.data.count)
       obj.$store.commit('STAT_SET_SERVER_TABLE', resObj)
       if (tableType === 'edit') {

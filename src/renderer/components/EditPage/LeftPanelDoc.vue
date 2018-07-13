@@ -24,10 +24,10 @@
           <table v-if="key.split(',')[1] === '个人信息'">
             <tr class="table-warning" v-bind:class="{'table-danger':flag == key.split(',')[0]}" v-on:click="changeIndex(key, true)"><td colspan="4">{{key.split(',')[1]}}</td></tr>
             <tr rowspan="2" v-for="(item, index) in section" v-bind:key='index' v-bind:class="{'table-danger':flag == item[0]}" v-on:click="changeIndex(item)">
-              <td rowspan="2" v-if="index % 2 === 0"><b>{{ item[1] }}</b></td>
-              <td rowspan="2" v-if="index % 2 === 0">{{ item[2] }}{{ item[3] }}{{ item[4] }}{{ item[5] }}{{ item[6] }}{{ item[7] }}{{ item[8] }}</td>
-              <td v-if="index % 2 !== 0"><b>{{ item[1] }}</b></td>
-              <td v-if="index % 2 !== 0">{{ item[2] }}{{ item[3] }}{{ item[4] }}{{ item[5] }}{{ item[6] }}{{ item[7] }}{{ item[8] }}</td>
+              <td style="width: 25%" rowspan="2" v-if="index % 2 === 0"><b>{{ item[1] }}</b></td>
+              <td style="width: 25%" rowspan="2" v-if="index % 2 === 0">{{ item[2] }}{{ item[3] }}{{ item[4] }}{{ item[5] }}{{ item[6] }}{{ item[7] }}{{ item[8] }}</td>
+              <td style="width: 25%" v-if="index % 2 !== 0"><b>{{ item[1] }}</b></td>
+              <td style="width: 25%" v-if="index % 2 !== 0">{{ item[2] }}{{ item[3] }}{{ item[4] }}{{ item[5] }}{{ item[6] }}{{ item[7] }}{{ item[8] }}</td>
             </tr>
           </table>
           <!-- 未定义-主诉-病史-体格检查 -->

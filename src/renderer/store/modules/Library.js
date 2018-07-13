@@ -27,7 +27,9 @@ const state = {
   title: [],
   fileTypes: ['本地', '远程', '区块链'],
   dropdownTypes: ['年份', '版本', '全部'],
-  downFile: []
+  downFile: [],
+  libraryList: { org: [], time: [], version: [] },
+  serverDimension: { org: '', time: '', version: '' }
 };
 
 const mutations = {
@@ -40,9 +42,22 @@ const mutations = {
     state.tableHeader = state.table.slice(0, 1)
     state.tableSel = state.table
     state.tableSel.splice(0, 1)
-    const time = state.dimensionSearch.time = state.tableHeader[0].indexOf('year')
-    const version = state.dimensionSearch.version = state.tableHeader[0].indexOf('version')
-    const org = state.dimensionSearch.org = state.tableHeader[0].indexOf('org')
+    let time = null
+    let version = null
+    let org = null
+    state.dimensionOrg = [...new Set(state.table.map(a => a[org]))]
+    if (state.tableHeader[0].includes('year')) {
+      time = state.tableHeader[0].indexOf('year')
+      version = state.tableHeader[0].indexOf('version')
+      org = state.tableHeader[0].indexOf('org')
+    } else if (state.tableHeader[0].includes('年份')) {
+      time = state.tableHeader[0].indexOf('年份')
+      version = state.tableHeader[0].indexOf('版本')
+      org = state.tableHeader[0].indexOf('机构')
+    }
+    state.dimensionSearch.time = time
+    state.dimensionSearch.version = version
+    state.dimensionSearch.org = org
     state.dimensionOrg = [...new Set(state.table.map(a => a[org]))]
     state.dimensionTime = [...new Set(state.table.map(a => a[time]))]
     state.dimensionVersion = [...new Set(state.table.map(a => a[version]))]
@@ -83,11 +98,31 @@ const mutations = {
     // .slice(1)
     state.localTable = state.localTables[state.tablePage]
   },
+  LIBRARY_SET_LIBRARY_LIST(state, data) {
+    state.libraryList = data
+  },
+  // STAT_CLEAR_SERVER_DIMENSION(state, value) {
+  //   state.serverDimension[value[1]] = value[0]
+  //   console.log(state.serverDimension)
+  // },
+  LIBRARY_SET_SERVER_DIMENSION(state, opt) {
+    switch (opt[1]) {
+      case 'org':
+        state.serverDimension.org = opt[0]
+        break;
+      case 'time':
+        state.serverDimension.year = opt[0]
+        break;
+      case 'version':
+        state.serverDimension.version = opt[0]
+        break;
+      default:
+        break;
+    }
+    console.log(state.serverDimension)
+  },
   LIBRARY_SET_TABLE_PAGE(state, page) {
     state.tablePage = page;
-  },
-  LIBRARY_SET_SERVER_DIMENSION(state, index) {
-    state.dimensionServer = index
   },
   LIBRARY_SET_LEFT_PANEL(state, opt) {
     if (state.tableType === 'local') {
@@ -106,6 +141,7 @@ const mutations = {
         default:
           break;
       }
+      console.log(state.dimension)
     } else {
       state.leftPanel = opt[0];
       state.dimensionType = opt[1];
@@ -200,6 +236,9 @@ const mutations = {
   // }
   LIBRARY_GET_DOWN_FILE(state, value) {
     state.downFile = value
+  },
+  LIBRARY_SET_SERVER_DIMENSIONS(state, value) {
+    state.dimensions = value
   }
 };
 
@@ -224,6 +263,9 @@ const actions = {
     commit('LIBRARY_SET_FILE_TYPES');
     commit('LIBRARY_SET_DROPDOWN_TYPES');
     commit('LIBRARY_GET_DOWN_FILE');
+    commit('LIBRARY_SET_SERVER_DIMENSIONS');
+    commit('LIBRARY_SET_LIBRARY_LIST');
+    commit('STAT_CLEAR_SERVER_DIMENSION');
   },
 };
 

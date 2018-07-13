@@ -124,12 +124,14 @@ export default function loadFile(obj, x, p, e = null) {
         const f = [];
         fReadline.on('close', () => {
           const fileInfo = {};
-          f[0].split(',')[0].split(';').forEach((v) => {
-            fileInfo[v.split(':')[0]] = v.split(':')[1]
-          })
+          if (f[0]) {
+            f[0].split(',')[0].split(';').forEach((v) => {
+              fileInfo[v.split(':')[0]] = v.split(':')[1]
+            })
+          }
           obj.$store.commit('EDIT_LOAD_FILE', f);
           obj.$store.commit('EDIT_LOAD_FILE_DOWN', f);
-          obj.$store.commit('EDIT_SET_LEFT_PANEL', 'table')
+          // obj.$store.commit('EDIT_SET_LEFT_PANEL', 'table')
           obj.$store.commit('EDIT_SET_FILE_TYPE', 'cda')
           obj.$store.commit('SET_NOTICE', 'CDA文件读取成功！');
           const summary = []

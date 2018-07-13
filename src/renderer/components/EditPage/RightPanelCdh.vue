@@ -42,11 +42,13 @@
       },
       xs: {
         get() {
-          let x = global.hitbdata.cdh
+          let x = this.$store.state.Edit.cdhFile
           if (this.$store.state.Edit.rightPanel === 'server') {
             x = this.$store.state.Edit.rightCdh
+          } else if (this.$store.state.Edit.editCdh === 'search') {
+            x = this.$store.state.Edit.editRightCdh
           } else {
-            x = global.hitbdata.cdh
+            x = this.$store.state.Edit.cdhFile
           }
           return x
         },

@@ -30,6 +30,7 @@ const state = {
   selectedCol: [],
   compareTable: [],
   serverTable: { page: 1, countPage: 0, data: [], pageList: [], tableName: '' },
+  serverDimension: { org: '', time: '', drg: '' },
   localTables: {},
   localTable: [],
   chartData: [],
@@ -53,7 +54,8 @@ const state = {
   caseSelectedCol: [],
   xObj: {},
   barType: '',
-  fileTypes: ['本地', '远程', '区块链']
+  fileTypes: ['本地', '远程', '区块链'],
+  statList: { time: [], org: [], drg: [] },
 };
 
 const mutations = {
@@ -236,6 +238,24 @@ const mutations = {
     state.isServer = true
     state.serverTable = opt
   },
+  STAT_SERVER_DIMENSION(state, opt) {
+    switch (opt[0]) {
+      case 'org':
+        state.serverDimension.org = opt[1]
+        break;
+      case 'time':
+        state.serverDimension.time = opt[1]
+        break;
+      case 'drg':
+        state.serverDimension.drg = opt[1]
+        break;
+      default:
+        break;
+    }
+  },
+  STAT_CLEAR_SERVER_DIMENSION(state) {
+    state.serverDimension = { org: '', time: '', drg: '' }
+  },
   STAT_SET_TABLE_TYPE(state, data) {
     if (data !== 'compare') {
       if (data === 'server' || data === 'case' ||　data === 'block') {
@@ -311,9 +331,9 @@ const mutations = {
       state.localTable = table
     }
   },
-  // STAT_SET_TITLE_PAGE(state, num) {
-  //   state.colNum = num
-  // },
+  STAT_SET_STAT_LIST(state, data) {
+    state.statList = data
+  },
   STAT_SET_CHART_OPTION(state, opt) {
     state.chartIsShow = 'chart'
     state.chartOption = opt
@@ -436,6 +456,9 @@ const actions = {
     commit('STAT_SET_XOBJ');
     commit('STAT_SET_BAR_TYPE');
     commit('STAT_SET_FILE_TYPES');
+    commit('STAT_SET_STAT_LIST');
+    commit('STAT_SERVER_DIMENSION');
+    commit('STAT_CLEAR_SERVER_DIMENSION');
   },
 };
 export default {

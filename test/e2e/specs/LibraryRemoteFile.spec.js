@@ -24,6 +24,7 @@ describe('LibraryRemoteFile', function () {
       .setValue('#server-username', 'test@test.com.cn')
       .setValue('#server-password', '123456')
       .click('#server-login')
+      .pause(1000)
       .click('#navbar-library')
       .click('#library-dropdown')
       .click('#library-file-远程')
@@ -33,10 +34,21 @@ describe('LibraryRemoteFile', function () {
       })
     // 2.1.6.1、点击左侧列表(library-leftlist)，读取数据文件内容，右侧表中显示所选远程文件内容
       .click('.library-leftlist')
+      .pause(1000)
       .getHTML('.library-rightpanel')
       .then(function (rightpanel) {
         expect(rightpanel).to.be.an('array');
       })
+      .pause(1000)
+    // 点击下载按钮、、
+      .click('#library-doc-down')
+      .pause(1000)
+      .getText('#notice-bar')
+      .then(function (rightpanel) {
+        console.log(rightpanel)
+        expect(rightpanel).to.equal('系统通知：文件保存成功！');
+      })
+      .pause(1000)
     // 2.1.7.1.1、点击表中一行（例：第四行），当前行高亮显示
     // 2.1.7.2、点击工具栏的后一页(library-down)，右侧表中显示下一页内容第四行高亮并提示：翻页成功！table底部页数加一，提示翻页成功，若加一后页数大于当前总页数，提示：当前已经是最后一页！
       .click('#library-down')
@@ -90,6 +102,12 @@ describe('LibraryRemoteFile', function () {
     // 2.1.8.3.1、点击左侧列表(library-leftlist)，右侧表中显示所选版本的对应数据，若右侧表中无数据显示，提示：未找到对应数据！
     // 2.1.8.4、点击表中任意一列
     // 2.1.8.5、点击添加列维度，左侧列表显示选中列中的内容（去重），若选中列无内容，提示维度内容为空不可添加！
+      .click('#library-dropdown1')
+      .click('#library-dropdown-版本')
+      .getText('#library-dropdown-版本')
+      .then(function (version) {
+        expect(version).to.equal('');
+      })
   })
 });
 

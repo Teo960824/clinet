@@ -28,7 +28,7 @@
           <a class="nav-link text-light" href="#">保存</a>
         </li>
         <li class="nav-item" id="edit-leftbar-newdoc" v-on:click="save('保存模板')">
-          <a class="nav-link text-light" href="#" v-if="this.$store.state.Edit.leftPanel == 'table' && this.$store.state.Edit.rightPanel == 'server'">另存为模板</a>
+          <a class="nav-link text-light" href="#" v-if="this.$store.state.System.user.login">另存为模板</a>
         </li>
         <!-- <li class="nav-item" id="edit-leftbar-del" v-on:click="save(0)">
           <a class="nav-link text-light" href="#">去除</a>
@@ -57,8 +57,9 @@
 </template>
 
 <script>
-  import saveEditDoc from '../../utils/EditSave'
-  import { getDocContent } from '../../utils/EditServerFile'
+  import { saveEditDoc, newEditDoc, cacheEditDoc } from '../../utils/EditSave'
+  // import { unSaveFile } from '../../utils/SaveFile'
+  // import { getDocContent } from '../../utils/EditServerFile'
   import { getStat } from '../../utils/StatServerFile'
   import { getLibrary } from '../../utils/LibraryServerFile';
   export default {
@@ -92,44 +93,7 @@
         document.getElementById('edit-editbar-input').focus()
       },
       newDoc: function (n) {
-        if (this.$store.state.Edit.fileName) {
-          // this.$store.commit('EDIT_SET_CHAT_TYPE', true);
-          this.$store.commit('EDIT_SET_DOC_INDEX', [0, true])
-          this.$store.commit('EDIT_SET_FILE_INDEX', this.$store.state.Edit.file.length)
-          this.$store.commit('EDIT_SET_LEFT_PANEL', 'doc')
-          this.$store.commit('EDIT_SET_RIGHT_TYPE', 'left')
-          this.$store.commit('EDIT_SET_RIGHT_PANELS', '编辑病案')
-          if (n) {
-            this.$store.commit('EDIT_SET_DOC_TYPE', n)
-          } else { n = this.$store.state.Edit.docType }
-          this.$store.commit('SET_NOTICE', n);
-          if (this.$store.state.Edit.rightPanel === 'server') {
-            getDocContent(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.System.user.username, n)
-          } else if (global.hitbmodel[n] !== undefined) {
-            this.$store.commit('EDIT_LOAD_DOC', global.hitbmodel[n])
-            this.$store.commit('EDIT_ADD_DOC', '');
-          } else { this.$store.commit('EDIT_SET_DOC'); }
-          // if (fileName.includes('@')) {
-          //   saveEdit(this, [this.$store.state.System.server, this.$store.state.System.port, this.$store.state.Edit.files[this.$store.state.Edit.filesIndex], [''], this.$store.state.System.user.username, 2])
-          // }
-          const date = new Date();
-          let month = date.getMonth() + 1;
-          let strDate = date.getDate();
-          if (month >= 1 && month <= 9) {
-            month = `0${month}`;
-          }
-          if (strDate >= 0 && strDate <= 9) {
-            strDate = `0${strDate}`
-          }
-          const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-          this.$store.commit('EDIT_UPDATE_DOC_HEADER', ['创建时间', currentdate]);
-          this.$store.commit('EDIT_SET_DOC_STATE');
-          this.docType = n
-          this.saveDoc()
-          document.getElementById('edit-editbar-input').focus()
-        } else {
-          this.$store.commit('SET_NOTICE', '请选择保存病案的文件！')
-        }
+        newEditDoc(this, n)
       },
       page: function (n) {
         let page = 0
@@ -149,8 +113,10 @@
         }
         if (page === 1 && n === -1) {
           this.$store.commit('SET_NOTICE', '当前已是第一页')
+          this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
         } else if (countPage === page && n === 1 && ['/stat', '/library'].includes(this.$store.state.Edit.lastNav)) {
           this.$store.commit('SET_NOTICE', '当前已是尾页');
+          this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
         } else {
           switch (this.$store.state.Edit.lastNav) {
             case '/library':
@@ -161,6 +127,7 @@
                 this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
                 this.$store.commit('EDIT_LOAD_FILE', this.$store.state.Library.localTable)
                 this.$store.commit('SET_NOTICE', `当前${this.$store.state.Library.tablePage}页,共${this.$store.state.Library.countPage}页`)
+                this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
               }
               break;
             case '/stat':
@@ -170,77 +137,27 @@
               } else {
                 this.$store.commit('STAT_TABLE_PAGE', n);
                 this.$store.commit('SET_NOTICE', `当前${this.$store.state.Stat.tablePage}页,共${this.$store.state.Stat.countPage}页`)
+                this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
               }
               break;
             default:
               this.$store.commit('EDIT_SET_FILE_PAGE', n);
               this.$store.commit('SET_NOTICE', '下一页')
+              this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
               break;
           }
         }
       },
       saveDoc: function () {
-        const date = new Date();
-        let month = date.getMonth() + 1;
-        let strDate = date.getDate();
-        if (month >= 1 && month <= 9) {
-          month = `0${month}`;
-        }
-        if (strDate >= 0 && strDate <= 9) {
-          strDate = `0${strDate}`
-        }
-        const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-        this.$store.commit('EDIT_UPDATE_DOC_HEADER', ['缓存时间', currentdate]);
-        this.$store.commit('EDIT_SET_DOC_STATE');
-        const fileIndex = this.$store.state.Edit.fileIndex
-        if (fileIndex >= 0) {
-          let doc = this.$store.state.Edit.doc
-          doc = doc.filter(x => x !== '')
-          doc = doc.map(x => x.join(' '))
-          const docHeader = this.$store.state.Edit.docHeader
-          const keys = Object.keys(docHeader)
-          const values = Object.values(docHeader)
-          let string = ''
-          keys.forEach((x, key) => {
-            let a = ''
-            if (values[key] && values[key].includes(' ')) {
-              a = values[key].replace(/ /g, '　')
-            } else {
-              a = values[key]
-            }
-            if (string === '') {
-              string = `${x}:${a}`
-            } else {
-              string = `${string};${x}:${a}`
-            }
-          })
-          if (doc[0] && doc[0].includes('创建时间')) {
-            doc.splice(0, 1, string);
-          } else {
-            doc.splice(0, 0, string);
-          }
-          this.$store.commit('EDIT_SET_IS_SAVE_LOCAL', fileIndex);
-          this.$store.commit('EDIT_SAVE_DOC', [fileIndex, doc.toString()]);
-          const summary = []
-          doc.forEach((x) => {
-            const b = x.split(';')
-            let creatTime = ''
-            b.forEach((x) => {
-              if (x.includes('创建时间')) {
-                creatTime = x
-              }
-            })
-            if (x.includes('创建时间')) {
-              summary.push([fileIndex, creatTime])
-            }
-          })
-          this.$store.commit('EDIT_ADD_DOC_SUMMARY', summary);
-        } else {
-          this.$store.commit('SET_NOTICE', '请先打开一个文件，然后选择编辑一个文档，或者新建一个文档！')
-        }
+        cacheEditDoc(this)
       },
       save: function (data) {
         saveEditDoc(this, data)
+        if (this.$store.state.Edit.fileName === '未保存病案.cda') {
+          // this.$store.commit('EDIT_ADD_DOC', this.$store.state.Edit.doc.toString());
+          // // this.$store.commit('EDIT_ADD_DOC', [this.$store.state.Edit.fileIndex, this.$store.state.Edit.doc.toString()]);
+          // unSaveFile(this, '2018年度病案.cda', '/edit')
+        }
       },
       leftEnter(e) {
         const doc = this.$store.state.Edit.doc
@@ -253,6 +170,7 @@
             this.$store.commit('SET_NOTICE', '')
           } else {
             this.$store.commit('SET_NOTICE', '未查找到，请输入正确内容！')
+            this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
           }
           return index1
         })
