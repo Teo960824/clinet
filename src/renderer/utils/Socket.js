@@ -14,6 +14,7 @@ export function socketConnect(obj, data, user) {
     .receive('ok', () => {
       username = user.username
       obj.$store.commit('SET_NOTICE', '远程服务用户登录成功')
+      obj.$store.commit('EDIT_SET_RIGHT_PANEL', 'server')
     })
     .receive('error', (err) => {
       obj.$store.commit('SET_NOTICE', err.reason)

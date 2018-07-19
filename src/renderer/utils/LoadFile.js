@@ -52,7 +52,7 @@ export default function loadFile(obj, x, p, e = null) {
                 obj.$store.commit('EDIT_SET_LEFT_PANEL', 'table')
               } else {
                 // obj.$store.commit('STAT_SET_COL_NUM', f[0].split(',').length);
-                obj.$store.commit('STAT_LOAD_FILE', f);
+                obj.$store.commit('STAT_SET_TABLE', ['local', f]);
               }
               break
             case 'library':

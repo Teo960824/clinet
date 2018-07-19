@@ -18,41 +18,41 @@
         <!-- <li v-if="toolbar === 'getUsers' && user.login === false">
           <a class="nav-link text-light" href="#" v-on:click="insertUserPage()">新建</a>
         </li> -->
-        <li v-if="toolbar === 'getUsers' && user.login === true" id = "server-user-change">
-          <a class="nav-link text-light" href="#" v-on:click="updateUserPage()">修改</a>
+        <li v-if="toolbar === 'getUsers' && user.login === true" v-on:click="updateUserPage()" id="server-user-change">
+          <a class="nav-link text-light" href="#">修改</a>
         </li>
         <!-- <li v-if="toolbar === 'createUsers'">
           <a class="nav-link text-light" href="#" v-on:click="insertUser()">注册</a>
-        </li> -->
+        </li> 
         <li v-if="toolbar === 'upUsers'" id = "server-user-ischange">
           <a class="nav-link text-light" href="#" v-on:click="updateUser()">确认修改</a>
-        </li>
+        </li>-->
         <li class="nav-item active" v-on:click="docUser()" v-if="toolbar === 'getUsers' && user.login === true" id = "server-user-changepower">
           <a class="nav-link text-light" href="#"> 文件权限修改 <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item dropdown" v-on:click='getOrgs()' id="server-org-setup">
           <a class="nav-link text-light dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> 机构设置 <span class="sr-only">(current)</span></a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#" v-on:click="orgInfos('机构信息')">机构信息</a>
+            <a class="dropdown-item" href="#" id="orgInfos1" v-on:click="orgInfos('机构信息')">机构信息</a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#" v-on:click="orgInfos('科室信息')">科室信息</a>
+            <a class="dropdown-item" href="#" id="orgInfos2" v-on:click="orgInfos('科室信息')">科室信息</a>
             <div class="dropdown-divider"></div>
           </div>
         </li>
-        <li class="nav-item active" v-if="toolbar === 'getOrgs' && orgPage === 'getOrg'" id = "server-user-neworg">
-          <a class="nav-link text-light" href="#" v-on:click="insertOrgPage()"> 新建机构 <span class="sr-only">(current)</span></a>
+        <li class="nav-item active" v-if="toolbar === 'getOrgs' && orgPage === 'getOrg'" id = "server-user-neworg"  v-on:click="insertOrgPage()">
+          <a class="nav-link text-light" href="#"> 新建机构 <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item active" v-if="toolbar === 'createOrgs' && orgPage === 'getOrg' && orgName ==='insert'" id = "server-user-addorg">
-          <a class="nav-link text-light" href="#" v-on:click="insertOrg()"> 添加机构 <span class="sr-only">(current)</span></a>
+        <li class="nav-item active" v-if="toolbar === 'createOrgs' && orgPage === 'getOrg' && orgName ==='insert'" id = "server-user-addorg"  v-on:click="insertOrg()">
+          <a class="nav-link text-light" href="#"> 添加机构 <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active" v-if="toolbar === 'createOrgs' && orgPage === 'getOrg' && orgName ==='update'">
           <a class="nav-link text-light" href="#" v-on:click="updateOrg()"> 机构修改 <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active" v-if="toolbar === 'getOrgs' && orgPage === 'getDepartment'">
-          <a class="nav-link text-light" href="#" v-on:click="insertDepPage()"> 新建科室 <span class="sr-only">(current)</span></a>
+          <a class="nav-link text-light" href="#" id="newsection" v-on:click="insertDepPage()"> 新建科室 <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active" v-if="toolbar === 'createDepartments' && orgPage === 'getDepartment' && orgName ==='insertDep'">
-          <a class="nav-link text-light" href="#" v-on:click="insertDep()"> 添加科室 <span class="sr-only">(current)</span></a>
+          <a class="nav-link text-light" href="#" id="addsection" v-on:click="insertDep()"> 添加科室 <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active" v-if="toolbar === 'createDepartments' && orgPage === 'getDepartment' && orgName ==='updateDep'">
           <a class="nav-link text-light" href="#" v-on:click="updateDep()"> 科室修改 <span class="sr-only">(current)</span></a>
@@ -63,7 +63,7 @@
         <li class="nav-item active" v-if="this.$store.state.System.userPower === 1 && toolbar === 'getPersons' && orgPage === 'getPerson'" v-on:click="updatePerson()">
           <a class="nav-link text-light" href="#"> 人员修改 <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item active" v-on:click='upHelp()'>
+        <li class="nav-item active" id="sever-help-section" v-on:click='upHelp()'>
           <a class="nav-link text-light" href="#"> 增加帮助功能 <span class="sr-only">(current)</span></a>
         </li>
         <!-- <li class="nav-item active" v-on:click='getServerFunctions' id="server-remote-function-setup">
@@ -299,7 +299,7 @@
         sUpdateDepart(this, [this.$store.state.System.server, this.$store.state.System.port], this.depId, this.departmentInfo);
       },
       upHelp: function () {
-        sUpHelp(this, [this.$store.state.System.server, this.$store.state.System.port], '编辑器帮助', '')
+        sUpHelp(this, [this.$store.state.System.server, this.$store.state.System.port], '病案质控', '')
       }
     },
   };

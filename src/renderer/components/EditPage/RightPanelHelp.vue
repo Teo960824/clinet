@@ -179,7 +179,8 @@
       type: {
         get() {
           return this.$store.state.Edit.helpType
-        }
+        },
+        set() {}
       },
       chatUsers: {
         get() {

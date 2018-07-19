@@ -46,7 +46,7 @@ describe('LibraryRemoteFile', function () {
       .getText('#notice-bar')
       .then(function (rightpanel) {
         console.log(rightpanel)
-        expect(rightpanel).to.equal('系统通知：文件保存成功！');
+        expect(rightpanel).to.equal('系统通知：文件「mdc.csv」保存成功！');
       })
       .pause(1000)
     // 2.1.7.1.1、点击表中一行（例：第四行），当前行高亮显示
@@ -70,44 +70,58 @@ describe('LibraryRemoteFile', function () {
       })
       .click('#edit-leftbar-back')
       // .waitUntilTextExists('#notice-bar', '选择的不是CSV文件，不能导入！')
-    // 2.1.8、点击维度选择(library-dropdown)，显示维度下拉选项
-    // 2.1.8.1、工具栏的维度选择-机构(library-org)，左侧列表显示当前数据内所有机构，提示：机构维度选择成功，若机构列无内容，提示：无机构维度！
-      .click('#library-dropdown1')
-      .click('#library-dropdown-全部')
-      .getText('#library-dropdown-全部')
-      .then(function (org) {
-        expect(org).to.equal('');
-      })
-    // 2.1.8.1.1、点击左侧列表(library-leftlist)，右侧表中显示所选机构的对应数据，若右侧表中无数据显示，提示：未找到对应数据！
-      .click('.library-leftlist')
+    // // 2.1.8、点击维度选择(library-dropdown)，显示维度下拉选项
+    // // 2.1.8.1、工具栏的维度选择-机构(library-org)，左侧列表显示当前数据内所有机构，提示：机构维度选择成功，若机构列无内容，提示：无机构维度！
+      .click('.library-leftlist')  
+      .click('#library-right-dimension-time')
+      .click('#library-td-time-tr1')
+      .pause(1000)
       .getText('.library-rightpanel')
       .then(function (leftlist) {
         expect(leftlist).to.be.an('array');
       })
-    // 2.1.8.2、工具栏的维度选择-时间(library-dropdown-年份)，左侧列表显示当前数据内所有时间，提示：时间维度选择成功，若时间列无内容，提示：无时间维度！
-      .click('#library-dropdown1')
-      .click('#library-dropdown-年份')
-      .getText('#library-dropdown-年份')
-      .then(function (time) {
-        expect(time).to.equal('');
+      .click('.library-leftlist')  
+      .click('#library-right-dimension-version')
+      .click('#library-td--version-tr2')
+      .pause(1000)
+      .getText('.library-rightpanel')
+      .then(function (leftlist) {
+        expect(leftlist).to.be.an('array');
       })
-    // 2.1.8.2.1、点击左侧列表(library-leftlist)，右侧表中显示所选时间的对应数据，若右侧表中无数据显示，提示：未找到对应数据！
-    // 2.1.8.3、工具栏的维度选择-版本(library-dropdown-版本)，左侧列表显示当前数据内所有版本，提示：版本维度选择成功，若版本列无内容，提示：无版本维度！
-      .click('#library-dropdown1')
-      .click('#library-dropdown-版本')
-      .getText('#library-dropdown-版本')
-      .then(function (version) {
-        expect(version).to.equal('');
-      })
-    // 2.1.8.3.1、点击左侧列表(library-leftlist)，右侧表中显示所选版本的对应数据，若右侧表中无数据显示，提示：未找到对应数据！
-    // 2.1.8.4、点击表中任意一列
-    // 2.1.8.5、点击添加列维度，左侧列表显示选中列中的内容（去重），若选中列无内容，提示维度内容为空不可添加！
-      .click('#library-dropdown1')
-      .click('#library-dropdown-版本')
-      .getText('#library-dropdown-版本')
-      .then(function (version) {
-        expect(version).to.equal('');
-      })
+    //   .getText('#library-dropdown-全部')
+    //   .then(function (org) {
+    //     expect(org).to.equal('');
+    //   })
+    // // 2.1.8.1.1、点击左侧列表(library-leftlist)，右侧表中显示所选机构的对应数据，若右侧表中无数据显示，提示：未找到对应数据！
+    //   .click('.library-leftlist')
+    //   .getText('.library-rightpanel')
+    //   .then(function (leftlist) {
+    //     expect(leftlist).to.be.an('array');
+    //   })
+    // // 2.1.8.2、工具栏的维度选择-时间(library-dropdown-年份)，左侧列表显示当前数据内所有时间，提示：时间维度选择成功，若时间列无内容，提示：无时间维度！
+    //   .click('#library-dropdown1')
+    //   .click('#library-dropdown-年份')
+    //   .getText('#library-dropdown-年份')
+    //   .then(function (time) {
+    //     expect(time).to.equal('');
+    //   })
+    // // 2.1.8.2.1、点击左侧列表(library-leftlist)，右侧表中显示所选时间的对应数据，若右侧表中无数据显示，提示：未找到对应数据！
+    // // 2.1.8.3、工具栏的维度选择-版本(library-dropdown-版本)，左侧列表显示当前数据内所有版本，提示：版本维度选择成功，若版本列无内容，提示：无版本维度！
+    //   .click('#library-dropdown1')
+    //   .click('#library-dropdown-版本')
+    //   .getText('#library-dropdown-版本')
+    //   .then(function (version) {
+    //     expect(version).to.equal('');
+    //   })
+    // // 2.1.8.3.1、点击左侧列表(library-leftlist)，右侧表中显示所选版本的对应数据，若右侧表中无数据显示，提示：未找到对应数据！
+    // // 2.1.8.4、点击表中任意一列
+    // // 2.1.8.5、点击添加列维度，左侧列表显示选中列中的内容（去重），若选中列无内容，提示维度内容为空不可添加！
+    //   .click('#library-dropdown1')
+    //   .click('#library-dropdown-版本')
+    //   .getText('#library-dropdown-版本')
+    //   .then(function (version) {
+    //     expect(version).to.equal('');
+    //   })
   })
 });
 

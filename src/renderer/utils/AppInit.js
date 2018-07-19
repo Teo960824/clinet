@@ -520,6 +520,7 @@ export default function appInit() {
         console.log(error);
       });
   }
+
   // 用户本地文件
   const cdaFile = path.format({
     dir: hitbdataUser,
@@ -545,5 +546,37 @@ export default function appInit() {
         })
       }
     })
+  }
+
+  // 本地Section文件
+  const sections = path.format({
+    dir: hitbdataSystem,
+    base: 'hitb_sections.cda'
+  });
+  if (fs.existsSync(sections)) {
+    fs.lstat(sections, (err) => {
+      if (!err) {
+        const fRead = fs.createReadStream(sections);
+        const fReadline = readline.createInterface({ input: fRead });
+        const f = [];
+        fReadline.on('close', () => {
+          global.hitbSections = f
+        });
+        fReadline.on('line', (line) => {
+          f.push(line)
+        })
+      }
+    })
+  }
+  if (!fs.existsSync(sections)) {
+    axios.get('/static/hitb_sections.cda')
+      .then((res) => {
+        fs.writeFile(sections, res.data, (err) => {
+          console.log(err)
+        })
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 }

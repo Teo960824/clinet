@@ -3,43 +3,43 @@
     <form>
       <div class="form-group">
         <label>所在机构</label>
-        <input type="text" class="form-control" placeholder="OrgName" v-model="DepartmentInfo.org" @input="deps()"/>
+        <input type="text" class="form-control" placeholder="OrgName" id="system_department_name" v-model="DepartmentInfo.org" @input="deps()"/>
       </div>
       <div class="form-group">
         <label>科室主任</label>
-        <input type="text" class="form-control" placeholder="Director of the Department" v-model="DepartmentInfo.cherf_department" @input="deps()"/>
+        <input type="text" class="form-control" placeholder="Director of the Department" id="system_department_director" v-model="DepartmentInfo.cherf_department" @input="deps()"/>
       </div>
       <div class="form-group">
         <label>所属科室类</label>
-        <input type="text" class="form-control" placeholder="The Department Class" v-model="DepartmentInfo.class" @input="deps()"/>
+        <input type="text" class="form-control" placeholder="The Department Class" id="system_department_class" v-model="DepartmentInfo.class" @input="deps()"/>
       </div>
       <div class="form-group">
         <label>所属科室</label>
-        <input type="text" class="form-control" placeholder="The Department" v-model="DepartmentInfo.department" @input="deps()"/>
+        <input type="text" class="form-control" placeholder="The Department" id="system_department_affiliated" v-model="DepartmentInfo.department" @input="deps()"/>
       </div>
       <div class="form-group">
         <div class="custom-control custom-checkbox my-1 mr-sm-2">
-          <input type="checkbox" class="custom-control-input" id="Is_Improt" v-model="DepartmentInfo.is_imp" @input="deps()">
-          <label class="custom-control-label" for="Is_Improt">是否重点</label>
+          <input type="checkbox" class="custom-control-input" id="system_department_improt1" v-model="DepartmentInfo.is_imp" @input="deps()">
+          <label class="custom-control-label" for="system_department_improt1">是否重点</label>
         </div>
       </div>
       <div class="form-group">
         <div class="custom-control custom-checkbox my-1 mr-sm-2">
-          <input type="checkbox" class="custom-control-input" id="Is_Characteristic" v-model="DepartmentInfo.is_spe" @input="deps()">
-          <label class="custom-control-label" for="Is_Characteristic">是否特色</label>
+          <input type="checkbox" class="custom-control-input" id="system_department_characteristic1" v-model="DepartmentInfo.is_spe" @input="deps()">
+          <label class="custom-control-label" for="system_department_characteristic1">是否特色</label>
         </div>
       </div>
       <div class="form-group">
         <label>副主任</label>
-        <input type="text" class="form-control" placeholder="Professor" v-model="DepartmentInfo.professor" @input="deps()"/>
+        <input type="text" class="form-control" placeholder="Professor" id="system_department_Deputy" v-model="DepartmentInfo.professor" @input="deps()"/>
       </div>
       <div class="form-group">
         <label>内部科室编码</label>
-        <input type="text" class="form-control" placeholder="Wt_Code" v-model="DepartmentInfo.code" @input="deps()"/>
+        <input type="text" class="form-control" placeholder="Wt_Code" id="system_department_coding" v-model="DepartmentInfo.code" @input="deps()"/>
       </div>
       <div class="form-group">
         <label>内部科室名称</label>
-        <input type="text" class="form-control" placeholder="Wt_name" v-model="DepartmentInfo.wt_name" @input="deps()"/>
+        <input type="text" class="form-control" placeholder="Wt_name" id="system_department_name1" v-model="DepartmentInfo.wt_name" @input="deps()"/>
       </div>
     </form>
     <div class="row">

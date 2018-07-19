@@ -122,7 +122,7 @@
             case '/library':
               if (this.$store.state.Library.tableType === 'server') {
                 this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
-                getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.$store.state.Library.tablePage, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'edit')
+                getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.$store.state.Library.tablePage, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'edit', ['asc', '编码'])
               } else {
                 this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
                 this.$store.commit('EDIT_LOAD_FILE', this.$store.state.Library.localTable)

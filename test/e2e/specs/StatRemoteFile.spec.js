@@ -212,14 +212,64 @@ describe('StatRemoteFile', function () {
         // console.log(rightTable)
         expect(rightTable).to.equal(false)
       })
-    // 2.2.1.1.9 点击工具栏的维度选择 下拉框显示可选维度
-    // 2.2.1.1.9.1 点击时间 leftPanel显示可选机构维度
-      .click('#stat-right-dimension')
-      .click('#stat-td-tr0')
-    //   .getText('.stat-left-dimension-tr')
-    //   .then(function (time) {
-    //     expect(time).to.be.an('array');
-    //   })
+    // // 2.2.1.1.9 点击工具栏的维度选择 下拉框显示可选维度
+    // // 2.2.1.1.9.1 点击时间 leftPanel显示可选机构维度
+      .click('#stat-right-dimension-org')
+      .click('#stat-right-dimension-org-org0')
+      .getText('.stat-right-table-tr')
+      .then(function (time) {
+        expect(time).to.be.an('array');
+      })
+      .click('#stat-right-dimension-org')
+      .click('#stat-right-dimension-org-dep0')
+      .getText('.stat-right-table-tr')
+      .then(function (time) {
+        expect(time).to.be.an('array');
+      })
+      .click('#stat-right-dimension-time')
+      .click('#stat-right-dimension-time-year0')
+      .getText('.stat-right-table-tr')
+      .then(function (time) {
+        expect(time).to.be.an('array');
+      })
+      .click('#stat-right-dimension-time')
+      .click('#stat-right-dimension-time-h-year0')
+      .getText('.stat-right-table-tr')
+      .then(function (time) {
+        expect(time).to.be.an('array');
+      })
+      .click('#stat-right-dimension-time')
+      .click('#stat-right-dimension-time-s0')
+      .getText('.stat-right-table-tr')
+      .then(function (time) {
+        expect(time).to.be.an('array');
+      })
+      .click('#stat-right-dimension-time')
+      .click('#stat-right-dimension-time-m0')
+      .getText('.stat-right-table-tr')
+      .then(function (time) {
+        expect(time).to.be.an('array');
+      })
+
+      .click('#stat-right-dimension-drg')
+      .click('#stat-right-dimension-drg-m0')
+      .getText('.stat-right-table-tr')
+      .then(function (time) {
+        expect(time).to.be.an('array');
+      })
+      .click('#stat-right-dimension-drg')
+      .click('#stat-right-dimension-drg-a0')
+      .getText('.stat-right-table-tr')
+      .then(function (time) {
+        expect(time).to.be.an('array');
+      })
+      .click('#stat-right-dimension-drg')
+      .click('#stat-right-dimension-drg-d0')
+      .getText('.stat-right-table-tr')
+      .then(function (time) {
+        expect(time).to.be.an('array');
+      })
+      
     //   .click('.stat-left-dimension-tr')
     //   .getText('.stat-right-table-tr')
     //   .then(function (time) {
@@ -237,21 +287,21 @@ describe('StatRemoteFile', function () {
     //   .then(function (org) {
     //     expect(org).to.be.an('array');
     //   })
-    // // 2.2.1.1.9.3 点击病种 leftPanel显示可选病种维度
-    //   // .click('#stat-right-dimension')
-    //   // .click('#stat-right-dimension-disease')
-    //   // .waitUntilWindowLoaded(1000)
-    //   // .getText('.stat-left-dimension-tr')
-    //   // .then(function (disease) {
-    //   //   // console.log(disease);
-    //   //   expect(disease).to.be.an('array');
-    //   // })
-    //   // .click('.stat-left-dimension-tr')
-    //   // .waitUntilWindowLoaded(1000)
-    //   // .getText('#stat-right-table')
-    //   // .then(function (disease) {
-    //   //   expect(disease).to.be.an('string');
-    //   // })
+    // 2.2.1.1.9.3 点击病种 leftPanel显示可选病种维度
+      // .click('#stat-right-dimension')
+      // .click('#stat-right-dimension-disease')
+      // .waitUntilWindowLoaded(1000)
+      // .getText('.stat-left-dimension-tr')
+      // .then(function (disease) {
+      //   // console.log(disease);
+      //   expect(disease).to.be.an('array');
+      // })
+      // .click('.stat-left-dimension-tr')
+      // .waitUntilWindowLoaded(1000)
+      // .getText('#stat-right-table')
+      // .then(function (disease) {
+      //   expect(disease).to.be.an('string');
+      // })
   })
 });
 

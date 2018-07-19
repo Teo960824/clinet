@@ -27,13 +27,15 @@ export default function saveFile(obj, x, p) {
     let data = []
     if (p === '/library') {
       data = obj.$store.state.Library.downFile.join('\n')
+    } else if (p === '/stat') {
+      data = obj.$store.state.Stat.downloadTable.join('\n')
     } else {
       data = obj.$store.state.Edit.file.join('\n')
     }
     // const data = obj.$store.state.Edit.file.join('\n')
     fs.writeFile(fileName, data, (err) => {
       if (!err) {
-        obj.$store.commit('SET_NOTICE', '文件保存成功！')
+        obj.$store.commit('SET_NOTICE', `文件「${x}」保存成功！`)
       }
     })
   } else if (x && x.endsWith('.cda')) {
@@ -62,7 +64,7 @@ export default function saveFile(obj, x, p) {
         // if (data1.length > 0) {
         fs.writeFile(fileName, data1, (err) => {
           if (!err) {
-            obj.$store.commit('SET_NOTICE', `文件成功保存到《${fileName}》！`)
+            obj.$store.commit('SET_NOTICE', `文件成功保存到「${fileName}」！`)
           }
         })
         // }
@@ -70,7 +72,7 @@ export default function saveFile(obj, x, p) {
     } else {
       fs.writeFile(fileName, data, (err) => {
         if (!err) {
-          obj.$store.commit('SET_NOTICE', `文件成功保存到《${fileName}》！`)
+          obj.$store.commit('SET_NOTICE', `文件成功保存到「${fileName}」！`)
         }
       })
     }
@@ -84,7 +86,7 @@ export default function saveFile(obj, x, p) {
     fs.writeFile(fileName, obj.$store.state.Library.downFile.join('\n').split(',').join(' '), (err) => {
       // console.log()
       if (!err) {
-        obj.$store.commit('SET_NOTICE', `文件成功保存到《${fileName}》！`)
+        obj.$store.commit('SET_NOTICE', `文件成功保存到「${fileName}」！`)
       }
     })
   } else {
@@ -129,7 +131,7 @@ export function unSaveFile(obj, x, p) {
   // const fileName = '2018年度病案.cda'
   fs.writeFile(fileName, data, (err) => {
     if (!err) {
-      obj.$store.commit('SET_NOTICE', `文件成功保存到《${fileName}》！`)
+      obj.$store.commit('SET_NOTICE', `文件成功保存到「${fileName}」！`)
     }
   })
 }

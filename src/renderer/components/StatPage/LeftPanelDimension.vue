@@ -42,7 +42,7 @@
           this.$store.commit('STAT_SET_DIMENSION', [this.$store.state.Stat.dimensionType, data]);
           this.$store.commit('STAT_SET_SERVER_DIMENSION', data)
           this.$store.commit('STAT_TABLE_PAGE', 0)
-          getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.serverTable.tableName, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension }, 'stat')
+          getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.serverTable.tableName, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension, order: this.$store.state.Stat.serverSort }, 'stat')
           table = this.$store.state.Stat.serverTable.data
         } else {
           this.$store.commit('STAT_TABLE_PAGE', 0)

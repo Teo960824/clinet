@@ -30,7 +30,7 @@
             <button id="server-login" type="button" class="btn btn-outline-primary" v-on:click="sysytemlogin()"  v-if="!this.secondPassword">登录(可使用用户账号登录和区块链账号登录)</button>
             <button id="server-regiest" type="button" class="btn btn-outline-primary" v-on:click="sysytemRegisters()"  v-if="!this.secondPassword">注册</button>
             <button id="server-again-regiest" type="button" class="btn btn-outline-primary" v-on:click="sysytemRegister()"  v-if="this.secondPassword">确认注册</button>
-            <button id="server-login-return" type="button" class="btn btn-outline-primary" v-on:click="sysytemReturn()"  v-if="this.secondPassword">返回</button>
+            <button id="server-login-return" type="button" class="btn btn-outline-primary" v-on:click="sysytemRegisters()"  v-if="this.secondPassword">返回</button>
           </div>
         </div>
         <!-- 未登录 -->
@@ -78,7 +78,7 @@
                   <input type="text" class="form-control" id="InputPersonname" placeholder="Personname" v-model="personname" @input="register()">
                 </div>
               </form>
-              <button id="server-login" type="button" class="btn btn-outline-primary" v-on:click="sysytemUpdate()">确认修改</button>
+              <button id="server-login-1" type="button" class="btn btn-outline-primary" v-on:click="sysytemUpdate()">确认修改</button>
             </div>
           </div>
           <div v-if="this.toolbar === 'getUsers'">
@@ -149,7 +149,8 @@
         confirmPassword: '',
         userInfo: 'info',
         upUserInfo: { org: this.$store.state.System.user.org, password: '' },
-        secondPassword: false
+        secondPassword: false,
+        reg: /^([0-9A-Za-z\-_.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/g
 
       }
     },
@@ -204,9 +205,8 @@
         this.$store.commit('SYSTEM_LOGIN_USER', b)
       },
       sysytemlogin: function () {
-        const reg = /^([0-9A-Za-z\-_.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/g
         const user = this.$store.state.System.userLogin
-        if (reg.test(user.username)) {
+        if (this.reg.test(user.username)) {
           this.$store.commit('SYSTEM_SET_SERVER', this.$store.state.System.file[1].split(','))
           socketConnect(this, [this.server, this.port], { username: user.username, password: user.password });
         } else if (Array.from(user.username.split(' ')).length === 12) {
@@ -217,18 +217,18 @@
         }
       },
       sysytemRegisters: function () {
-        this.secondPassword = true
+        if (this.secondPassword === false) {
+          this.secondPassword = true
+        } else {
+          this.secondPassword = false
+        }
         // this.$store.commit('SYSTEM_SET_TOOLBAR', 'createUsers')
-      },
-      sysytemReturn: function () {
-        this.secondPassword = false
       },
       sysytemRegister: function () {
         this.$store.commit('SYSTEM_SET_SERVER', this.$store.state.System.file[1].split(','))
         // 邮箱,密码,年龄.电话
-        const reg = /^([0-9A-Za-z\-_.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/g
         let a = 1;
-        if (reg.test(this.emailorname)) {
+        if (this.reg.test(this.emailorname)) {
           a = 1
         } else {
           a = 0

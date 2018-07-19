@@ -29,9 +29,29 @@ export function saveEditDoc(obj, data) {
     }
   } else if (data === '保存病案') {
     obj.saveType = '保存病案'
+    if (obj.$store.state.Edit.files[obj.$store.state.Edit.filesIndex] !== obj.$store.state.System.user.username) {
+      const index = obj.$store.state.Edit.files.indexOf(obj.$store.state.System.user.username)
+      saveEdit(obj,
+        [obj.$store.state.System.server, obj.$store.state.System.port],
+        obj.$store.state.Edit.files[index],
+        [doc.toString()], obj.$store.state.System.user.username,
+        '新建', obj.$store.state.Edit.docType, '病案',
+        obj.$store.state.Edit.serverId)
+    } else {
+      saveEdit(obj,
+        [obj.$store.state.System.server, obj.$store.state.System.port],
+        obj.$store.state.Edit.files[obj.$store.state.Edit.filesIndex],
+        [doc.toString()], obj.$store.state.System.user.username,
+        '新建', obj.$store.state.Edit.docType, '病案',
+        obj.$store.state.Edit.serverId)
+    }
     if (fileName.includes('@')) {
-      saveEdit(obj, [obj.$store.state.System.server, obj.$store.state.System.port], obj.$store.state.Edit.files[obj.$store.state.Edit.filesIndex], [doc.toString()], obj.$store.state.System.user.username, '新建', obj.$store.state.Edit.docType, '病案', obj.$store.state.Edit.serverId
-      )
+      saveEdit(obj,
+        [obj.$store.state.System.server, obj.$store.state.System.port],
+        obj.$store.state.Edit.files[obj.$store.state.Edit.filesIndex],
+        [doc.toString()], obj.$store.state.System.user.username,
+        '新建', obj.$store.state.Edit.docType, '病案',
+        obj.$store.state.Edit.serverId)
     } else {
       if (obj.$store.state.Edit.lastNav === '/stat') {
         x = obj.$store.state.Stat.fileName

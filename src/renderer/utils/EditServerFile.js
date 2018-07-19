@@ -51,7 +51,6 @@ export function getEdit(obj, data, filename, serverType = 'server', type = '') {
         }
       })
       // obj.$store.commit('EDIT_LOAD_FILE', res.data)
-      console.log('----')
       obj.$store.commit('EDIT_SET_DOC_SUMMARY', docSummary)
       obj.$store.commit('EDIT_SERVER_ID', res.data.cda.id)
       obj.$store.commit('EDIT_LOAD_FILE', [res.data.cda.content])
@@ -248,7 +247,6 @@ export function editDocState(obj, doc) {
 }
 
 export function editDocShow(obj, data, value) {
-  console.log(value.join(' '))
   const value2 = value.join(' ')
   // const value2 = value[1].split(',').map(x => x.split(' ')[1])
   axios({
@@ -266,4 +264,21 @@ export function editDocShow(obj, data, value) {
     obj.$store.commit('SET_NOTICE', '病案历史查询失败')
   })
   // console.log(diag)
+}
+
+export function addDocControl(obj, data, value) {
+  axios({
+    method: 'post',
+    url: `http://${data[0]}:${data[1]}/edit/cdh_control`,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    // data: qs.stringify({ diag: `["${value2.join('","')}"]` }),
+    data: qs.stringify({ key: value }),
+    responseType: 'json'
+  }).then((res) => {
+    obj.$store.commit('SET_NOTICE', res.data.result)
+    // obj.$store.commit('EDIT_LOAD_DOC_SHOW', res.data.cda)
+  }).catch((err) => {
+    console.log(err);
+    obj.$store.commit('SET_NOTICE', '病案历史查询失败')
+  })
 }

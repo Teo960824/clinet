@@ -22,7 +22,7 @@ export function getLibraryFiles(obj, data, serverType = 'server') {
   })
 }
 
-export function getLibrary(obj, data, tableName, pageNum, dimensionType, dimensionServer, type1, serverType = 'server') {
+export function getLibrary(obj, data, tableName, pageNum, dimensionType, dimensionServer, type1, serverType = 'server', sort) {
   // 去除文件名中的.csv
   const type = tableName.split('.csv')[0]
   let url = ''
@@ -36,9 +36,15 @@ export function getLibrary(obj, data, tableName, pageNum, dimensionType, dimensi
   } else {
     url = ''
   }
+  let sorts = ''
+  if (sort.length !== 0) {
+    sorts = `&sort_type=${sort[0]}&sort_value=${sort[1]}`
+  } else {
+    sorts = ''
+  }
   axios({
     method: 'get',
-    url: `http://${data[0]}:${data[1]}/library/rule_client?rows=30&tab_type=${type}&page=${pageNum}&server_type=${serverType}${url}`,
+    url: `http://${data[0]}:${data[1]}/library/rule_client?rows=30&tab_type=${type}&page=${pageNum}&server_type=${serverType}${url}${sorts}`,
     headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
     responseType: 'json'
   }).then((res) => {
@@ -119,4 +125,3 @@ export function getLibrarySerach(obj, url, filename, value, servertype) {
     obj.$store.commit('SET_NOTICE', '下载失败')
   })
 }
-

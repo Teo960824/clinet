@@ -64,10 +64,12 @@ const state = {
   persons: {},
   pageInfo: { org: '1', department: '1' },
   targetList: [],
+  targetKey: [],
   checkData: [],
   checkDataAll: [],
   checkDataNum: 0,
   checkDataPage: 0,
+  checkDataAllPage: { page: 0, num: 0 },
   // 文件上传信息
   upLoadFile: [],
   loadTable: 0,
@@ -376,7 +378,9 @@ const mutations = {
         break;
     }
     state.checkData = state.checkDataAll.map(n => n.slice(state.checkDataNum * 10, (state.checkDataNum * 10) + 10))
+    state.checkDataAllPage.name = Math.floor(state.checkDataAll / 10)
     const [header, ...body] = state.checkData
+    state.checkDataAllPage.page = Math.floor(state.body.length / 20)
     const bodys = body.slice(state.checkDataPage * 20, (state.checkDataPage * 20) + 20);
     const c = [header, ...bodys]
     if (c.length !== 1) {
@@ -391,6 +395,9 @@ const mutations = {
   },
   SYSTEM_SECTION(state, value) {
     state.systemSection = value
+  },
+  SYSTEM_GET_TARGET_LIST_KEY(state, value) {
+    state.targetKey = value
   },
 };
 
@@ -438,6 +445,7 @@ const actions = {
     commit('SYSTEM_GET_PAGEINFO');
     commit('SYSTEM_SET_SEARCH');
     commit('SYSTEM_GET_TARGET_LIST');
+    commit('SYSTEM_GET_TARGET_LIST_KEY')
     commit('SYSTEM_GET_CHECKDATA');
     commit('SYSTEM_GET_CHECKDATA_PAGE');
     commit('SYSTEM_SET_SERVER_LOAD_TABLE');

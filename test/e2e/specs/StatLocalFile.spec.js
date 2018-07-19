@@ -16,8 +16,9 @@ describe('StatLocalFile', function () {
     // 2.1、本地文件 leftPanel显示本地文件列表
       .click('#stat-file-dropdown')
       .click('#stat-file-本地')
+      .pause(1000)
     // 2.1.1 点击leftPanel列表 rightPanel数据表显示当前文件的前十条数据 chart显示当前数据图表 提示显示当前数据提示内容
-      .click('#stat-left-file-tr0')
+      .click('#stat-left-file-tr2')
       .waitUntilTextExists('#notice-bar', 'CSV文件读取成功！')
       .getText('.stat-right-table-tr')
       .then(function (rightTable) {
@@ -161,33 +162,33 @@ describe('StatLocalFile', function () {
         // console.log(rightTable)
         expect(rightTable).to.equal(false)
       })
-    // 2.1.1.1.9 点击工具栏的维度选择 下拉框显示可选维度
-    // 2.1.1.1.9.1 点击时间 leftPanel显示可选时间维度
-      .click('#stat-right-dimension')
-      .click('#stat-td-tr0')
-      .getText('.stat-left-dimension-tr')
-      .then(function (time) {
-        expect(time).to.be.an('array');
-      })
-      .click('.stat-left-dimension-tr')
-      .getText('.stat-right-table-tr')
-      .then(function (time) {
-        expect(time).to.be.an('array');
-      })
-    // 2.1.1.1.9.2 点击机构 leftPanel显示可选机构维度
-      .click('#stat-right-dimension')
-      .click('#stat-td-tr1')
-      .pause(1000)
-      .getText('.stat-left-dimension-tr')
-      .then(function (org) {
-        console.log(org)
-        expect(org).to.be.an('string');
-      })
-      .click('.stat-left-dimension-tr')
-      .getText('.stat-right-table-tr')
-      .then(function (org) {
-        expect(org).to.be.an('array');
-      })
+    // // 2.1.1.1.9 点击工具栏的维度选择 下拉框显示可选维度
+    // // 2.1.1.1.9.1 点击时间 leftPanel显示可选时间维度
+    //   .click('#stat-right-dimension')
+    //   .click('#stat-td-tr0')
+    //   .getText('.stat-left-dimension-tr')
+    //   .then(function (time) {
+    //     expect(time).to.be.an('array');
+    //   })
+    //   .click('.stat-left-dimension-tr')
+    //   .getText('.stat-right-table-tr')
+    //   .then(function (time) {
+    //     expect(time).to.be.an('array');
+    //   })
+    // // 2.1.1.1.9.2 点击机构 leftPanel显示可选机构维度
+    //   .click('#stat-right-dimension')
+    //   .click('#stat-td-tr1')
+    //   .pause(1000)
+    //   .getText('.stat-left-dimension-tr')
+    //   .then(function (org) {
+    //     console.log(org)
+    //     expect(org).to.be.an('string');
+    //   })
+    //   .click('.stat-left-dimension-tr')
+    //   .getText('.stat-right-table-tr')
+    //   .then(function (org) {
+    //     expect(org).to.be.an('array');
+    //   })
     // 2.1.1.1.9.3 点击病种 leftPanel显示可选病种维度
       // .click('#stat-right-dimension')
       // .click('##stat-td-tr2')

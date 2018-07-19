@@ -443,6 +443,7 @@ export function sCompDrg(obj, data, dataWt4, version, type = '') {
 }
 // 获取分析字段和范围
 export function sGetTarget(obj, data, type) {
+  console.log('12123')
   let url = ''
   if (type === 'list') {
     url = `http://${data[0]}:${data[1]}/stat/target1/`
@@ -459,8 +460,23 @@ export function sGetTarget(obj, data, type) {
       console.log(res)
       obj.$store.commit('SYSTEM_GET_TARGET_LIST', res.data.list)
     } else {
+      console.log(res)
       obj.$store.commit('SYSTEM_GET_TARGET', res.data)
     }
+  }).catch((err) => {
+    console.log(err)
+    obj.$store.commit('SYSTEM_GET_TARGET', {})
+  })
+}
+
+export function sGetTargetKey(obj, data, type, username) {
+  axios({
+    method: 'get',
+    url: `http://${data[0]}:${data[1]}/stat/target_key?file=${type}&username=${username}`,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    responseType: 'json'
+  }).then((res) => {
+    obj.$store.commit('SYSTEM_GET_TARGET_LIST_KEY', res.data)
   }).catch((err) => {
     console.log(err)
     obj.$store.commit('SYSTEM_GET_TARGET', {})

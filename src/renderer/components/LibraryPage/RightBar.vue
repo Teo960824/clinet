@@ -43,19 +43,19 @@
           <a class="nav-link text-light" href="#" title="跳转到编辑来编辑该文件"> 编辑数据 <span class="sr-only">(current)</span></a>
         </li>
         <li v-if="this.$store.state.Library.tableType === 'server' && libraryList.time.length !== 0" class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle text-light" href="#" id="stat-right-dimension-value" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="nav-link dropdown-toggle text-light" href="#" id="library-right-dimension-time" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             时间
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="height: 10rem; overflow: auto">
-              <a v-for="(data, index) in libraryList.time" v-bind:key='index' v-on:click='selX(data, "time")' class="nav-link" href="#"  v-bind:id="'stat-td-tr'+index" > {{data}} <span class="sr-only">(current)</span></a>
+              <a v-for="(data, index) in libraryList.time" v-bind:key='index' v-on:click='selX(data, "time")' class="nav-link" href="#"  v-bind:id="'library-td-time-tr'+index" > {{data}} <span class="sr-only">(current)</span></a>
           </div>
         </li>
         <li v-if="this.$store.state.Library.tableType === 'server' && libraryList.version.length !== 0" class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle text-light" href="#" id="stat-right-dimension-value" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="nav-link dropdown-toggle text-light" href="#" id="library-right-dimension-version" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             版本
           </a>
            <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="height: 10rem; overflow: auto">
-              <a v-for="(data, index) in libraryList.version" v-bind:key='index' v-on:click='selX(data, "version")' class="nav-link" href="#"  v-bind:id="'stat-td-tr'+index" > {{data}} <span class="sr-only">(current)</span></a>
+              <a v-for="(data, index) in libraryList.version" v-bind:key='index' v-on:click='selX(data, "version")' class="nav-link" href="#"  v-bind:id="'library-td--version-tr'+index" > {{data}} <span class="sr-only">(current)</span></a>
           </div>
         </li>
         <li class="nav-item dropdown" v-if="this.$store.state.Library.tableType !== 'server'">
@@ -168,7 +168,7 @@
           this.$store.commit('SET_NOTICE', '当前已是尾页');
         } else if (this.$store.state.Library.tableType === 'server' || this.$store.state.Library.tableType === 'block') {
           this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
-          getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.$store.state.Library.tablePage, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'library', this.$store.state.Library.tableType)
+          getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.$store.state.Library.tablePage, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'library', this.$store.state.Library.tableType, ['asc', '编码'])
         } else if (this.$store.state.Library.tableType === 'local') {
           this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
           this.$store.commit('SET_NOTICE', `当前${this.$store.state.Library.tablePage}页,共${this.$store.state.Library.countPage}页`)
@@ -208,6 +208,7 @@
         switch (this.$store.state.Library.tableType) {
           case 'local': {
             if (this.$store.state.Library.localTable.length > 0) {
+              console.log(value)
               switch (x) {
                 case '全部':
                   this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['file', null]);
@@ -232,7 +233,7 @@
             if (this.$store.state.Library.serverTable.tableName) {
               this.$store.commit('LIBRARY_SET_SERVER_DIMENSION', [value, x]);
               console.log(this.$store.state.Library.serverDimension)
-              getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 1, 'filter', this.$store.state.Library.serverDimension, 'edit', 'server')
+              getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 1, 'filter', this.$store.state.Library.serverDimension, 'edit', 'server', ['asc', '编码'])
               // getList()
               // switch (x) {
               //   case '全部':
