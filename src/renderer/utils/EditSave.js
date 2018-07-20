@@ -136,6 +136,7 @@ export function cacheEditDoc(obj) {
     obj.$store.commit('EDIT_SET_IS_SAVE_LOCAL', fileIndex);
     obj.$store.commit('EDIT_SAVE_DOC', [fileIndex, doc.toString()]);
     const summary = []
+    const diag = []
     doc.forEach((x) => {
       const b = x.split(';')
       let creatTime = ''
@@ -143,9 +144,16 @@ export function cacheEditDoc(obj) {
         if (x.includes('创建时间')) {
           creatTime = x
         }
+        if (x.includes('诊断')) {
+          diag.push(x)
+        }
       })
-      if (x.includes('创建时间')) {
-        summary.push([fileIndex, creatTime])
+      const diag1 = []
+      diag.forEach((x) => {
+        diag1.push(x.replace(/ /g, ':'))
+      })
+      if (x.includes('创建时间') || x.includes('诊断')) {
+        summary.push([fileIndex, creatTime, diag1.toString()])
       }
     })
     obj.$store.commit('EDIT_ADD_DOC_SUMMARY', summary);

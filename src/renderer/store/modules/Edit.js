@@ -51,7 +51,7 @@ const state = {
   cdhFile: {},
   cdhFilePage: 0,
   secton: '',
-  docControl: []
+  docControl: [],
 };
 
 const mutations = {
@@ -369,6 +369,21 @@ const mutations = {
     state.docSummary.splice(value, 1);
     state.doc = [];
   },
+  EDIT_UPDATE_DOC_SUMMARY(state, value) {
+    let index = null
+    state.docSummary[value[0]].forEach((x, key) => {
+      if (typeof (x) !== 'number') {
+        if (x.includes('上传时间')) {
+          index = key
+        }
+      }
+    })
+    if (index) {
+      state.docSummary[value[0]].splice(index, 1, value[1])
+    } else {
+      state.docSummary[value[0]].push(value[1])
+    }
+  },
   EDIT_SET_CDH(state, value) {
     state.editCdh = value
   },
@@ -416,6 +431,7 @@ const mutations = {
 
 const actions = {
   someAsyncTask({ commit }) {
+    commit('EDIT_UPDATE_DOC_SUMMARY');
     commit('EDIT_ADD_DOC_CONTROL');
     commit('EDIT_DELETE_DOC_CONTROL');
     commit('EDIT_SET_SECTION');

@@ -14,8 +14,10 @@
         <td v-if="rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-del'+index"><a href="#" v-on:click="delDoc(data, index)">删除</a></td>
         <td v-if="rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-edit'+index"><a href="#" v-on:click="loadDoc(data, index, 'edit')">编辑</a></td>
         <td v-if="lastNav !== '/library' && rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-ref'+index"><a href="#" v-on:click="loadDoc(data, index, 'show')">参考</a></td>
-        <td v-if="!fileName.includes('@') || rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-upl'+index"><a href="#" v-on:click="uploadDoc(data)">上传</a></td>
+        <td v-if="!fileName.includes('@') || rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-upl'+index"><a href="#" v-on:click="uploadDoc(data, index)">上传</a></td>
         <td v-if="fileName.includes('@')" v-bind:id="'edit-leftpaneltable-dow'+index"><a href="#" v-on:click="downloadDoc(data, index)">下载</a></td>
+        <td v-if="data[2]" class="table-success"><a href="#" style="color: #000">已上传</a></td>
+        <td v-if="!data[2]" class="table-warning"><a href="#" style="color: #000">未上传</a></td>
       </tr>
     </table>
     <table v-if="this.$store.state.Edit.rightFolds.includes('编辑病案')">
@@ -161,6 +163,7 @@
         }
         const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
         this.$store.commit('EDIT_UPDATE_DOC_HEADER', ['上传时间', currentdate]);
+        this.$store.commit('EDIT_UPDATE_DOC_SUMMARY', [index, `上传时间:${currentdate}`]);
         this.$store.commit('EDIT_SET_DOC_STATE');
       },
       downloadDoc: function (data, index) {
@@ -200,11 +203,15 @@
           // }
           if (type === 'string') {
             h.split(',').forEach((key, i) => {
-              if (data[i] !== undefined) {
-                r.push(`${key} ${data[i]}`)
-              } else {
-                r.push(`${key}`)
-              }
+              // if (data[i] !== undefined) {
+              //   r.push(`${key} ${data[i]}`)
+              //   // r.splice(0, 1, `${key} ${data[i]}`)
+              //   console.log(r)
+              // } else {
+              //   r.push(`${key}`)
+              //   console.log(r)
+              // }
+              r.push(`${key} ${data[i]}`)
             });
           } else {
             h.forEach((key, i) => {
@@ -215,6 +222,27 @@
           //   r = data.split(',')
           // }
           this.$store.commit('EDIT_LOAD_DOC', r)
+          const header = r[0]
+          if (header.includes('创建时间')) {
+            const a = header.split(';')
+            const d = a.map((x) => {
+              const b = x.split(':')
+              if (b[0] && b[0].includes('时间')) {
+                const c = `${b[1]}:${b[2]}:${b[3]}`
+                b[1] = c
+                b.splice(2, 2)
+              }
+              return b
+            })
+            const obj = {}
+            d.forEach((x) => {
+              if (x[1].includes('undefined')) {
+                x[1] = null
+              }
+              obj[x[0]] = x[1]
+            })
+            this.$store.commit('EDIT_SET_DOC_HEADER', obj)
+          }
           if (this.$store.state.Edit.helpType === '在线交流') {
             this.$store.commit('EDIT_SET_CHAT_TYPE', true)
             join(this, this.$store.state.Edit.fileName, this.$store.state.System.user.username)
