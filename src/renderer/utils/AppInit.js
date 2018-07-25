@@ -579,4 +579,24 @@ export default function appInit() {
         console.log(error);
       });
   }
+  // 本地病案质控
+  const controls = path.format({
+    dir: hitbdataUser,
+    base: '病案质控.cda'
+  });
+  if (fs.existsSync(controls)) {
+    fs.lstat(controls, (err) => {
+      if (!err) {
+        const fRead = fs.createReadStream(controls);
+        const fReadline = readline.createInterface({ input: fRead });
+        const f = [];
+        fReadline.on('close', () => {
+          global.hitbControls = f
+        });
+        fReadline.on('line', (line) => {
+          f.push(line)
+        })
+      }
+    })
+  }
 }

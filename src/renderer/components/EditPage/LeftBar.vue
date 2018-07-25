@@ -18,16 +18,16 @@
             <div class="dropdown-divider"></div>
           </div>
         </li>
-        <li class="nav-item" id="edit-leftbar-newdoc" v-on:click="show()">
+        <li class="nav-item" id="edit-leftbar-newdoc1" v-on:click="show()">
           <a class="nav-link text-light" href="#" v-if="this.$store.state.Edit.leftPanel == 'table'">编辑</a>
         </li>
         <li class="nav-item" id="edit-leftbar-cache" v-on:click="saveDoc()">
           <a class="nav-link text-light" href="#">缓存</a>
         </li>
-        <li class="nav-item" id="edit-leftbar-newdoc" v-on:click="save('保存病案')">
+        <li class="nav-item" id="edit-leftbar-newdoc2" v-on:click="save('保存病案')">
           <a class="nav-link text-light" href="#">保存</a>
         </li>
-        <li class="nav-item" id="edit-leftbar-newdoc" v-on:click="save('保存模板')">
+        <li class="nav-item" id="edit-leftbar-newdoc3" v-on:click="save('保存模板')">
           <a class="nav-link text-light" href="#" v-if="this.$store.state.System.user.login">另存为模板</a>
         </li>
         <!-- <li class="nav-item" id="edit-leftbar-del" v-on:click="save(0)">

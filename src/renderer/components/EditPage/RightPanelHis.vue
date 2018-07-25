@@ -1,7 +1,7 @@
 <template>
-  <div id="edit-leftpaneldoc-doc" v-bind:style="{ height: height + 'px', overflow: 'auto' }">
+  <div id="edit-leftpaneldoc-doc">
     <div class="card">
-      <table><tr class="table-warning">当前病案状态：{{docState}}</tr></table>
+      <!-- <table><tr class="table-warning">当前病案状态：{{docState}}</tr></table> -->
       <div class="card-body" v-for="(section, key) of doc" v-bind:key='key'>
         <!-- 个人信息 -->
         <div v-if="lastNav === '/stat' || lastNav === '/library' || lastNav === '/system'">

@@ -22,19 +22,19 @@
             <li>当前文件:  {{serverType}}--{{this.$store.state.Stat.statTableInfo.tableName}}</li>
             <!-- 显示当前文件 -->
             <!-- 远程维度选择提示 -->
-            <li v-if="['', '全部'].includes(this.$store.state.Stat.serverDimension.org) && ['server', 'block'].includes(this.$store.state.Stat.tableType)">机构: 全部</li>
+            <li v-if="['', '全部'].includes(this.$store.state.Stat.dimension.org) && ['server', 'block'].includes(this.$store.state.Stat.tableType)">机构: 全部</li>
             <li v-else>
-              机构: {{this.$store.state.Stat.serverDimension.org}}
+              机构: {{this.$store.state.Stat.dimension.org}}
               <a class="badge badge-primary badge-pill" v-on:click='clearSelX("org")' href="#" style="color:#ffffff">X</a>
             </li>
-            <li v-if="['', '全部'].includes(this.$store.state.Stat.serverDimension.time) && ['server', 'block'].includes(this.$store.state.Stat.tableType)">时间: 全部</li>
+            <li v-if="['', '全部'].includes(this.$store.state.Stat.dimension.time) && ['server', 'block'].includes(this.$store.state.Stat.tableType)">时间: 全部</li>
             <li v-else>
-              时间: {{this.$store.state.Stat.serverDimension.time}}
+              时间: {{this.$store.state.Stat.dimension.time}}
               <a class="badge badge-primary badge-pill" v-on:click='clearSelX("time")' href="#" style="color:#ffffff">X</a>
             </li>
-            <li v-if="['', '-'].includes(this.$store.state.Stat.serverDimension.drg) && ['server', 'block'].includes(this.$store.state.Stat.tableType)">病种: 未选择</li>
+            <li v-if="['', '-'].includes(this.$store.state.Stat.dimension.drg) && ['server', 'block'].includes(this.$store.state.Stat.tableType)">病种: 未选择</li>
             <li v-else>
-              病种: {{this.$store.state.Stat.serverDimension.drg}}
+              病种: {{this.$store.state.Stat.dimension.drg}}
               <a class="badge badge-primary badge-pill" v-on:click='clearSelX("drg")' href="#" style="color:#ffffff">X</a>
             </li>
           </ul>
@@ -111,7 +111,11 @@
         <button type="submit" class="btn btn-primary" v-on:click="selX(data, 0)">清空</button>
       </div>
     </div>
-    <right-panel-custom v-if="this.$store.state.Stat.chartIsShow === 'custom'"></right-panel-custom>
+    <div class="row" v-if="this.$store.state.Stat.chartIsShow === 'custom'">
+      <div class="col-md-12">
+        <right-panel-custom></right-panel-custom>
+      </div>
+    </div>
     <div>
       <table v-if="this.$store.state.Stat.tableType === 'server'">
         <tr v-for="(x, index) in xs"  v-if="index === 0" v-on:click="onClick(x, index)" v-bind:key="index">
@@ -326,7 +330,7 @@
     methods: {
       onClickTd: function (data, index) {
         this.$store.commit('STAT_SET_XOBJ', [data[index], 0]);
-        const header = this.$store.state.Stat.serverTable.data[0]
+        const header = this.$store.state.Stat.statTable.data[0]
         let cindex = 0
         let oindex = 0
         let tindex = 0
@@ -440,7 +444,7 @@
       },
       serverPage: function (data) {
         this.$store.commit('STAT_SET_TABLE_PAGE', parseInt(data, 10))
-        getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: parseInt(data, 10), username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension, order: this.$store.state.Stat.serverSort }, 'stat')
+        getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: parseInt(data, 10), username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.serverSort }, 'stat')
       },
       chart: function (data) {
         this.$store.commit('STAT_SET_CHART_OPTION', data)
@@ -462,7 +466,7 @@
           if (data.endsWith('.csv')) {
             this.$store.commit('STAT_CLEAR_SERVER_DIMENSION');
             this.$store.commit('STAT_CLEAR_SERVER_SORT');
-            getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: data, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension, order: this.$store.state.Stat.serverSort }, 'stat', this.$store.state.Stat.tableType)
+            getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: data, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.serverSort }, 'stat', this.$store.state.Stat.tableType)
           } else {
             getStatFiles(this, [this.$store.state.System.server, this.$store.state.System.port], data, this.$store.state.System.user.usernamee, this.$store.state.Stat.tableType)
           }
@@ -473,26 +477,9 @@
       },
       selX: function (data, value) {
         if (value === 1) {
-          let tableType = ''
-          let table = []
+          const tableType = this.$store.state.Stat.tableType
           const table1 = []
-          // let header = []
-          switch (this.$store.state.Stat.tableType) {
-            case 'local':
-              table = this.$store.state.Stat.localTable
-              tableType = 'local'
-              break;
-            case 'server':
-              table = this.$store.state.Stat.serverTable.data
-              tableType = 'server'
-              break;
-            case 'block':
-              table = this.$store.state.Stat.serverTable.data
-              tableType = 'block'
-              break;
-            default:
-              break;
-          }
+          const table = this.$store.state.Stat.statTable.data
           const a = table[0]
           const index = a.indexOf(data)
           if (index > -1) {
@@ -511,11 +498,11 @@
       },
       clearSelX: function (type) {
         this.$store.commit('STAT_SERVER_DIMENSION', [type, '全部'])
-        getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension, order: this.$store.state.Stat.serverSort }, 'stat')
+        getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.serverSort }, 'stat')
       },
       onClickSort: function (field, type) {
         this.$store.commit('STAT_SET_SERVER_SORT', [field, type])
-        getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension, order: this.$store.state.Stat.serverSort }, 'stat')
+        getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.serverSort }, 'stat')
       }
     },
   };

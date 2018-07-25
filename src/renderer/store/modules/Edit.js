@@ -21,7 +21,7 @@ const state = {
   hintType: 'notice',
   hint: [],
   helpType: '编辑器使用帮助',
-  helpTypes: ['输入框提示', '病案参考', '病案历史', '在线交流', 'DRG分析', 'HIS接口', '病案质控'],
+  helpTypes: ['输入框提示', '病案参考', '病案历史', '在线交流', 'DRG分析', 'HIS接口', '病案质控', '专家提示'],
   serverType: 'user',
   docType: '自定义文档',
   docTypes: ['自定义文档', '病案首页（卫统四CSV）', '入院申请', '首次病程', '病程记录', '病案首页', '门诊病案', '健康体检'],
@@ -422,15 +422,23 @@ const mutations = {
     }
   },
   EDIT_ADD_DOC_CONTROL(state, value) {
-    state.docControl.push(value)
+    if (!value[1]) {
+      state.docControl.push(`${value[0]}`)
+    } else {
+      state.docControl.push(`${value[0]}:${value[1]}`)
+    }
   },
   EDIT_DELETE_DOC_CONTROL(state, value) {
     state.docControl.splice(value, 1);
+  },
+  EDIT_SET_DOC_CONTROL(state, value) {
+    state.docControl = value
   },
 };
 
 const actions = {
   someAsyncTask({ commit }) {
+    commit('EDIT_SET_DOC_CONTROL');
     commit('EDIT_UPDATE_DOC_SUMMARY');
     commit('EDIT_ADD_DOC_CONTROL');
     commit('EDIT_DELETE_DOC_CONTROL');

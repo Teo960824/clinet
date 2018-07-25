@@ -191,25 +191,25 @@ const mutations = {
         state.tableSel = state.table.filter(x => x[2] === opt[1])
         break;
       default:
-        state.dimensionOrg = []
-        state.dimensionTime = []
-        state.dimensionDrg = []
+        state.dimension.org = []
+        state.dimension.time = []
+        state.dimension.drg = []
         break;
     }
     state.notice = [
       `病案总数：${state.tableSel.length - 1}`
     ]
     const page = Math.ceil(state.tableSel.length / 20)
-    state.countPage = page
+    state.statTableInfo.countPage = page
     for (let i = 0; i < page; i += 1) {
       const f = []
-      f.push(state.tableHeader[0])
+      f.push(state.statTableInfo.header[0])
       for (let j = 0; j < 19; j += 1) {
         f.push(state.tableSel[(i + 1) * j])
       }
       state.localTables[i] = f
     }
-    state.localTable = state.localTables[state.tablePage]
+    state.statTable.data = state.localTables[state.statTableInfo.page]
   },
   STAT_GET_FIELD(state, field) {
     state.field = field;
@@ -288,7 +288,7 @@ const mutations = {
     }
   },
   STAT_CLEAR_SERVER_DIMENSION(state) {
-    state.dimension = { org: [], time: [], drg: [], type: 'org', localList: [] }
+    state.dimension = { org: '', time: '', drg: '', type: 'org' }
   },
   STAT_SET_TABLE_TYPE(state, data) {
     if (data !== 'compare') {
@@ -301,7 +301,7 @@ const mutations = {
     state.tableType = data
   },
   STAT_SET_SERVER_TABLE_INFO(state, data) {
-    state.serverTableInfo.data = data
+    state.statTable.info = data
   },
   STAT_SET_CHART_LEFT(state, data) {
     state.chartLeft = data
@@ -332,7 +332,7 @@ const mutations = {
     }
   },
   STAT_TABLE_NAME(state, index) {
-    state.tableName = index
+    state.statTableInfo.tableName = index
   },
   STAT_SET_FILE_FLAG(state) {
     state.selectedRow = [];
@@ -346,13 +346,13 @@ const mutations = {
     // const page = 1
     for (let i = 0; i < page; i += 1) {
       const f = []
-      f.push(state.tableHeader[0])
+      f.push(state.statTableInfo.header[0])
       for (let j = 0; j < 19; j += 1) {
         f.push(a[(i + 1) * j])
       }
       state.localTables[i] = f
     }
-    state.localTable = state.localTables[state.tablePage]
+    state.statTable.data = state.localTables[state.statTableInfo.page]
   },
   STAT_SET_COL_NUM(state, num) {
     if (state.tableType === 'local') {
@@ -362,10 +362,10 @@ const mutations = {
       for (let i = num - 10; i < num; i += 1) { indexs.push(i) }
       state.haveRight = true
       const table = []
-      state.localTables[state.tablePage].forEach((xs) => {
+      state.localTables[state.statTableInfo.page].forEach((xs) => {
         table.push(indexs.map(x => xs[x]))
       })
-      state.localTable = table
+      state.statTable.data = table
     }
   },
   STAT_SET_STAT_LIST(state, data) {
@@ -464,10 +464,14 @@ const mutations = {
     state.downloadTable = data
   },
   STAT_SET_CUSTOM_INDEX(state, data) {
-    if (state.customindex.includes(data)) {
-      state.customindex.splice(state.customindex.findIndex(v => v === data), 1)
+    if (typeof data === 'string') {
+      if (state.customindex.includes(data)) {
+        state.customindex.splice(state.customindex.findIndex(v => v === data), 1)
+      } else {
+        state.customindex.push(data)
+      }
     } else {
-      state.customindex.push(data)
+      state.customindex = data
     }
   }
 };

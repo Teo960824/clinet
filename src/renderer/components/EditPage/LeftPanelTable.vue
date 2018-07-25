@@ -14,10 +14,10 @@
         <td v-if="rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-del'+index"><a href="#" v-on:click="delDoc(data, index)">删除</a></td>
         <td v-if="rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-edit'+index"><a href="#" v-on:click="loadDoc(data, index, 'edit')">编辑</a></td>
         <td v-if="lastNav !== '/library' && rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-ref'+index"><a href="#" v-on:click="loadDoc(data, index, 'show')">参考</a></td>
-        <td v-if="!fileName.includes('@') || rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-upl'+index"><a href="#" v-on:click="uploadDoc(data, index)">上传</a></td>
+        <!-- <td v-if="!fileName.includes('@') || rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-upl'+index"><a href="#" v-on:click="uploadDoc(data, index)">上传</a></td> -->
         <td v-if="fileName.includes('@')" v-bind:id="'edit-leftpaneltable-dow'+index"><a href="#" v-on:click="downloadDoc(data, index)">下载</a></td>
         <td v-if="data[2]" class="table-success"><a href="#" style="color: #000">已上传</a></td>
-        <td v-if="!data[2]" class="table-warning"><a href="#" style="color: #000">未上传</a></td>
+        <td v-if="(!fileName.includes('@') || rightPanel !== 'block') && !data[2]" class="table-warning"><a href="#" style="color: #000" v-on:click="uploadDoc(data, index)">未上传</a></td>
       </tr>
     </table>
     <table v-if="this.$store.state.Edit.rightFolds.includes('编辑病案')">
@@ -144,14 +144,6 @@
         this.$store.commit('EDIT_SET_DELETE_LOCAL', index[0])
       },
       uploadDoc: function (data, index) {
-        if (!this.$store.state.System.user.login) {
-          this.$store.commit('SET_NOTICE', '未登录用户,请在系统服务-用户设置内登录');
-          this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
-        } else {
-          this.$store.commit('EDIT_SET_FILE_INDEX', index)
-          // obj, data, fileName, content, id, saveType, username, doctype, mouldtype
-          saveEdit(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Edit.files[this.$store.state.Edit.filesIndex], [data], '', '上传', this.$store.state.System.user.username, 1, this.$store.state.Edit.docType, '病案')
-        }
         const date = new Date();
         let month = date.getMonth() + 1;
         let strDate = date.getDate();
@@ -162,9 +154,17 @@
           strDate = `0${strDate}`
         }
         const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-        this.$store.commit('EDIT_UPDATE_DOC_HEADER', ['上传时间', currentdate]);
-        this.$store.commit('EDIT_UPDATE_DOC_SUMMARY', [index, `上传时间:${currentdate}`]);
-        this.$store.commit('EDIT_SET_DOC_STATE');
+        if (!this.$store.state.System.user.login) {
+          this.$store.commit('SET_NOTICE', '未登录用户,请在系统服务-用户设置内登录');
+          this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
+        } else {
+          this.$store.commit('EDIT_SET_FILE_INDEX', index)
+          // obj, data, fileName, content, id, saveType, username, doctype, mouldtype
+          saveEdit(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Edit.files[this.$store.state.Edit.filesIndex], [data], '', '上传', this.$store.state.System.user.username, 1, this.$store.state.Edit.docType, '病案')
+          this.$store.commit('EDIT_UPDATE_DOC_HEADER', ['上传时间', currentdate]);
+          this.$store.commit('EDIT_UPDATE_DOC_SUMMARY', [index, `上传时间:${currentdate}`]);
+          this.$store.commit('EDIT_SET_DOC_STATE');
+        }
       },
       downloadDoc: function (data, index) {
         const index1 = this.$store.state.Edit.files[this.$store.state.Edit.filesIndex].indexOf('-')

@@ -54,7 +54,6 @@
     computed: {
       editType: {
         get() {
-          console.log(this.$store.state.Edit.section)
           return this.$store.state.Edit.editType
         },
         set() {}
@@ -158,7 +157,7 @@
                   this.$store.commit('EDIT_SET_DOC_INDEX', [1]);
                   n += 1
                   if (!global.hitbdata.cdhHeader.includes(v[0]) && this.$store.state.Edit.rightPanels.includes('病案质控')) {
-                    this.$store.commit('EDIT_ADD_DOC_CONTROL', v[0]);
+                    this.$store.commit('EDIT_ADD_DOC_CONTROL', v);
                   }
                 });
               } else {

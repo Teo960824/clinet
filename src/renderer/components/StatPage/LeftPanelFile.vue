@@ -50,11 +50,12 @@
         // 判断读取文件
         if (this.$store.state.Stat.tableType === 'local') {
           loadFile(this, data, 'stat');
-        } else if (this.$store.state.Stat.tableType === 'server') {
+        } else if (this.$store.state.Stat.tableType === 'server' || this.$store.state.Stat.isServer) {
+          this.$store.commit('STAT_SET_TABLE_TYPE', 'server')
           // 判断是否是病案
           if (data.endsWith('.csv')) {
             this.$store.commit('STAT_SET_CHART_IS_SHOW', 'chart');
-            getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: data, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension, order: this.$store.state.Stat.serverSort }, 'stat')
+            getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: data, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.tableSort }, 'stat')
           } else {
             if (this.$store.state.Stat.serverMenu.type === '二级菜单') {
               this.$store.commit('STAT_SET_SERVER_MENU', ['三级菜单', []]);

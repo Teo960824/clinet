@@ -402,10 +402,10 @@ describe('EditLocalFile', function () {
         expect(editText).to.be.an('string');
       })
     // 2.3.5 点击左侧 第一行 td 上传按钮 edit-leftpaneltable-upl0
-      .click('#edit-leftpaneltable-upl0')
-      .getText('#edit-bar-prompt')
-      .then(function (editText) {
-        expect(editText).to.be.an('string');
-      })
+      // .click('#edit-leftpaneltable-upl0')
+      // .getText('#edit-bar-prompt')
+      // .then(function (editText) {
+      //   expect(editText).to.be.an('string');
+      // })
   });
 });

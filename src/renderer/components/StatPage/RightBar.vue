@@ -64,12 +64,12 @@
         </li>
         <!-- 加入对比 -->
         <!-- 显示对比 -->
-        <li class="nav-item active" id="stat-show-contrast" v-on:click='showCompare()' v-if="this.$store.state.Stat.compareTable.length > 0"  title="显示当前已加入对比的内容">
+        <li class="nav-item active" id="stat-show-contrast" v-on:click='showCompare()' v-if="this.$store.state.Stat.compareTable1.length > 0"  title="显示当前已加入对比的内容">
           <a class="nav-link text-light" href="#"> 显示对比 <span class="sr-only">(current)</span></a>
         </li>
         <!-- 显示对比 -->
         <!-- 保存对比 -->
-        <li class="nav-item active" id="stat-save-contrast" v-on:click='saveCompare()'  v-if="this.$store.state.Stat.compareTable.length > 0">
+        <li class="nav-item active" id="stat-save-contrast" v-on:click='saveCompare()'  v-if="this.$store.state.Stat.compareTable1.length > 0">
           <a class="nav-link text-light" href="#"  title="将目前对比内容保存为文件"> 保存对比 <span class="sr-only">(current)</span></a>
         </li>
         <!-- 保存对比 -->
@@ -147,15 +147,18 @@
           <a class="nav-link  text-light" href="#"> 返回 <span class="sr-only"></span></a>
         </li>
         <!-- 详情显示 -->
-        <li class="nav-item active" id="stat-left-download" v-on:click='statDownload()' v-if="this.$store.state.Stat.serverTable.data.length > 0 && this.$store.state.Stat.tableType === 'server'"  title="下载到本地">
+        <li class="nav-item active" id="stat-left-download" v-on:click='statDownload()' v-if="this.$store.state.Stat.tableType === 'server'"  title="下载到本地">
           <a class="nav-link  text-light" href="#"> 下载 <span class="sr-only"></span></a>
         </li>
         <!-- 自定义查询 -->
-        <li class="nav-item active" v-on:click='customselece()' v-if="this.$store.state.Stat.serverTable.data.length > 0 && this.$store.state.Stat.tableType === 'server'"  title="自定义查询">
+        <li class="nav-item active" v-on:click='customselece()' v-if="this.$store.state.Stat.tableType === 'server'"  title="自定义查询">
           <a class="nav-link  text-light" href="#"> 自定义 <span class="sr-only"></span></a>
         </li>
-        <li class="nav-item active" v-on:click='custom()' v-if="this.$store.state.Stat.serverTable.data.length > 0 && this.$store.state.Stat.tableType === 'server'"  title="自定义查询">
+        <li class="nav-item active" v-on:click='custom()' v-if="this.$store.state.Stat.tableType === 'server' && this.customs"  title="自定义查询">
           <a class="nav-link  text-light" href="#"> 自定义查询 <span class="sr-only"></span></a>
+        </li>
+        <li class="nav-item active" v-on:click='customInsert()' v-if="this.$store.state.Stat.tableType === 'server' && this.customs"  title="自定义保存">
+          <a class="nav-link  text-light" href="#"> 自定义保存 <span class="sr-only"></span></a>
         </li>
       </ul>
       <form class="form-inline my-2 my-lg-0" v-on:submit.prevent>
@@ -175,7 +178,7 @@
   import chartData from '../../utils/ChartData';
   import addContrast from '../../utils/StatContrast';
   // import saveFile from '../../utils/SaveFile';
-  import { getStatFiles, getStat, saveStat, getStatInfo, downloadStat } from '../../utils/StatServerFile';
+  import { getStatFiles, getStat, saveStat, getStatInfo, downloadStat, sCustom } from '../../utils/StatServerFile';
   import loadFile from '../../utils/LoadFile';
   // import sGetTarget from '../../utils/Server';
 
@@ -185,7 +188,8 @@
         paths: [],
         stat: '',
         tableType: this.$store.state.Stat.tableType,
-        dimension: ''
+        dimension: '',
+        customs: false
       };
     },
     computed: {
@@ -283,21 +287,18 @@
       page: function (n) {
         if (this.$store.state.Stat.tablePage === 1 && n === -1) {
           this.$store.commit('SET_NOTICE', '当前已是第一页')
-        } else if ((this.$store.state.Stat.tablePage === this.$store.state.Stat.countPage && n === 1) || this.$store.state.Stat.countPage === 0) {
+        } else if ((this.$store.state.Stat.tablePage === this.$store.state.Stat.statTableInfo.countPage && n === 1) || this.$store.state.Stat.statTableInfo.countPage === 0) {
           this.$store.commit('SET_NOTICE', '当前已是尾页');
         } else {
-          let table = []
           switch (this.$store.state.Stat.tableType) {
             case 'server':
               this.$store.commit('STAT_TABLE_PAGE', n);
-              getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.serverTable.tableName, page: this.$store.state.Stat.tablePage, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension, order: this.$store.state.Stat.serverSort }, 'stat')
-              table = this.$store.state.Stat.serverTable.data
+              getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: this.$store.state.Stat.statTableInfo.page, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.tableSort }, 'stat')
               break;
             case 'local':
               this.$store.commit('STAT_TABLE_PAGE', n);
-              this.$store.commit('SET_NOTICE', `当前${this.$store.state.Stat.tablePage}页,共${this.$store.state.Stat.countPage}页`)
-              table = this.$store.state.Stat.localTable
-              chartData(this, table, this.$store.state.Stat.selectedRow, this.$store.state.Stat.selectedCol)
+              this.$store.commit('SET_NOTICE', `当前${this.$store.state.Stat.statTableInfo.page}页,共${this.$store.state.Stat.statTableInfo.countPage}页`)
+              chartData(this, this.$store.state.Stat.statTable.data, this.$store.state.Stat.selectedRow, this.$store.state.Stat.selectedCol)
               break;
             default:
               break;
@@ -345,7 +346,7 @@
           case 'local':
             if (this.$store.state.Stat.fileIndex !== null) {
               this.$store.commit('EDIT_SET_LEFT_PANEL', 'table');
-              this.$store.commit('EDIT_LOAD_FILE', this.$store.state.Stat.localTable);
+              this.$store.commit('EDIT_LOAD_FILE', this.$store.state.Stat.statTable.data);
             }
             this.$store.commit('EDIT_SET_RIGHT_PANEL', 'local');
             this.$store.commit('EDIT_SET_FILES_INDEX', this.$store.state.Stat.fileIndex);
@@ -354,7 +355,7 @@
             this.$store.commit('EDIT_SET_LEFT_PANEL', 'table');
             this.$store.commit('EDIT_SET_RIGHT_PANEL', 'server');
             this.$store.commit('EDIT_SET_FILES_INDEX', 0);
-            this.$store.commit('EDIT_LOAD_FILE', this.$store.state.Stat.serverTable.data);
+            this.$store.commit('EDIT_LOAD_FILE', this.$store.state.Stat.statTable.data);
             break;
           default:
         }
@@ -386,10 +387,10 @@
             break;
           }
           case 'server': {
-            if (this.$store.state.Stat.serverTable.data.length > 0) {
+            if (this.$store.state.Stat.statTable.data.length > 0) {
               this.$store.commit('STAT_SERVER_DIMENSION', [selType, x])
               this.$store.commit('STAT_SERVER_DIMENSION', ['type', type])
-              getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.serverTable.tableName, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension, order: this.$store.state.Stat.serverSort }, 'stat')
+              getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.tableSort }, 'stat')
             } else {
               this.$store.commit('SET_NOTICE', '请选择文件');
             }
@@ -449,23 +450,11 @@
         }
       },
       compare: function () {
-        let table = []
-        let header = []
-        switch (this.$store.state.Stat.tableType) {
-          case 'server':
-            table = this.$store.state.Stat.serverTable.data
-            header = this.$store.state.Stat.serverTable.data[0]
-            break;
-          case 'local':
-            table = this.$store.state.Stat.localTable
-            header = this.$store.state.Stat.tableHeader[0]
-            break;
-          default:
-            break;
-        }
+        const table = this.$store.state.Stat.statTable.data
+        const header = this.$store.state.Stat.statTableInfo.header
         const col = this.$store.state.Stat.selectedCol
         const row = this.$store.state.Stat.selectedRow
-        const compareTable = this.$store.state.Stat.compareTable
+        const compareTable = this.$store.state.Stat.compareTable1
         if (this.$store.state.Stat.tableType !== 'compare') {
           if (row.length > 0 && row[0] !== 0) {
             addContrast(this, table, compareTable, header, col, row)
@@ -475,23 +464,23 @@
         }
       },
       showCompare: function () {
-        if (this.$store.state.Stat.compareTable.length > 0) {
+        if (this.$store.state.Stat.compareTable1.length > 0) {
           this.$store.commit('STAT_SET_TABLE_TYPE', 'compare');
         } else {
           this.$store.commit('SET_NOTICE', '对比数据为空,请选择对比数据!');
         }
       },
       saveCompare: function () {
-        if (this.$store.state.Stat.tableType === 'server' || this.$store.state.Stat.serverTable !== []) {
+        if (this.$store.state.Stat.tableType === 'server' && this.$store.state.Stat.statTable.data !== []) {
           // 取得所有对比行中所有的key并去重
           const compareFile = []
           let keys = []
-          keys = keys.concat.apply([], this.$store.state.Stat.compareTable.map(x => Object.keys(x)))
+          keys = keys.concat.apply([], this.$store.state.Stat.compareTable1.map(x => Object.keys(x)))
           keys = Array.from(new Set(keys))
           // 存储表头
           compareFile.push(keys)
           // 取得表内容,取不到的用-代替
-          this.$store.state.Stat.compareTable.forEach((xs) => {
+          this.$store.state.Stat.compareTable1.forEach((xs) => {
             const f = []
             keys.forEach((x, i) => {
               if (xs[x]) {
@@ -515,7 +504,7 @@
             }
             break;
           case 'server':
-            getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.serverTable.tableName, page: 0, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension, order: this.$store.state.Stat.serverSort }, 'stat')
+            getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: 0, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.tableSort }, 'stat')
             break;
           default:
         }
@@ -526,7 +515,7 @@
             // this.$store.commit('STAT_SET_TITLE_PAGE', n);
             break;
           case 'local':
-            if (n > 0 && this.$store.state.Stat.colNum + n <= this.$store.state.Stat.tableHeader[0].length) {
+            if (n > 0 && this.$store.state.Stat.colNum + n <= this.$store.state.Stat.statTableInfo.header.length) {
               this.$store.commit('STAT_SET_COL_NUM', this.$store.state.Stat.colNum + n);
             } else if (n < 0 && this.$store.state.Stat.colNum + n > 0) {
               this.$store.commit('STAT_SET_COL_NUM', this.$store.state.Stat.colNum + n);
@@ -542,30 +531,30 @@
         this.$store.commit('STAT_SET_TABLE_TYPE', 'server');
       },
       blockShare: function () {
-        const filename = this.$store.state.Stat.serverTable.tableName
+        const filename = this.$store.state.Stat.statTableInfo.tableName
         let array = []
-        array = this.$store.state.Stat.selectedRow.map(n => this.$store.state.Stat.serverTable.data[n])
+        array = this.$store.state.Stat.selectedRow.map(n => this.$store.state.Stat.statTable.data[n])
         share(this, [this.$store.state.System.server, this.$store.state.System.port], 'stat', filename, this.$store.state.System.user.username, array)
       },
       statInfo: function () {
         const selectRow = this.$store.state.Stat.selectedRow;
         const selectNum = selectRow[selectRow.length - 1];
-        const data = this.$store.state.Stat.serverTable.data[selectNum]
+        const data = this.$store.state.Stat.statTable.data[selectNum]
         // const selectStat =
-        const dimension = { type: this.$store.state.Stat.serverDimension.type, org: data[0], time: data[1] }
-        if (this.$store.state.Stat.serverTable.data[0].includes('病种')) {
+        const dimension = { type: this.$store.state.Stat.dimension.type, org: data[0], time: data[1] }
+        if (this.$store.state.Stat.statTable.data[0].includes('病种')) {
           dimension.drg = data[2]
         } else {
           dimension.drg = ''
         }
-        getStatInfo(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.serverTable.tableName, page: this.$store.state.Stat.tablePage, dimension: dimension }, this.$store.state.System.user.username, 'server')
+        getStatInfo(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: this.$store.state.statTableInfo.tablePage, dimension: dimension }, this.$store.state.System.user.username, 'server')
         // console.log(this.$store.state.Stat.selectedRow);
       },
       returnStat: function () {
         this.$store.commit('STAT_SET_TABLE_TYPE', 'server');
       },
       statDownload: function () {
-        downloadStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.serverTable.tableName, page: this.$store.state.Stat.tablePage, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension, order: this.$store.state.Stat.serverSort }, 'stat')
+        downloadStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: this.$store.state.statTableInfo.page, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.tableSort }, 'stat')
       },
       custom: function () {
         sGetTarget(this, [this.$store.state.System.server, this.$store.state.System.port], 'list');
@@ -573,9 +562,17 @@
         console.log('这是自定义查询')
       },
       customselece: function () {
-        console.log(this.$store.state.Stat.fileName)
-        getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: 'defind__.csv', page: this.$store.state.Stat.tablePage, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension, order: this.$store.state.Stat.serverSort }, 'stat')
-        console.log('12132213')
+        this.$store.commit('STAT_SET_CHART_IS_SHOW', 'chart');
+        getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: 'defind__.csv', page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.serverSort }, 'stat')
+        // this.$store.commit('STAT_SET_CHART_IS_SHOW', 'custom');
+        if (this.customs) {
+          this.customs = false
+        } else {
+          this.customs = true
+        }
+      },
+      customInsert: function () {
+        sCustom(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Stat.customindex, this.$store.state.System.user.username)
       }
     },
   };

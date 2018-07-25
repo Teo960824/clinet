@@ -16,4 +16,4 @@ global.assert = assert
 
 // Require all JS files in `./specs` for Mocha to consume
 require('require-dir')('./specs')
-// require('./specs/StatLocalFile.spec')
+// require('./specs/StatRemoteFile.spec')

@@ -44,7 +44,7 @@
     },
     methods: {
       addControl(data) {
-        addDocControl(this, [this.$store.state.System.server, this.$store.state.System.port], data)
+        addDocControl(this, [this.$store.state.System.server, this.$store.state.System.port], data, this.$store.state.System.user.username)
       },
       delControl(index) {
         this.$store.commit('EDIT_DELETE_DOC_CONTROL', index);

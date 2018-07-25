@@ -36,6 +36,7 @@ export function getStatFiles(obj, data, filename, username, serverType = 'server
 }
 
 export function getStat(obj, data, opt, tableType, serverType = 'server') {
+  console.log(opt)
   obj.$store.commit('STAT_SET_TABLE_TYPE', serverType)
   let file = opt.tableName
   const tableName = file
@@ -72,7 +73,7 @@ export function getStat(obj, data, opt, tableType, serverType = 'server') {
       const resObj = { page: parseInt(res.data.page, 10), countPage: res.data.count, pageList: res.data.page_list, tableName: tableName, tableSel: res.data.num, dimensionOrg: res.data.org_num, dimensionTime: res.data.time_num, dimensionDrg: res.data.drg_num }
       obj.$store.commit('STAT_SET_STAT_LIST', res.data.list)
       obj.$store.commit('STAT_SET_COUNT_PAGE', res.data.count)
-      obj.$store.commit('STAT_SET_TABLE_TEST', ['server', res.data.stat])
+      obj.$store.commit('STAT_SET_TABLE', ['server', res.data.stat])
       obj.$store.commit('STAT_SET_TABLE_INFO', resObj)
       if (tableType === 'edit') {
         obj.$store.commit('EDIT_LOAD_FILE', res.data.stat.filter(x => x !== undefined).map(x => x.join(',')))

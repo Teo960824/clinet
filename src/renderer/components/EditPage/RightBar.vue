@@ -101,7 +101,6 @@
     },
     methods: {
       help: function (n) {
-        console.log(n)
         if (n) {
           this.$store.commit('EDIT_SET_RIGHT_PANELS', n);
           this.$store.commit('SET_NOTICE', n);
@@ -130,13 +129,16 @@
             }
           } else if (n === '病案历史') {
             getCaseHistory(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Edit.doc, this.$store.state.System.user.username)
+          } else if (n === '病案质控') {
+            const controls = global.hitbControls[0].split(',')
+            this.$store.commit('EDIT_SET_DOC_CONTROL', controls);
           }
         }
       },
       localData: function () {
         this.$store.commit('EDIT_SET_RIGHT_PANELS', '本地文件');
         this.$store.commit('EDIT_SET_DOC_TYPES', ['自定义文档', '病案首页（卫统四CSV）', '入院申请', '首次病程', '病程记录', '病案首页', '门诊病案', '健康体检']);
-        this.$store.commit('EDIT_SET_HELP_TYPES', ['输入框提示', '病案参考', '病案历史', '在线交流', 'DRG分析', 'HIS接口'])
+        this.$store.commit('EDIT_SET_HELP_TYPES', ['输入框提示', '病案参考', '病案历史', '在线交流', 'DRG分析', 'HIS接口', '病案质控', '专家提示'])
         this.$store.commit('EDIT_SET_CHAT_TYPE', false);
         this.$store.commit('EDIT_SET_RIGHT_PANEL', 'local');
         this.$store.commit('EDIT_SET_LEFT_PANEL', 'table');

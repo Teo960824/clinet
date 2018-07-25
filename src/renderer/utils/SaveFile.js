@@ -43,6 +43,10 @@ export default function saveFile(obj, x, p) {
       dir: global.hitbdata.path.user,
       base: x
     });
+    const controlName = path.format({
+      dir: dir,
+      base: '病案质控.cda'
+    })
     // const data = obj.$store.state.Edit.file.map(x => `${x},\n`).toString()
     let data = []
     const a = typeof p
@@ -75,6 +79,12 @@ export default function saveFile(obj, x, p) {
           obj.$store.commit('SET_NOTICE', `文件成功保存到「${fileName}」！`)
         }
       })
+      const control = obj.$store.state.Edit.docControl.toString()
+      fs.writeFile(controlName, control, (err) => {
+        if (!err) {
+          obj.$store.commit('SET_NOTICE', `文件成功保存到「${controlName}」！`)
+        }
+      })
     }
   } else if (x && x.startsWith('cdh') && x.endsWith('.csv')) {
     const b = x.split('.')
@@ -84,7 +94,6 @@ export default function saveFile(obj, x, p) {
     });
 
     fs.writeFile(fileName, obj.$store.state.Library.downFile.join('\n').split(',').join(' '), (err) => {
-      // console.log()
       if (!err) {
         obj.$store.commit('SET_NOTICE', `文件成功保存到「${fileName}」！`)
       }

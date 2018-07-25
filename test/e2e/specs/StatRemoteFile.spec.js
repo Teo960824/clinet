@@ -96,30 +96,30 @@ describe('StatRemoteFile', function () {
       //   // console.log(rightTableTr)
       //   expect(rightTableTr).to.be.an('string');
       // })
-    // 2.2.1.1.3 点击工具栏的保存对比
-    // 2.2.1.1.4 点击工具栏的后一页 rightPanel显示当前数据的后十条数据并且当前行高亮显示 如果为最后一页则提示"当前已是最后一页"
-      .click('#stat-next-page')
-      .waitUntilWindowLoaded(1000)
-      .getText('.stat-right-table-tr')
-      .then(function (rightTable) {
-        expect(rightTable).to.be.an('array');
-      })
-    // 2.2.1.1.5 点击工具栏的前一页 rightPanel显示当前数据的前十条数据并且当前行高亮显示 如果为第一页则提示"当前已是第一页"
-      .click('#stat-prev-page')
-      .waitUntilWindowLoaded(500)
-      .getText('.stat-right-table-tr')
-      .then(function (rightTable) {
-        expect(rightTable).to.be.an('array');
-      })
-    // 2.2.1.1.6 点击工具栏的编辑数据 将当前远程文件数据显示传到Edit的rightPanel中并高亮显示当前选中数据 leftPanel显示选中的第一条数据内容
-      .click('#stat-edit-data')
-      .waitUntilTextExists('#edit-editbar-input', '')
-      .getText('#edit-editbar-input')
-      .then(function (editText) {
-        expect(editText).to.equal('');
-      })
-      .click('#edit-leftbar-back')
-      // .waitUntilTextExists('#notice-bar', 'CSV文件读取成功！')
+    // // 2.2.1.1.3 点击工具栏的保存对比
+    // // 2.2.1.1.4 点击工具栏的后一页 rightPanel显示当前数据的后十条数据并且当前行高亮显示 如果为最后一页则提示"当前已是最后一页"
+    //   .click('#stat-next-page')
+    //   .waitUntilWindowLoaded(1000)
+    //   .getText('.stat-right-table-tr')
+    //   .then(function (rightTable) {
+    //     expect(rightTable).to.be.an('array');
+    //   })
+    // // 2.2.1.1.5 点击工具栏的前一页 rightPanel显示当前数据的前十条数据并且当前行高亮显示 如果为第一页则提示"当前已是第一页"
+    //   .click('#stat-prev-page')
+    //   .waitUntilWindowLoaded(500)
+    //   .getText('.stat-right-table-tr')
+    //   .then(function (rightTable) {
+    //     expect(rightTable).to.be.an('array');
+    //   })
+    // // 2.2.1.1.6 点击工具栏的编辑数据 将当前远程文件数据显示传到Edit的rightPanel中并高亮显示当前选中数据 leftPanel显示选中的第一条数据内容
+    //   .click('#stat-edit-data')
+    //   .waitUntilTextExists('#edit-editbar-input', '')
+    //   .getText('#edit-editbar-input')
+    //   .then(function (editText) {
+    //     expect(editText).to.equal('');
+    //   })
+    //   .click('#edit-leftbar-back')
+    //   // .waitUntilTextExists('#notice-bar', 'CSV文件读取成功！')
     // 2.2.1.1.7 点击工具栏的左图选择 下拉框显示可选图形
     // 2.2.1.1.7.1 点击柱状图 rightPanel左部chart数据展示为柱状图
       .click('#stat-left-chart')
