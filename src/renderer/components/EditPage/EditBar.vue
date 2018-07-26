@@ -45,6 +45,7 @@
 <script>
   import { message, join } from '../../utils/Socket'
   import { getCaseHistory, editDocShow } from '../../utils/EditServerFile'
+  import { getDate } from '../../utils/EditSave'
   export default {
     // mounted: function () {
     //   this.$nextTick(() => {
@@ -106,6 +107,7 @@
           } else {
           // const value = document.getElementById('edit-editbar-input').value
             const value = e.target.value
+            console.log(value)
             this.$store.commit('EDIT_SET_BAR_VALUE', value);
             let n = this.$store.state.Edit.docIndex
             if (this.$store.state.Edit.selectedType !== 'col') {
@@ -123,7 +125,7 @@
                   }
                 });
               } else {
-                this.$store.commit('EDIT_UPDATE_DOC', [n, ' ', true]);
+                this.$store.commit('EDIT_UPDATE_DOC', [n, ' ', false]);
                 // this.$store.commit('EDIT_DELETE_ITEM', n);
               }
             }
@@ -179,16 +181,7 @@
           message(this, e.target.value, this.$store.state.System.user.username, 'message')
           this.$store.commit('EDIT_SET_BAR_VALUE', '');
         }
-        const date = new Date();
-        let month = date.getMonth() + 1;
-        let strDate = date.getDate();
-        if (month >= 1 && month <= 9) {
-          month = `0${month}`;
-        }
-        if (strDate >= 0 && strDate <= 9) {
-          strDate = `0${strDate}`
-        }
-        const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+        const currentdate = getDate()
         this.$store.commit('EDIT_UPDATE_DOC_HEADER', ['修改时间', currentdate]);
         this.$store.commit('EDIT_SET_DOC_STATE');
       },

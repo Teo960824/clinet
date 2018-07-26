@@ -1,7 +1,8 @@
 import saveFile from './SaveFile'
-import { saveEdit, getDocContent } from './EditServerFile'
-// import loadFile from './LoadFile'
-export function saveEditDoc(obj, data) {
+import { saveEdit, getDocContent, editDocState, editDocShow } from './EditServerFile'
+import { join } from './Socket'
+
+export function getDate() {
   const date = new Date();
   let month = date.getMonth() + 1;
   let strDate = date.getDate();
@@ -12,6 +13,11 @@ export function saveEditDoc(obj, data) {
     strDate = `0${strDate}`
   }
   const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  return currentdate
+}
+
+export function saveEditDoc(obj, data) {
+  const currentdate = getDate()
   obj.$store.commit('EDIT_UPDATE_DOC_HEADER', ['保存时间', currentdate]);
   obj.$store.commit('EDIT_SET_DOC_STATE');
   const fileName = obj.$store.state.Edit.fileName
@@ -93,16 +99,7 @@ export function saveEditDoc(obj, data) {
 }
 
 export function cacheEditDoc(obj) {
-  const date = new Date();
-  let month = date.getMonth() + 1;
-  let strDate = date.getDate();
-  if (month >= 1 && month <= 9) {
-    month = `0${month}`;
-  }
-  if (strDate >= 0 && strDate <= 9) {
-    strDate = `0${strDate}`
-  }
-  const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  const currentdate = getDate()
   obj.$store.commit('EDIT_UPDATE_DOC_HEADER', ['缓存时间', currentdate]);
   obj.$store.commit('EDIT_SET_DOC_STATE');
   const fileIndex = obj.$store.state.Edit.fileIndex
@@ -184,16 +181,7 @@ export function newEditDoc(obj, n) {
   // if (fileName.includes('@')) {
   //   saveEdit(obj, [obj.$store.state.System.server, obj.$store.state.System.port, obj.$store.state.Edit.files[obj.$store.state.Edit.filesIndex], [''], obj.$store.state.System.user.username, 2])
   // }
-  const date = new Date();
-  let month = date.getMonth() + 1;
-  let strDate = date.getDate();
-  if (month >= 1 && month <= 9) {
-    month = `0${month}`;
-  }
-  if (strDate >= 0 && strDate <= 9) {
-    strDate = `0${strDate}`
-  }
-  const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  const currentdate = getDate()
   obj.$store.commit('EDIT_UPDATE_DOC_HEADER', ['创建时间', currentdate]);
   obj.$store.commit('EDIT_SET_DOC_STATE');
   obj.docType = n
@@ -204,3 +192,73 @@ export function newEditDoc(obj, n) {
   // obj.$store.commit('SET_NOTICE', '请选择保存病案的文件！')
   // }
 }
+
+// 读取文件
+export function loadEditDoc(obj, data, index, type) {
+  let doc = []
+  if (type === 'edit') {
+    obj.$store.commit('EDIT_SET_RIGHT_PANELS', '编辑病案');
+    obj.$store.commit('EDIT_SET_FILE_INDEX', index)
+    const r = []
+    const file = obj.$store.state.Edit.file
+    const type = typeof obj.$store.state.Edit.file[0]
+    let h = []
+    h = file[index]
+    if (type === 'string') {
+      h.split(',').forEach((key, i) => {
+        if (data[i]) {
+          r.push(`${key} ${data[i]}`)
+        } else {
+          r.push(`${key}`)
+        }
+      });
+    } else {
+      h.forEach((key, i) => {
+        r.push(`${key} ${data[i]}`)
+      });
+    }
+    obj.$store.commit('EDIT_LOAD_DOC', r)
+    const header = r[0]
+    if (header.includes('创建时间')) {
+      const a = header.split(';')
+      const d = a.map((x) => {
+        const b = x.split(':')
+        if (b[0] && b[0].includes('时间')) {
+          const c = `${b[1]}:${b[2]}:${b[3]}`
+          b[1] = c
+          b.splice(2, 2)
+        }
+        return b
+      })
+      const obj1 = {}
+      d.forEach((x) => {
+        if (x[1].includes('undefined')) {
+          x[1] = null
+        }
+        obj1[x[0]] = x[1]
+      })
+      obj.$store.commit('EDIT_SET_DOC_HEADER', obj1)
+    }
+    if (obj.$store.state.Edit.helpType === '在线交流') {
+      obj.$store.commit('EDIT_SET_CHAT_TYPE', true)
+      join(obj, obj.$store.state.Edit.fileName, obj.$store.state.System.user.username)
+      obj.$store.commit('EDIT_SET_LEFT_PANEL', 'doc')
+    } else if (obj.$store.state.Edit.selectedType === 'row') {
+      obj.$store.commit('EDIT_SET_LEFT_PANEL', 'doc')
+      obj.$store.commit('EDIT_SET_RIGHT_TYPE', 'left')
+    }
+    obj.$store.commit('EDIT_SET_RIGHT_TYPE', 'left')
+    obj.$store.commit('EDIT_SET_DOC_INDEX', [0, true]);
+    document.getElementById('edit-editbar-input').focus()
+    doc = obj.$store.state.Edit.doc
+    editDocState(obj, doc)
+  } else {
+    obj.$store.commit('EDIT_SET_RIGHT_PANELS', '病案参考');
+    obj.$store.commit('EDIT_SET_FILE_INDEX', index)
+    obj.$store.commit('EDIT_SET_HELP_TYPE', '病案参考');
+    doc = obj.$store.state.Edit.docShow
+    editDocShow(obj, [obj.$store.state.System.server, obj.$store.state.System.port], data)
+  }
+  obj.$store.commit('EDIT_SET_DOC_STATE')
+}
+

@@ -33,9 +33,9 @@
 </template>
 
 <script>
-  import { saveEdit, editDocState, editDocShow } from '../../utils/EditServerFile'
+  import { saveEdit } from '../../utils/EditServerFile'
   import saveFile from '../../utils/SaveFile';
-  import { join } from '../../utils/Socket'
+  import { loadEditDoc, getDate } from '../../utils/EditSave'
   export default {
     data() {
       return {
@@ -144,16 +144,7 @@
         this.$store.commit('EDIT_SET_DELETE_LOCAL', index[0])
       },
       uploadDoc: function (data, index) {
-        const date = new Date();
-        let month = date.getMonth() + 1;
-        let strDate = date.getDate();
-        if (month >= 1 && month <= 9) {
-          month = `0${month}`;
-        }
-        if (strDate >= 0 && strDate <= 9) {
-          strDate = `0${strDate}`
-        }
-        const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+        const currentdate = getDate()
         if (!this.$store.state.System.user.login) {
           this.$store.commit('SET_NOTICE', '未登录用户,请在系统服务-用户设置内登录');
           this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
@@ -172,102 +163,12 @@
         console.log(filename);
         saveFile(this, this.$store.state.Edit.loadFileName, [...this.$store.state.Edit.downFile, data]);
         this.$store.commit('EDIT_SET_FILE_INDEX', index)
-        const date = new Date();
-        let month = date.getMonth() + 1;
-        let strDate = date.getDate();
-        if (month >= 1 && month <= 9) {
-          month = `0${month}`;
-        }
-        if (strDate >= 0 && strDate <= 9) {
-          strDate = `0${strDate}`
-        }
-        const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+        const currentdate = getDate()
         this.$store.commit('EDIT_UPDATE_DOC_HEADER', ['下载时间', currentdate]);
         this.$store.commit('EDIT_SET_DOC_STATE');
       },
       loadDoc: function (data, index, type) {
-        let doc = []
-        if (type === 'edit') {
-          this.$store.commit('EDIT_SET_RIGHT_PANELS', '编辑病案');
-          this.$store.commit('EDIT_SET_FILE_INDEX', index)
-          const r = []
-          // if (this.$store.state.Edit.fileType === 'csv') {
-          const file = this.$store.state.Edit.file
-          const type = typeof this.$store.state.Edit.file[0]
-          let h = []
-          h = file[index]
-          // if (file.length === 20) {
-          //   h = file[index]
-          // } else {
-          //   h = file[0].split(',')
-          // }
-          if (type === 'string') {
-            h.split(',').forEach((key, i) => {
-              // if (data[i] !== undefined) {
-              //   r.push(`${key} ${data[i]}`)
-              //   // r.splice(0, 1, `${key} ${data[i]}`)
-              //   console.log(r)
-              // } else {
-              //   r.push(`${key}`)
-              //   console.log(r)
-              // }
-              r.push(`${key} ${data[i]}`)
-            });
-          } else {
-            h.forEach((key, i) => {
-              r.push(`${key} ${data[i]}`)
-            });
-          }
-          // } else {
-          //   r = data.split(',')
-          // }
-          this.$store.commit('EDIT_LOAD_DOC', r)
-          const header = r[0]
-          if (header.includes('创建时间')) {
-            const a = header.split(';')
-            const d = a.map((x) => {
-              const b = x.split(':')
-              if (b[0] && b[0].includes('时间')) {
-                const c = `${b[1]}:${b[2]}:${b[3]}`
-                b[1] = c
-                b.splice(2, 2)
-              }
-              return b
-            })
-            const obj = {}
-            d.forEach((x) => {
-              if (x[1].includes('undefined')) {
-                x[1] = null
-              }
-              obj[x[0]] = x[1]
-            })
-            this.$store.commit('EDIT_SET_DOC_HEADER', obj)
-          }
-          if (this.$store.state.Edit.helpType === '在线交流') {
-            this.$store.commit('EDIT_SET_CHAT_TYPE', true)
-            join(this, this.$store.state.Edit.fileName, this.$store.state.System.user.username)
-            this.$store.commit('EDIT_SET_LEFT_PANEL', 'doc')
-          } else if (this.$store.state.Edit.selectedType === 'row') {
-            this.$store.commit('EDIT_SET_LEFT_PANEL', 'doc')
-            this.$store.commit('EDIT_SET_RIGHT_TYPE', 'left')
-          }
-          // this.$store.commit('EDIT_SET_RIGHT_PANEL', 'left')
-          this.$store.commit('EDIT_SET_RIGHT_TYPE', 'left')
-          this.$store.commit('EDIT_SET_DOC_INDEX', [0, true]);
-          document.getElementById('edit-editbar-input').focus()
-          doc = this.$store.state.Edit.doc
-          editDocState(this, doc)
-        } else {
-          this.$store.commit('EDIT_SET_RIGHT_PANELS', '病案参考');
-          this.$store.commit('EDIT_SET_FILE_INDEX', index)
-          // this.$store.commit('EDIT_LOAD_DOC_SHOW', data.split(','))
-          // this.$store.commit('EDIT_SET_RIGHT_PANEL', 'help');
-          this.$store.commit('EDIT_SET_HELP_TYPE', '病案参考');
-          doc = this.$store.state.Edit.docShow
-          editDocShow(this, [this.$store.state.System.server, this.$store.state.System.port], data)
-        }
-        // editDocState(this, doc)
-        this.$store.commit('EDIT_SET_DOC_STATE')
+        loadEditDoc(this, data, index, type)
       },
       close(data) {
         this.$store.commit('EDIT_DELETE_RIGHT_PANELS', data);
