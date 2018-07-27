@@ -130,8 +130,12 @@
           } else if (n === '病案历史') {
             getCaseHistory(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Edit.doc, this.$store.state.System.user.username)
           } else if (n === '病案质控') {
-            const controls = global.hitbControls[0].split(',')
-            this.$store.commit('EDIT_SET_DOC_CONTROL', controls);
+            if (global.hitbControls.length > 0) {
+              const controls = global.hitbControls[0].split(',')
+              this.$store.commit('EDIT_SET_DOC_CONTROL', controls);
+            } else {
+              this.$store.commit('SET_NOTICE', '病案质控暂无内容！');
+            }
           }
         }
       },

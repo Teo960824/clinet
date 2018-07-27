@@ -5,7 +5,7 @@ describe('Edit_1', function () {
   afterEach(utils.afterEach);
 
   it('Edit_1-测试1', function () {
-    this.timeout(100000)
+    this.timeout(150000)
     // 1、点击login页面的login-button
     return this.app.client.click('#login')
     // 等待底部通知框出现'未注册用户登陆！'提示，进入Home页
@@ -129,8 +129,92 @@ describe('Edit_1', function () {
       .then(function (editText) {
         expect(editText).to.be.an('string');
       })
-      // 2.2.8.1、缓存后保存文件
+    // 2.2.8.1、缓存后保存文件
       .click('#edit-leftbar-cache')
       .click('#edit-leftbar-newdoc2')
+    // 2.3.1、点击编辑器使用帮助
+      .click('#edit-rightbar-choice')
+      .click('#edit-rightbar-sel')
+      // .waitUntilTextExists('#edit-bar-prompt', '系统通知：编辑器使用帮助')
+      // .getText('#edit-rightbar-sel')
+      // .then(function (editText) {
+      //   expect(editText).to.be.an('string');
+      // })
+      .getText('#edit-editbar-input')
+      .then(function (editText) {
+        expect(editText).to.equal('')
+      })
+    // 2.3.2、点击输入框提示
+      .click('#edit-rightbar-choice')
+      .click('#edit-rightbar-输入框提示')
+      .waitUntilTextExists('#edit-bar-prompt', '系统通知：输入框提示')
+      .getText('#edit-editbar-input')
+      .then(function (editText) {
+        expect(editText).to.equal('')
+      })
+      .getText('#edit-rightpanellocal-title')
+      .then(function (editText) {
+        expect(editText).to.be.an('string');
+      })
+    // 2.3.3、点击病案参考
+      .click('#edit-rightbar-choice')
+      .click('#edit-rightbar-病案参考')
+      .waitUntilTextExists('#edit-bar-prompt', '系统通知：病案参考')
+      .getText('#edit-editbar-input')
+      .then(function (editText) {
+        expect(editText).to.equal('')
+      })
+    // 2.3.4、点击病案历史
+      .click('#edit-rightbar-choice')
+      .click('#edit-rightbar-病案历史')
+      // .waitUntilTextExists('#notice-bar', '系统通知：病案历史查询失败')
+      .getText('#edit-editbar-input')
+      .then(function (editText) {
+        expect(editText).to.equal('')
+      })
+      .getText('#edit-rightpaneldoc-doc')
+      .then(function (editText) {
+        expect(editText).to.be.an('string');
+      })
+    // 2.3.5、点击在线交流
+      .click('#edit-rightbar-choice')
+      .click('#edit-rightbar-在线交流')
+      .waitUntilTextExists('#edit-bar-prompt', '系统通知：在线交流')
+      .getText('#edit-editbar-input')
+      .then(function (editText) {
+        expect(editText).to.equal('')
+      })
+    // 2.3.6、点击DRG分析
+      .click('#edit-rightbar-choice')
+      .click('#edit-rightbar-DRG分析')
+      .waitUntilTextExists('#edit-bar-prompt', '系统通知：请选择分析数据！')
+      .getText('#edit-editbar-input')
+      .then(function (editText) {
+        expect(editText).to.equal('')
+      })
+    // 2.3.7、点击HIS接口
+      .click('#edit-rightbar-choice')
+      .click('#edit-rightbar-HIS接口')
+      .waitUntilTextExists('#edit-bar-prompt', '系统通知：HIS接口')
+      .getText('#edit-editbar-input')
+      .then(function (editText) {
+        expect(editText).to.equal('')
+      })
+    // 2.3.7、点击病案质控
+      .click('#edit-rightbar-choice')
+      .click('#edit-rightbar-病案质控')
+      .waitUntilTextExists('#edit-bar-prompt', '系统通知：病案质控')
+      .getText('#edit-editbar-input')
+      .then(function (editText) {
+        expect(editText).to.equal('')
+      })
+    // 2.3.8、点击专家提示
+      .click('#edit-rightbar-choice')
+      .click('#edit-rightbar-专家提示')
+      .waitUntilTextExists('#edit-bar-prompt', '系统通知：专家提示')
+      .getText('#edit-editbar-input')
+      .then(function (editText) {
+        expect(editText).to.equal('')
+      })
   })
 });

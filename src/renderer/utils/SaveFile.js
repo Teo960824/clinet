@@ -1,7 +1,6 @@
 const fs = require('fs')
 const path = require('path');
 export default function saveFile(obj, x, p) {
-  // console.log(p)
   let dir = global.hitbdata.path.home
   switch (p) {
     case '/edit':
@@ -16,6 +15,9 @@ export default function saveFile(obj, x, p) {
     case '/system':
       dir = global.hitbdata.path.system
       break
+    case '/user':
+      dir = global.hitbdata.path.user
+      break
     default: break
   }
   if (x && x.endsWith('.csv') && !x.startsWith('cdh')) {
@@ -29,6 +31,25 @@ export default function saveFile(obj, x, p) {
       data = obj.$store.state.Library.downFile.join('\n')
     } else if (p === '/stat') {
       data = obj.$store.state.Stat.downloadTable.join('\n')
+    } else if (p === '/user') {
+      const fileName = path.format({
+        dir: dir,
+        base: x.replace('csv', 'cda')
+        //  x.splice(0, -3, 'cda')
+      });
+      const arr = []
+      obj.$store.state.Library.downFile.forEach((x) => {
+        arr.push(x[0])
+      })
+      arr.splice(0, 1)
+      const data1 = arr.join('\n')
+      // if (data1.length > 0) {
+      // console.log(fileName.Substring(0, -3))
+      fs.writeFile(fileName, data1, (err) => {
+        if (!err) {
+          obj.$store.commit('SET_NOTICE', `文件成功保存到「${fileName}」！`)
+        }
+      })
     } else {
       data = obj.$store.state.Edit.file.join('\n')
     }

@@ -44,7 +44,7 @@
 
 <script>
   import { message, join } from '../../utils/Socket'
-  import { getCaseHistory, editDocShow } from '../../utils/EditServerFile'
+  import { getCaseHistory, editDocShow, getExpertHint } from '../../utils/EditServerFile'
   import { getDate } from '../../utils/EditSave'
   export default {
     // mounted: function () {
@@ -107,7 +107,7 @@
           } else {
           // const value = document.getElementById('edit-editbar-input').value
             const value = e.target.value
-            console.log(value)
+            // console.log(value)
             this.$store.commit('EDIT_SET_BAR_VALUE', value);
             let n = this.$store.state.Edit.docIndex
             if (this.$store.state.Edit.selectedType !== 'col') {
@@ -160,6 +160,9 @@
                   n += 1
                   if (!global.hitbdata.cdhHeader.includes(v[0]) && this.$store.state.Edit.rightPanels.includes('病案质控')) {
                     this.$store.commit('EDIT_ADD_DOC_CONTROL', v);
+                  }
+                  if (this.$store.state.Edit.rightPanels.includes('专家提示') && v[0].includes('症状')) {
+                    getExpertHint(this, [this.$store.state.System.server, this.$store.state.System.port], v)
                   }
                 });
               } else {

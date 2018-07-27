@@ -283,3 +283,21 @@ export function addDocControl(obj, data, value, username) {
     obj.$store.commit('SET_NOTICE', '病案历史查询失败')
   })
 }
+
+export function getExpertHint(obj, data, value) {
+  const [hd, ...values] = value
+  axios({
+    method: 'post',
+    url: `http://${data[0]}:${data[1]}/library/symptom_serach`,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    data: qs.stringify({ symptom: values }),
+    responseType: 'json'
+  }).then((res) => {
+    obj.$store.commit('EDIT_SET_EXPERT_HINT', res.data.result)
+    // obj.$store.commit('EDIT_LOAD_DOC_SHOW', res.data.cda)
+  }).catch((err) => {
+    console.log(err);
+    obj.$store.commit('SET_NOTICE', '病案历史查询失败')
+  })
+  console.log(hd)
+}

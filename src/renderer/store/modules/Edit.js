@@ -52,6 +52,7 @@ const state = {
   cdhFilePage: 0,
   secton: '',
   docControl: [],
+  expertHint: []
 };
 
 const mutations = {
@@ -434,10 +435,14 @@ const mutations = {
   EDIT_SET_DOC_CONTROL(state, value) {
     state.docControl = value
   },
+  EDIT_SET_EXPERT_HINT(state, value) {
+    state.expertHint = value
+  },
 };
 
 const actions = {
   someAsyncTask({ commit }) {
+    commit('EDIT_SET_EXPERT_HINT');
     commit('EDIT_SET_DOC_CONTROL');
     commit('EDIT_UPDATE_DOC_SUMMARY');
     commit('EDIT_ADD_DOC_CONTROL');

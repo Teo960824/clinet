@@ -136,6 +136,7 @@
     <!-- <right-panel-doc v-if="type === '病案参考'"></right-panel-doc> -->
     <right-panel-doc v-if="this.$store.state.Edit.rightPanels.includes('病案参考')"></right-panel-doc>
     <right-panel-control v-if="this.$store.state.Edit.rightPanels.includes('病案质控')"></right-panel-control>
+    <right-panel-expert v-if="this.$store.state.Edit.rightPanels.includes('专家提示')"></right-panel-expert>
     <!-- <table v-if="type === 'DRG分析'"> -->
     <table v-if="this.$store.state.Edit.rightPanels.includes('DRG分析')">
       <tr>
@@ -172,9 +173,10 @@
   import RightPanelHis from './RightPanelHis';
   import RightPanelCdh from './RightPanelCdh';
   import RightPanelControl from './RightPanelControl';
+  import RightPanelExpert from './RightPanelExpert';
   import { invite } from '../../utils/Socket'
   export default {
-    components: { RightPanelDoc, RightPanelCdh, RightPanelHis, RightPanelControl },
+    components: { RightPanelDoc, RightPanelCdh, RightPanelHis, RightPanelControl, RightPanelExpert },
     computed: {
       type: {
         get() {

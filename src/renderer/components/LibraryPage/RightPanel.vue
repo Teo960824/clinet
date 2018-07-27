@@ -101,7 +101,7 @@
       serverPage: function (data) {
         const page = parseInt(data, 10)
         this.$store.commit('LIBRARY_SET_TABLE_PAGE', page);
-        getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, page, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'library', this.$store.state.Library.tableType, ['asc', '编码'])
+        getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, page, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'library', this.$store.state.Library.tableType, ['asc', ''])
         // getLibrary(obj, data, tableName, pageNum, dimensionType, dimensionServer, type1, serverType = 'server'
       },
       sort: function (type, value) {

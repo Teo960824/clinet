@@ -233,20 +233,7 @@
             if (this.$store.state.Library.serverTable.tableName) {
               this.$store.commit('LIBRARY_SET_SERVER_DIMENSION', [value, x]);
               console.log(this.$store.state.Library.serverDimension)
-              getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 1, 'filter', this.$store.state.Library.serverDimension, 'edit', 'server', ['asc', '编码'])
-              // getList()
-              // switch (x) {
-              //   case '全部':
-              //     this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['file', null]);
-              //     getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.$store.state.Library.tablePage, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'library', 'block')
-              //     break;
-              //   case 'time': case 'version':
-              //     this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['file', null]);
-              //     getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 1, x, value, 'edit', 'server')
-              //     // getList(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 'time', this.$store.state.System.user.username)
-              //     break;
-              //   default:
-              // }
+              getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 1, 'filter', this.$store.state.Library.serverDimension, 'edit', 'server', ['asc', ''])
             } else {
               this.$store.commit('SET_NOTICE', '请选择文件');
             }

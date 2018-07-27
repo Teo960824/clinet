@@ -97,7 +97,11 @@ export function librarDown(obj, url, filename) {
     if (res.status === 200) {
       obj.$store.commit('SET_NOTICE', '下载成功')
       obj.$store.commit('LIBRARY_GET_DOWN_FILE', res.data.result)
-      saveFile(obj, filename, '/library')
+      if (filename !== '模板.csv') {
+        saveFile(obj, filename, '/library')
+      } else {
+        saveFile(obj, filename, '/user')
+      }
     } else {
       obj.$store.commit('SET_NOTICE', '下载失败')
     }

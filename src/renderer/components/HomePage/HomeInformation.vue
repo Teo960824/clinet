@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-6" style="paddingRight: 0">
         <div class="row" style="background-color:white;padding:1rem;height:40rem">
           <!-- <div class="col-md-7" id="homechart" style="height:28rem">
           </div> -->
@@ -83,66 +83,66 @@
       </div>
       <div class="col-md-6" style="height:90rem;background-color:white">
         <div role="alert">
-          <h3 class="alert-heading" style="padding: 0">住院病历</h3>
+          <h3 class="alert-heading">住院病历</h3>
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-              <span style="marginRight: 10px"><b>入院记录</b></span>
+              <span><b>入院记录</b></span>
             </ol>
           </nav>
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-              <span style="marginRight: 10px"><b>病程记录</b></span>
+              <span><b>病程记录</b></span>
               <li v-for="(data, index) in bcRecord" class="breadcrumb-item active" aria-current="page" v-bind:key="index"><a href="#">{{data}}</a></li>
             </ol>
           </nav>
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-              <span style="marginRight: 10px"><b>围术期相关记录</b></span>
+              <span><b>围术期相关记录</b></span>
               <li v-for="(data, index) in wsqRecord" class="breadcrumb-item active" aria-current="page" v-bind:key="index"><a href="#">{{data}}</a></li>
             </ol>
           </nav>
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-              <span style="marginRight: 10px"><b>出院（死亡）记录</b></span>
+              <span><b>出院（死亡）记录</b></span>
               <li v-for="(data, index) in cyRecord" class="breadcrumb-item active" aria-current="page" v-bind:key="index"><a href="#">{{data}}</a></li>
             </ol>
           </nav>
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-              <span style="marginRight: 10px"><b>护理相关记录</b></span>
+              <span><b>护理相关记录</b></span>
               <li v-for="(data, index) in hlRecord" class="breadcrumb-item active" aria-current="page" v-bind:key="index"><a href="#">{{data}}</a></li>
             </ol>
           </nav>
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-              <span style="marginRight: 10px"><b>知情同意书</b></span>
+              <span><b>知情同意书</b></span>
               <li v-for="(data, index) in zqRecord" class="breadcrumb-item active" aria-current="page" v-bind:key="index"><a href="#">{{data}}</a></li>
             </ol>
           </nav>
         </div>
         <div role="alert">
-          <h3 class="alert-heading" style="padding: 0">门诊病历</h3>
+          <h3 class="alert-heading">门诊病历</h3>
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-              <span style="marginRight: 10px"></span>
+              <span></span>
               <li v-for="(data, index) in mzRecord" class="breadcrumb-item active" aria-current="page" v-bind:key="index"><a href="#">{{data}}</a></li>
             </ol>
           </nav>
         </div>
         <div role="alert">
-          <h3 class="alert-heading" style="padding: 0">健康体检</h3>
+          <h3 class="alert-heading">健康体检</h3>
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-              <span style="marginRight: 10px"></span>
+              <!-- <span></span> -->
               <li class="breadcrumb-item active" aria-current="page"><a href="#">体检报告</a></li>
             </ol>
           </nav>
         </div>
         <div role="alert">
-          <h3 class="alert-heading" style="padding: 0">特殊病历</h3>
+          <h3 class="alert-heading">特殊病历</h3>
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-              <span style="marginRight: 10px"></span>
+              <span></span>
               <li v-for="(data, index) in tsRecord" class="breadcrumb-item active" aria-current="page" v-bind:key="index"><a href="#">{{data}}</a></li>
             </ol>
           </nav>
@@ -249,5 +249,11 @@
 
 <style scoped>
 /* *{margin: 0;padding: 0;border: 0}  */
+  h3{
+    padding: 0
+  }
+  span{
+    margin-right: 10px
+  }
 </style>
 
