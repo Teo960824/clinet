@@ -16,24 +16,27 @@ describe('Library', function () {
 
     // 2.1.2、点击工具栏的后一页(library-down)，右侧表中显示下一页内容第四行高亮并提示：翻页成功！table底部页数加一，提示翻页成功，若加一后页数大于当前总页数，提示：当前已经是最后一页！
       .click('#library-down')
-      .waitUntilTextExists('#notice-bar', '当前已是尾页')
+      .waitUntilTextExists('#notice-bar', '当前0页,共0页')
       .getText('#notice-bar')
       .then(function (rightpanel) {
-        expect(rightpanel).to.equal('系统通知：当前已是尾页');
+        expect(rightpanel).to.equal('系统通知：当前0页,共0页');
       })
     // 2.1.3、点击工具栏的前一页(library-up)，右侧表中显示上一页内容第四行高亮并提示：翻页成功！table底部页数减一，提示翻页成功，若减一后页数小于0，提示：当前已经是第一页！
       .click('#library-up')
-      .waitUntilTextExists('#notice-bar', '当前已是第一页')
+      .waitUntilTextExists('#notice-bar', '当前1页,共0页')
       .getText('#notice-bar')
       .then(function (rightpanel) {
-        expect(rightpanel).to.equal('系统通知：当前已是第一页');
+        expect(rightpanel).to.equal('系统通知：当前1页,共0页');
       })
+      .pause(3000)
     // 2.1.4、点击工具栏的编辑数据(remote-file)，进入编辑页面，编辑页面右侧显示当前数据，左侧显示第四行高亮的内容（传入id到编辑页面用于返回）
       .click('#library-edit')
-      // .getText('#edit-editbar-input')
-      // .then(function (editText) {
-      //   expect(editText).to.equal('');
-      // })
+      .pause(3000)
+      .getText('#edit-editbar-input')
+      .then(function (editText) {
+        expect(editText).to.equal('');
+      })
+      .pause(3000)
       .click('#edit-leftbar-back')
       // .waitUntilTextExists('#notice-bar', 'CSV文件读取成功！')
     // 2.1.5、点击维度选择(library-drop)，显示维度下拉选项

@@ -387,6 +387,7 @@
             break;
           }
           case 'server': {
+            this.$store.commit('STAT_SET_FILE_FLAG');
             if (this.$store.state.Stat.statTable.data.length > 0) {
               this.$store.commit('STAT_SERVER_DIMENSION', [selType, x])
               this.$store.commit('STAT_SERVER_DIMENSION', ['type', type])
@@ -554,7 +555,7 @@
         this.$store.commit('STAT_SET_TABLE_TYPE', 'server');
       },
       statDownload: function () {
-        downloadStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: this.$store.state.statTableInfo.page, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.tableSort }, 'stat')
+        downloadStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.tableSort }, 'stat')
       },
       custom: function () {
         sGetTarget(this, [this.$store.state.System.server, this.$store.state.System.port], 'list');

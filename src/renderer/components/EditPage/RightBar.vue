@@ -102,23 +102,29 @@
     methods: {
       help: function (n) {
         if (n) {
-          this.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+          // this.$store.commit('EDIT_SET_RIGHT_PANELS', n);
           this.$store.commit('SET_NOTICE', n);
-          this.$store.commit('EDIT_SET_HELP_TYPE', n);
+          // this.$store.commit('EDIT_SET_HELP_TYPE', n);
           if (this.$store.state.Edit.rightPanel === 'server') {
             clinetHelp(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.System.user.username)
           }
           if (n === 'DRG分析') {
+            this.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+            this.$store.commit('EDIT_SET_HELP_TYPE', n);
             if (this.$store.state.System.wt4Tables.length > 1) {
               sCompDrg(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.System.wt4Tables, 'BJ', 'getLocalData')
             } else {
               this.$store.commit('SET_NOTICE', '请选择分析数据！');
             }
           } else if (n === '编辑器使用帮助' || n === '在线交流') {
+            this.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+            this.$store.commit('EDIT_SET_HELP_TYPE', n);
             this.$store.commit('SET_NOTICE', n);
             this.helpType = n
             this.$store.commit('EDIT_SET_RIGHT_PANEL', 'help');
           } else if (n === '输入框提示') {
+            this.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+            this.$store.commit('EDIT_SET_HELP_TYPE', n);
             this.$store.commit('EDIT_GET_CDH_FILE', 0);
             if (this.$store.state.Edit.rightPanel === 'server') {
               if (!this.$store.state.Edit.rightCdh) {
@@ -127,15 +133,24 @@
                 this.$store.commit('SET_NOTICE', '输入提示无内容！');
               }
             }
-          } else if (n === '病案历史') {
+          } else if (n === '病案历史' && this.$store.state.Edit.rightPanel === 'server') {
+            this.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+            this.$store.commit('EDIT_SET_HELP_TYPE', n);
             getCaseHistory(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Edit.doc, this.$store.state.System.user.username)
-          } else if (n === '病案质控') {
+          } else if (n === '病案历史' && this.$store.state.Edit.rightPanel !== 'server') {
+            this.$store.commit('SET_NOTICE', '登陆后可查询病案历史！');
+          } else if (n === '病案质控' && this.$store.state.Edit.rightPanel === 'server') {
+            this.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+            this.$store.commit('EDIT_SET_HELP_TYPE', n);
             if (global.hitbControls.length > 0) {
               const controls = global.hitbControls[0].split(',')
               this.$store.commit('EDIT_SET_DOC_CONTROL', controls);
             } else {
               this.$store.commit('SET_NOTICE', '病案质控暂无内容！');
             }
+          } else {
+            this.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+            this.$store.commit('EDIT_SET_HELP_TYPE', n);
           }
         }
       },

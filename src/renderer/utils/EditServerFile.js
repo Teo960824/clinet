@@ -169,7 +169,14 @@ export function clinetHelp(obj, data, name) {
         const index = n.indexOf(' ')
         const c = n.slice(0, index)
         const a = [n.slice(index + 1)]
-        obj1[c] = a
+        const d = []
+        const e = a[0].split(' ')
+        e.forEach((x) => {
+          if (x !== '') {
+            d.push(x)
+          }
+        })
+        obj1[c] = d
         return obj1
       })
       obj.$store.commit('EDIT_SET_RIGHT_CDH', obj1)
@@ -293,11 +300,16 @@ export function getExpertHint(obj, data, value) {
     data: qs.stringify({ symptom: values }),
     responseType: 'json'
   }).then((res) => {
-    obj.$store.commit('EDIT_SET_EXPERT_HINT', res.data.result)
+    // console.log(res.data.result)
+    if (res.data.result.length === 0) {
+      obj.$store.commit('SET_NOTICE', '当前内容无专家提示')
+    } else {
+      obj.$store.commit('EDIT_SET_EXPERT_HINT', res.data.result)
+    }
     // obj.$store.commit('EDIT_LOAD_DOC_SHOW', res.data.cda)
   }).catch((err) => {
     console.log(err);
-    obj.$store.commit('SET_NOTICE', '病案历史查询失败')
+    obj.$store.commit('SET_NOTICE', '专家提示查询失败')
   })
   console.log(hd)
 }

@@ -36,7 +36,6 @@ export function getStatFiles(obj, data, filename, username, serverType = 'server
 }
 
 export function getStat(obj, data, opt, tableType, serverType = 'server') {
-  console.log(opt)
   obj.$store.commit('STAT_SET_TABLE_TYPE', serverType)
   let file = opt.tableName
   const tableName = file

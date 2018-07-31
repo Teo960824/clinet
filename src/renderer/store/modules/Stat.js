@@ -32,7 +32,6 @@ const state = {
   dimension: { org: '', time: '', drg: '', type: 'org' },
   statTable: { data: [], compare: [], info: [], download: [] },
   statTableInfo: { page: 1, countPage: 0, pageList: [], tableName: '', tableSel: [], dimensionOrg: '', dimensionTime: '', dimensionDrg: '', header: [] },
-  tableSort: { field: '机构', type: 'asc' },
   customindex: []
 };
 

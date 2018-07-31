@@ -2,19 +2,19 @@
   <div style="overflow:auto;">
     <table v-if="!this.$store.state.Edit.rightFolds.includes('专家提示')">
       <tr>
-        <th colspan="10" class="table-info"> 专家提示（共有条记录）
+        <th colspan="10" class="table-info"> 专家提示（共有{{eLength}}条记录）
           <a href="#" v-on:click="close('专家提示')" style="float: right">✖</a>
           <a href="#" v-on:click="fold('专家提示')" style="float: right; marginRight: 3px">↗</a>
         </th>
       </tr>
       <tr v-for="(data, index) in expertHint" v-bind:key='index'>
         <td> {{index + 1}} </td>
-        <td>{{data}}</td>
+        <td v-on:click="getItem(data, index)">{{data}}</td>
       </tr>
     </table>
-    <table v-if="this.$store.state.Edit.rightFolds.includes('病案质控')">
+    <table v-if="this.$store.state.Edit.rightFolds.includes('专家提示')">
       <tr>
-        <th colspan="10" class="table-info"> 专家提示（共有条记录）
+        <th colspan="10" class="table-info"> 专家提示（共有{{eLength}}条记录）
           <a href="#" v-on:click="close('专家提示')" style="float: right">✖</a>
           <a href="#" v-on:click="fold('专家提示')" style="float: right; marginRight: 5px">↙</a>
         </th>
@@ -32,6 +32,11 @@
         get() {
           return this.$store.state.Edit.expertHint
         }
+      },
+      eLength: {
+        get() {
+          return this.$store.state.Edit.expertHint.length
+        }
       }
     },
     methods: {
@@ -40,7 +45,12 @@
       },
       fold(data) {
         this.$store.commit('EDIT_SET_RIGHT_FOLDS', data);
-      }
+      },
+      getItem: function (item) {
+        const value = `${this.$store.state.Edit.editBarValue} ${item}`
+        this.$store.commit('EDIT_SET_BAR_VALUE', value)
+        document.getElementById('edit-editbar-input').focus()
+      },
     }
   };
 </script>

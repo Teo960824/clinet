@@ -2,7 +2,7 @@
   <div id="edit-rightpaneldoc-doc">
     <div class="card">
       <div>
-        <a href="#" v-on:click="close('病案历史')" style="float: right; marginRight: 5px">✖</a>
+        <a href="#" v-on:click="close('病案参考')" style="float: right; marginRight: 5px">✖</a>
       </div>
       <div class="card-body" v-for="(section, key) of doc" v-bind:key='key'>
         <!-- 个人信息 -->

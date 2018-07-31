@@ -12,6 +12,7 @@
         <li class="nav-item active" v-on:click='getUsers()' id="server-user-setup">
           <a class="nav-link text-light" href="#"> 用户设置 <span class="sr-only">(current)</span></a>
         </li>
+
         <!-- <li v-if="toolbar === 'getUsers' && user.login === false">
           <a class="nav-link text-light" href="#" v-on:click="loginUser()" id="server-login">登录</a>
         </li> -->
@@ -23,7 +24,7 @@
         </li>
         <!-- <li v-if="toolbar === 'createUsers'">
           <a class="nav-link text-light" href="#" v-on:click="insertUser()">注册</a>
-        </li> 
+        </li>
         <li v-if="toolbar === 'upUsers'" id = "server-user-ischange">
           <a class="nav-link text-light" href="#" v-on:click="updateUser()">确认修改</a>
         </li>-->
@@ -82,7 +83,6 @@
     sCreateOrg, sUpdateOrg, sGetDepart, sCreateDepart, sUpdateDepart, sUpHelp } from '../../utils/Server';
   // import { open } from '../../utils/BlockAccount'
   import loadFile from '../../utils/LoadFile';
-  // import { socketConnect } from '../../utils/Socket';
   export default {
     data() {
       return {

@@ -64,58 +64,6 @@
             getStatFiles(this, [this.$store.state.System.server, this.$store.state.System.port], data, this.$store.state.System.user.username, this.$store.state.Stat.tableType)
           }
         }
-        // // 读取本地文件
-        // // this.commit('STAT_SET_TABLE_TEST', ['local'])
-        // // 设置文件高亮
-        //
-        // if (data.endsWith('.csv')) {
-        //
-        // }
-
-        // }
-        // this.$store.commit('STAT_SET_FILE_FLAG');
-        // this.$store.commit('STAT_SET_FILE_NAME', data);
-        // this.$store.commit('STAT_SET_TABLE_PAGE', 1)
-        // if (data === '病案数据.csv') {
-        //   if (this.$store.state.Stat.serverMenu.type === '二级菜单') {
-        //     this.$store.commit('STAT_SET_SERVER_MENU', ['二级菜单', []]);
-        //     this.$store.commit('STAT_SET_SERVER_MENU', ['三级菜单', []]);
-        //   }
-        //   if (this.$store.state.System.connectInfo) {
-        //     // this.$store.commit('SYSTEM_SET_TOOLBAR', 'getServerData');
-        //     this.$store.commit('SET_NOTICE', '远程病案数据');
-        //     // 返回默认值页码
-        //     this.$store.commit('SYSTEM_SET_LOCAL_PAGE', 1);
-        //     // 保存分组数据类型
-        //     this.$store.commit('SYSTEM_SET_COMPUTE_DATA', 'getServerData');
-        //     sGetWt4(this, [this.$store.state.System.server, this.$store.state.System.port], 1, 'stat')
-        //     // this.$store.commit('STAT_SET_SERVER_TABLE', this.$store.state.System.wt4);
-        //   } else {
-        //     this.$store.commit('SET_NOTICE', '服务器连接未设置,请在系统服务内连接');
-        //   }
-        //   chartBar('chartLeft', null)
-        //   chartLine('chartRight', null)
-        //   this.$store.commit('STAT_SET_CHART_IS_SHOW', 'chart');
-        // } else if (this.$store.state.Stat.isServer) {
-        //   this.$store.commit('STAT_SET_TABLE_TYPE', 'server');
-        //   if (data.endsWith('.csv')) {
-        //     this.$store.commit('STAT_SET_CHART_IS_SHOW', 'chart');
-        //     getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: data, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.serverDimension, order: this.$store.state.Stat.serverSort }, 'stat')
-        //   } else {
-        //     if (this.$store.state.Stat.serverMenu.type === '二级菜单') {
-        //       this.$store.commit('STAT_SET_SERVER_MENU', ['三级菜单', []]);
-        //     }
-        //     this.$store.commit('STAT_SET_CHART_IS_SHOW', 'menu');
-        //     getStatFiles(this, [this.$store.state.System.server, this.$store.state.System.port], data, this.$store.state.System.user.username, this.$store.state.Stat.tableType)
-        //   }
-        // } else {
-        //   // 图表
-        //   chartBar('chartLeft', null)
-        //   chartLine('chartRight', null)
-        //   this.$store.commit('STAT_SET_CHART_IS_SHOW', 'chart');
-        //   loadFile(this, data, 'stat')
-        //   this.$store.commit('STAT_SET_TABLE_TYPE', 'local');
-        // }
       },
     },
   };

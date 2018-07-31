@@ -269,7 +269,24 @@ describe('StatRemoteFile', function () {
       .then(function (time) {
         expect(time).to.be.an('array');
       })
-      
+      // .click('#stat-left-download')
+      // .getText('#notice-bar')
+      // .then(function (time) {
+      //   console.log(time)
+      //   // expect(time).to.be.an('array');
+      // })
+      .click('#stat-table-asc1')
+      .getText('.stat-right-table-tr')
+      .then(function (time) {
+        console.log(time)
+        expect(time).to.be.an('array');
+      })
+      .click('#stat-table-desc1')
+      .getText('.stat-right-table-tr')
+      .then(function (time) {
+        console.log(time)
+        expect(time).to.be.an('array');
+      })
     //   .click('.stat-left-dimension-tr')
     //   .getText('.stat-right-table-tr')
     //   .then(function (time) {

@@ -77,6 +77,7 @@
 <script>
   import loadFile from '../../utils/LoadFile';
   import saveFile from '../../utils/SaveFile'
+  import { offline } from '../../utils/Socket';
   import { cacheEditDoc } from '../../utils/EditSave'
   import { getDocTypes, getHelpTypes, getEditFiles } from '../../utils/EditServerFile'
   export default {
@@ -234,7 +235,7 @@
           case '已登录':
             this.$store.commit('SET_NOTICE', '已登录');
             this.$router.push('/');
-            this.$store.commit('SYSTEM_SET_USER', ['更新用户信息成功', { username: '', org: '', type: 2, login: false }]);
+            offline(this, this.$store.state.System.user.username)
             this.$store.commit('EDIT_SET_DOC_TYPES', ['自定义文档', '病案首页（卫统四CSV）', '入院申请', '首次病程', '病程记录', '病案首页', '门诊病案', '健康体检']);
             this.$store.commit('EDIT_SET_RIGHT_PANEL', 'local');
             break;

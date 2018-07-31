@@ -121,14 +121,14 @@
         <tr v-for="(x, index) in xs"  v-if="index === 0" v-on:click="onClick(x, index)" v-bind:key="index">
           <th class="text-center" v-for="(data, xindex) in x" v-bind:key="xindex">
             <a class="oi oi-sort-ascending" v-if="serverSort.type === 'asc' && serverSort.field == data" ></a>
-            <a class="oi oi-sort-ascending" href="#" v-else style="color:#7bb8d1" v-on:click="onClickSort(data, 'asc')"></a>
+            <a class="oi oi-sort-ascending" href="#" v-else style="color:#7bb8d1" v-on:click="onClickSort(data, 'asc')" v-bind:id="'stat-table-asc'+xindex"></a>
             &nbsp;&nbsp;&nbsp;&nbsp;<span v-on:click="onClickTd(x, xindex)">{{data}}</span>&nbsp;&nbsp;&nbsp;&nbsp;
             <a class="oi oi-sort-descending"  v-if="serverSort.type === 'desc' && serverSort.field == data"></a>
-            <a class="oi oi-sort-descending" href="#" v-else style="color:#7bb8d1" v-on:click="onClickSort(data, 'desc')"></a>
+            <a class="oi oi-sort-descending" href="#" v-else style="color:#7bb8d1" v-on:click="onClickSort(data, 'desc')" v-bind:id="'stat-table-desc'+xindex"></a>
           </th>
         </tr>
         <tr v-for="(data, index) in xs" v-bind:key='index' v-on:click="onClick(data, index)" class="stat-right-table-tr" v-bind:class="{'table-danger':flag.find((n)=>n===index)}" v-if="index > 0">
-          <td v-for="(field, index) in data"  v-bind:key='index' v-bind:class="{'table-danger':flagTd.find((n)=>n===index)}" v-on:click="onClickTd(data, index)" class="stat-right-table-td"  v-if="index < 10">{{data[index]}}</td>
+          <td v-for="(field, index) in data"  v-bind:key='index' v-bind:class="{'table-danger':flagTd.find((n)=>n===index)}" v-on:click="onClickTd(data, index)" class="stat-right-table-td"  v-if="index < 11">{{data[index]}}</td>
         </tr>
       </table>
 
@@ -139,7 +139,7 @@
           </th>
         </tr>
         <tr v-for="(data, index) in xs" v-bind:key='index' v-on:click="onClick(data, index)" class="stat-right-table-tr" v-bind:class="{'table-danger':flag.find((n)=>n===index)}" v-if="index > 0">
-          <td v-for="(field, index) in data"  v-bind:key='index' v-bind:class="{'table-danger':flagTd.find((n)=>n===index)}" v-on:click="onClickTd(data, index)" class="stat-right-table-td"  v-if="index < 10">{{data[index]}}</td>
+          <td v-for="(field, index) in data"  v-bind:key='index' v-bind:class="{'table-danger':flagTd.find((n)=>n===index)}" v-on:click="onClickTd(data, index)" class="stat-right-table-td"  v-if="index < 11">{{data[index]}}</td>
         </tr>
       </table>
     </div>
@@ -476,6 +476,7 @@
         }
       },
       selX: function (data, value) {
+        this.$store.commit('STAT_SET_FILE_FLAG');
         if (value === 1) {
           const tableType = this.$store.state.Stat.tableType
           const table1 = []
@@ -497,7 +498,8 @@
         }
       },
       clearSelX: function (type) {
-        this.$store.commit('STAT_SERVER_DIMENSION', [type, '全部'])
+        this.$store.commit('STAT_SET_FILE_FLAG');
+        this.$store.commit('STAT_SERVER_DIMENSION', [type, '-']);
         getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.serverSort }, 'stat')
       },
       onClickSort: function (field, type) {

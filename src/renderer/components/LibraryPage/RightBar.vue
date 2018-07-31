@@ -135,43 +135,17 @@
           }
         }
       },
-      // loadData: function () {
-      //   this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['file', null]);
-      //   this.$store.commit('LIBRARY_LOAD_FILES');
-      //   this.$store.commit('LIBRARY_SET_TABLE_TYPE', 'local');
-      //   this.$store.commit('SET_NOTICE', '本地文件');
-      // },
-      // serverData: function () {
-      //   if (!this.$store.state.System.user.login) {
-      //     this.$store.commit('SET_NOTICE', '未登录用户,请在系统服务-用户设置内登录');
-      //   } else {
-      //     this.$store.commit('SET_NOTICE', '远程文件');
-      //     this.$store.commit('LIBRARY_SET_TABLE_TYPE', 'server');
-      //     this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['file', null]);
-      //     getLibraryFiles(this, [this.$store.state.System.server, this.$store.state.System.port], 'server')
-      //   }
-      // },
-      // blockData: function () {
-      //   if (!this.$store.state.System.user.login) {
-      //     this.$store.commit('SET_NOTICE', '未登录用户,请在系统服务-用户设置内登录');
-      //   } else {
-      //     this.$store.commit('SET_NOTICE', '区块链文件');
-      //     this.$store.commit('LIBRARY_SET_TABLE_TYPE', 'block');
-      //     this.$store.commit('LIBRARY_SET_LEFT_PANEL', ['file', null]);
-      //     getLibraryFiles(this, [this.$store.state.System.server, this.$store.state.System.port], 'block')
-      //   }
-      // },
       page: function (n) {
-        if (this.$store.state.Library.tablePage === 1 && n === -1) {
+        if (this.$store.state.Library.libraryTableInfo.page === 1 && n === -1) {
           this.$store.commit('SET_NOTICE', '当前已是第一页')
-        } else if ((this.$store.state.Library.tablePage === this.$store.state.Library.countPage && n === 1) || this.$store.state.Library.countPage === 0) {
+        } else if ((this.$store.state.Library.libraryTableInfo.page === this.$store.state.Library.libraryTableInfo.countPage && n === 1) || this.$store.state.Library.countPage === 0) {
           this.$store.commit('SET_NOTICE', '当前已是尾页');
         } else if (this.$store.state.Library.tableType === 'server' || this.$store.state.Library.tableType === 'block') {
           this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
-          getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.$store.state.Library.tablePage, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'library', this.$store.state.Library.tableType, ['asc', '编码'])
+          getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.libraryTableInfo.tableName, this.$store.state.Library.libraryTableInfo.page, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'library', this.$store.state.Library.tableType, this.$store.state.Library.serverSort)
         } else if (this.$store.state.Library.tableType === 'local') {
           this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
-          this.$store.commit('SET_NOTICE', `当前${this.$store.state.Library.tablePage}页,共${this.$store.state.Library.countPage}页`)
+          this.$store.commit('SET_NOTICE', `当前${this.$store.state.Library.libraryTableInfo.page}页,共${this.$store.state.Library.libraryTableInfo.countPage}页`)
         }
       },
       edit: function () {
@@ -179,10 +153,10 @@
         if (this.$store.state.Library.tableType === 'local') {
           this.$store.commit('EDIT_SET_RIGHT_PANELS', '本地文件');
           this.$store.commit('EDIT_SET_RIGHT_FOLDS', '本地文件');
-          if (this.$store.state.Library.localTable.includes(undefined)) {
-            f = this.$store.state.Library.localTable.filter(x => x !== undefined)
+          if (this.$store.state.Library.libraryTable.data.includes(undefined)) {
+            f = this.$store.state.Library.libraryTable.data.filter(x => x !== undefined)
           } else {
-            f = this.$store.state.Library.localTable
+            f = this.$store.state.Library.libraryTable.data
           }
         }
         if (this.$store.state.Library.tableType === 'server') {
@@ -207,7 +181,7 @@
       selX: function (value, x) {
         switch (this.$store.state.Library.tableType) {
           case 'local': {
-            if (this.$store.state.Library.localTable.length > 0) {
+            if (this.$store.state.Library.libraryTable.data.length > 0) {
               console.log(value)
               switch (x) {
                 case '全部':
@@ -230,10 +204,10 @@
             break;
           }
           case 'server': {
-            if (this.$store.state.Library.serverTable.tableName) {
+            if (this.$store.state.Library.libraryTableInfo.tableName) {
               this.$store.commit('LIBRARY_SET_SERVER_DIMENSION', [value, x]);
               console.log(this.$store.state.Library.serverDimension)
-              getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 1, 'filter', this.$store.state.Library.serverDimension, 'edit', 'server', ['asc', ''])
+              getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.libraryTableInfo.tableName, 1, 'filter', this.$store.state.Library.serverDimension, 'edit', 'server', this.$store.state.Library.serverSort)
             } else {
               this.$store.commit('SET_NOTICE', '请选择文件');
             }
@@ -250,17 +224,17 @@
             this.$store.commit('LIBRARY_GET_SEARCH_TABLE', this.library)
             break;
           case 'server':
-            getLibrarySerach(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.library, 'server')
+            getLibrarySerach(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.libraryTableInfo.tableName, this.library, 'server')
             break;
           case 'block':
-            getLibrarySerach(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.library, 'block')
+            getLibrarySerach(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.libraryTableInfo.tableName, this.library, 'block')
             break;
           default:
         }
       },
       blockShare: function () {
         let array = []
-        array = this.$store.state.Library.fieldIndex.map(n => this.$store.state.Library.serverTable.data[n])
+        array = this.$store.state.Library.fieldIndex.map(n => this.$store.state.Library.libraryTable.data[n])
         share(this, [this.$store.state.System.server, this.$store.state.System.port], 'library', this.$store.state.System.shareFileName, this.$store.state.System.user.username, array)
       },
       docDown: function () {
