@@ -279,9 +279,9 @@ export function editBarEnter(obj, targetValue) {
       obj.$store.commit('EDIT_SET_BAR_VALUE', '');
     } else {
       let n = obj.$store.state.Edit.docIndex
-      let value = targetValue
+      const value = targetValue
       if (obj.$store.state.Edit.selectedType !== 'col') {
-        const vs = value.split('，').filter(i => i !== '');
+        const vs = value.split(',').filter(i => i !== '');
         if (vs.length > 0) {
           vs.forEach((element, index) => {
             const v = element.split(' ').filter(i => i !== '');
@@ -306,7 +306,7 @@ export function editBarEnter(obj, targetValue) {
           message(obj, targetValue, obj.$store.state.System.user.username, 'doc')
         }
       } else {
-        value = value.replace(/,/g, '，')
+        // value = value.replace(/,/g, '，')
         const cv = value.split(' ').filter(i => i !== '');
         const col = obj.$store.state.Edit.selectedCol[0]
         obj.$store.commit('EDIT_UPDATE_FILE', [col, cv[1]]);

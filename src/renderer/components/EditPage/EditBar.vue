@@ -106,11 +106,10 @@
           } else {
           // const value = document.getElementById('edit-editbar-input').value
             const value = e.target.value
-            // console.log(value)
             this.$store.commit('EDIT_SET_BAR_VALUE', value);
             let n = this.$store.state.Edit.docIndex
             if (this.$store.state.Edit.selectedType !== 'col') {
-              const vs = value.split('，').filter(i => i !== '');
+              const vs = value.split(',').filter(i => i !== '');
               if (vs.length > 0) {
                 vs.forEach((element, index) => {
                   const v = element.split(' ').filter(i => i !== '');
