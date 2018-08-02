@@ -43,9 +43,8 @@
 </template>
 
 <script>
-  import { message, join } from '../../utils/Socket'
-  import { getCaseHistory, editDocShow, getExpertHint } from '../../utils/EditServerFile'
-  import { getDate } from '../../utils/EditSave'
+  import { join } from '../../utils/Socket'
+  import { editBarEnter } from '../../utils/EditSave'
   export default {
     // mounted: function () {
     //   this.$nextTick(() => {
@@ -133,60 +132,7 @@
         }
       },
       enter(e) {
-        if (this.$store.state.Edit.editType === '病案编辑') {
-          if (this.$store.state.Edit.helpType === '病案历史') {
-            getCaseHistory(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Edit.doc, this.$store.state.System.user.username)
-          }
-          if (this.$store.state.Edit.rightPanels.includes('病案参考')) {
-            editDocShow(this, [this.$store.state.System.server, this.$store.state.System.port], e.target.value)
-          }
-          if (e.target.value.includes('~')) {
-            this.$store.commit('EDIT_SET_MODEL_NAME', e.target.value.replace('~', ''));
-            this.$store.commit('EDIT_SET_BAR_VALUE', '');
-          } else {
-            let n = this.$store.state.Edit.docIndex
-            let value = e.target.value
-            if (this.$store.state.Edit.selectedType !== 'col') {
-              const vs = value.split('，').filter(i => i !== '');
-              if (vs.length > 0) {
-                vs.forEach((element, index) => {
-                  const v = element.split(' ').filter(i => i !== '');
-                  if (index > 0) {
-                    this.$store.commit('EDIT_UPDATE_DOC', [n, v, true]);
-                  } else {
-                    this.$store.commit('EDIT_UPDATE_DOC', [n, v]);
-                  }
-                  this.$store.commit('EDIT_SET_DOC_INDEX', [1]);
-                  n += 1
-                  if (!global.hitbdata.cdhHeader.includes(v[0]) && this.$store.state.Edit.rightPanels.includes('病案质控')) {
-                    this.$store.commit('EDIT_ADD_DOC_CONTROL', v);
-                  }
-                  if (this.$store.state.Edit.rightPanels.includes('专家提示') && v[0].includes('症状')) {
-                    getExpertHint(this, [this.$store.state.System.server, this.$store.state.System.port], v)
-                  }
-                });
-              } else {
-                this.$store.commit('EDIT_DELETE_ITEM', n);
-              }
-              if (this.$store.state.Edit.helpType === '在线交流') {
-                message(this, e.target.value, this.$store.state.System.user.username, 'doc')
-              }
-            } else {
-              value = value.replace(/,/g, '，')
-              const cv = value.split(' ').filter(i => i !== '');
-              const col = this.$store.state.Edit.selectedCol[0]
-              this.$store.commit('EDIT_UPDATE_FILE', [col, cv[1]]);
-            }
-            this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
-            this.$store.commit('SET_NOTICE', '编辑 -> 缓存 -> 选择文件 -> 保存');
-          }
-        } else if (this.$store.state.Edit.rightPanels.includes('病案编辑')) {
-          message(this, e.target.value, this.$store.state.System.user.username, 'message')
-          this.$store.commit('EDIT_SET_BAR_VALUE', '');
-        }
-        const currentdate = getDate()
-        this.$store.commit('EDIT_UPDATE_DOC_HEADER', ['修改时间', currentdate]);
-        this.$store.commit('EDIT_SET_DOC_STATE');
+        editBarEnter(this, e.target.value)
       },
       addItem() {
         // if (this.$store.state.Edit.fileType === 'cda') {

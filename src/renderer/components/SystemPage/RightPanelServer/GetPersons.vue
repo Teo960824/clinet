@@ -60,7 +60,7 @@
   </div>
 </template>
 <script>
-  import { sGetUsers } from '../../../utils/Server';
+  import { sGetUsers } from '../../../utils/ServerUser';
   export default {
     data() {
       return {

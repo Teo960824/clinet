@@ -1,6 +1,10 @@
 import saveFile from './SaveFile'
-import { saveEdit, getDocContent, editDocState, editDocShow } from './EditServerFile'
-import { join } from './Socket'
+import { saveEdit, getDocContent, editDocState, editDocShow, getCaseHistory, getExpertHint, clinetHelp } from './EditServerFile'
+import { join, message } from './Socket'
+import { sCompDrg } from './Server'
+import { getLibrary } from './LibraryServerFile'
+import { getStat } from './StatServerFile'
+
 
 export function getDate() {
   const date = new Date();
@@ -262,3 +266,182 @@ export function loadEditDoc(obj, data, index, type) {
   obj.$store.commit('EDIT_SET_DOC_STATE')
 }
 
+export function editBarEnter(obj, targetValue) {
+  if (obj.$store.state.Edit.editType === '病案编辑') {
+    if (obj.$store.state.Edit.helpType === '病案历史') {
+      getCaseHistory(obj, [obj.$store.state.System.server, obj.$store.state.System.port], obj.$store.state.Edit.doc, obj.$store.state.System.user.username)
+    }
+    if (obj.$store.state.Edit.rightPanels.includes('病案参考')) {
+      editDocShow(obj, [obj.$store.state.System.server, obj.$store.state.System.port], targetValue)
+    }
+    if (targetValue.includes('~')) {
+      obj.$store.commit('EDIT_SET_MODEL_NAME', targetValue.replace('~', ''));
+      obj.$store.commit('EDIT_SET_BAR_VALUE', '');
+    } else {
+      let n = obj.$store.state.Edit.docIndex
+      let value = targetValue
+      if (obj.$store.state.Edit.selectedType !== 'col') {
+        const vs = value.split('，').filter(i => i !== '');
+        if (vs.length > 0) {
+          vs.forEach((element, index) => {
+            const v = element.split(' ').filter(i => i !== '');
+            if (index > 0) {
+              obj.$store.commit('EDIT_UPDATE_DOC', [n, v, true]);
+            } else {
+              obj.$store.commit('EDIT_UPDATE_DOC', [n, v]);
+            }
+            obj.$store.commit('EDIT_SET_DOC_INDEX', [1]);
+            n += 1
+            if (!global.hitbdata.cdhHeader.includes(v[0]) && obj.$store.state.Edit.rightPanels.includes('病案质控')) {
+              obj.$store.commit('EDIT_ADD_DOC_CONTROL', v);
+            }
+            if (obj.$store.state.Edit.rightPanels.includes('专家提示') && v[0].includes('症状')) {
+              getExpertHint(obj, [obj.$store.state.System.server, obj.$store.state.System.port], v)
+            }
+          });
+        } else {
+          obj.$store.commit('EDIT_DELETE_ITEM', n);
+        }
+        if (obj.$store.state.Edit.helpType === '在线交流') {
+          message(obj, targetValue, obj.$store.state.System.user.username, 'doc')
+        }
+      } else {
+        value = value.replace(/,/g, '，')
+        const cv = value.split(' ').filter(i => i !== '');
+        const col = obj.$store.state.Edit.selectedCol[0]
+        obj.$store.commit('EDIT_UPDATE_FILE', [col, cv[1]]);
+      }
+      obj.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
+      obj.$store.commit('SET_NOTICE', '编辑 -> 缓存 -> 选择文件 -> 保存');
+    }
+  } else if (obj.$store.state.Edit.rightPanels.includes('病案编辑')) {
+    message(obj, targetValue, obj.$store.state.System.user.username, 'message')
+    obj.$store.commit('EDIT_SET_BAR_VALUE', '');
+  }
+  const currentdate = getDate()
+  obj.$store.commit('EDIT_UPDATE_DOC_HEADER', ['修改时间', currentdate]);
+  obj.$store.commit('EDIT_SET_DOC_STATE');
+}
+
+export function rightBarHelp(obj, n) {
+  if (n) {
+    // obj.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+    obj.$store.commit('SET_NOTICE', n);
+    // obj.$store.commit('EDIT_SET_HELP_TYPE', n);
+    if (obj.$store.state.Edit.rightPanel === 'server') {
+      clinetHelp(obj, [obj.$store.state.System.server, obj.$store.state.System.port], obj.$store.state.System.user.username)
+    }
+    if (n === 'DRG分析') {
+      obj.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+      obj.$store.commit('EDIT_SET_HELP_TYPE', n);
+      if (obj.$store.state.System.wt4Tables.length > 1) {
+        sCompDrg(obj, [obj.$store.state.System.server, obj.$store.state.System.port], obj.$store.state.System.wt4Tables, 'BJ', 'getLocalData')
+      } else {
+        obj.$store.commit('SET_NOTICE', '请选择分析数据！');
+      }
+    } else if (n === '编辑器使用帮助' || n === '在线交流') {
+      obj.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+      obj.$store.commit('EDIT_SET_HELP_TYPE', n);
+      obj.$store.commit('SET_NOTICE', n);
+      obj.helpType = n
+      obj.$store.commit('EDIT_SET_RIGHT_PANEL', 'help');
+    } else if (n === '输入框提示') {
+      obj.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+      obj.$store.commit('EDIT_SET_HELP_TYPE', n);
+      obj.$store.commit('EDIT_GET_CDH_FILE', 0);
+      if (obj.$store.state.Edit.rightPanel === 'server') {
+        if (!obj.$store.state.Edit.rightCdh) {
+          obj.$store.commit('SET_NOTICE', '输入提示无内容！');
+        } else if (!global.hitbdata.cdh) {
+          obj.$store.commit('SET_NOTICE', '输入提示无内容！');
+        }
+      }
+    } else if (n === '病案历史' && obj.$store.state.Edit.rightPanel === 'server') {
+      obj.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+      obj.$store.commit('EDIT_SET_HELP_TYPE', n);
+      getCaseHistory(obj, [obj.$store.state.System.server, obj.$store.state.System.port], obj.$store.state.Edit.doc, obj.$store.state.System.user.username)
+    } else if (n === '病案历史' && obj.$store.state.Edit.rightPanel !== 'server') {
+      obj.$store.commit('SET_NOTICE', '登陆后可查询病案历史！');
+    } else if (n === '病案质控' && obj.$store.state.Edit.rightPanel === 'server') {
+      obj.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+      obj.$store.commit('EDIT_SET_HELP_TYPE', n);
+      if (global.hitbControls.length > 0) {
+        const controls = global.hitbControls[0].split(',')
+        obj.$store.commit('EDIT_SET_DOC_CONTROL', controls);
+      } else {
+        obj.$store.commit('SET_NOTICE', '病案质控暂无内容！');
+      }
+    } else {
+      obj.$store.commit('EDIT_SET_RIGHT_PANELS', n);
+      obj.$store.commit('EDIT_SET_HELP_TYPE', n);
+    }
+  }
+}
+
+export function editPage(obj, n) {
+  if (obj.$store.state.Edit.helpType !== '输入框提示') {
+    if (obj.$store.state.Edit.rightType === 'left') {
+      let page = 0
+      let countPage = 0
+      switch (obj.$store.state.Edit.lastNav) {
+        case '/library':
+          page = obj.$store.state.Library.tablePage
+          countPage = obj.$store.state.Library.countPage
+          break;
+        case '/stat':
+          page = obj.$store.state.Stat.tablePage
+          countPage = obj.$store.state.Stat.countPage
+          break;
+        default:
+          page = obj.$store.state.Edit.filePage
+          break;
+      }
+      if (page === 1 && n === -1) {
+        obj.$store.commit('SET_NOTICE', '当前已是第一页')
+      } else if (countPage === page && n === 1 && ['/stat', '/library'].includes(obj.$store.state.Edit.lastNav)) {
+        obj.$store.commit('SET_NOTICE', '当前已是尾页');
+      } else {
+        switch (obj.$store.state.Edit.lastNav) {
+          case '/library':
+            if (obj.$store.state.Library.tableType === 'server') {
+              obj.$store.commit('LIBRARY_TABLE_PAGE', [n]);
+              getLibrary(obj, [obj.$store.state.System.server, obj.$store.state.System.port], obj.$store.state.Library.serverTable.tableName, obj.$store.state.Library.tablePage, obj.$store.state.Library.dimensionType, obj.$store.state.Library.dimensionServer, 'edit', 'server', ['asc', '编码'])
+            } else {
+              obj.$store.commit('LIBRARY_TABLE_PAGE', [n]);
+              obj.$store.commit('EDIT_LOAD_FILE', obj.$store.state.Library.localTable)
+              obj.$store.commit('SET_NOTICE', `当前${obj.$store.state.Library.tablePage}页,共${obj.$store.state.Library.countPage}页`)
+            }
+            break;
+          case '/stat':
+            if (obj.$store.state.Stat.tableType === 'server') {
+              obj.$store.commit('STAT_TABLE_PAGE', n);
+              getStat(obj, [obj.$store.state.System.server, obj.$store.state.System.port], { tableName: obj.$store.state.Stat.serverTable.tableName, page: obj.$store.state.Stat.tablePage, username: obj.$store.state.System.user.username, type: obj.$store.state.Stat.dimensionType, value: obj.$store.state.Stat.dimensionServer }, 'edit')
+            } else {
+              obj.$store.commit('STAT_TABLE_PAGE', n);
+              obj.$store.commit('SET_NOTICE', `当前${obj.$store.state.Stat.tablePage}页,共${obj.$store.state.Stat.countPage}页`)
+            }
+            break;
+          default:
+            obj.$store.commit('EDIT_SET_FILE_PAGE', n);
+            obj.$store.commit('SET_NOTICE', '下一页')
+            break;
+        }
+      }
+    } else if (obj.$store.state.Edit.rightPanel === 'edit') {
+      if (obj.$store.state.Edit.filesPage === 0 && n === -1) {
+        obj.$store.commit('SET_NOTICE', '当前已是第一页')
+      } else {
+        obj.$store.commit('EDIT_SET_FILES_PAGE', n);
+        obj.$store.commit('SET_NOTICE', '下一页')
+      }
+    }
+  } else if (obj.$store.state.Edit.helpType === '输入框提示') {
+    if (n === -1 && obj.$store.state.Edit.cdhFilePage === 0) {
+      obj.$store.commit('SET_NOTICE', '当前已经是第一页')
+    } else if (n === +1 && obj.$store.state.Edit.cdhFilePage === obj.$store.state.Edit.cdhFilePagecount) {
+      obj.$store.commit('SET_NOTICE', '当前已经最后一页')
+    } else {
+      obj.$store.commit('EDIT_GET_CDH_FILE', n);
+    }
+  }
+}

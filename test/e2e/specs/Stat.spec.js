@@ -17,14 +17,16 @@ describe('Stat', function () {
       .click('#stat-next-page')
       // .waitUntilTextExists('#notice-bar', '当前已是尾页')
       .getText('#notice-bar')
-      .then(function (rightTable) {
+      // .then(function (rightTable) {
+      .then(function () {
         // expect(rightTable).to.equal('系统通知：当前已是尾页');
       })
     // 2.1.1.1.5 点击工具栏的前一页 rightPanel显示当前数据的前十条数据并且当前行高亮显示 如果为第一页则提示"当前已是第一页"
       .click('#stat-prev-page')
       // .waitUntilTextExists('#notice-bar', '当前已是第一页')
       .getText('#notice-bar')
-      .then(function (rightTable) {
+      // .then(function (rightTable) {
+      .then(function () {
         // expect(rightTable).to.equal('系统通知：当前已是第一页');
       })
     // 2.1.1.1.6 点击工具栏的编辑数据 将当前本地文件数据显示传到Edit的rightPanel中并高亮显示当前选中数据 leftPanel显示选中的第一条数据内容

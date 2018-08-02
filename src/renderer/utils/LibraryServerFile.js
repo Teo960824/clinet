@@ -37,12 +37,12 @@ export function getLibrary(obj, data, tableName, pageNum, dimensionType, dimensi
     url = ''
   }
   let sorts = ''
-  if (sort.length !== 0) {
+  if (sort.field !== '') {
     sorts = `&sort_type=${sort.type}&sort_value=${sort.field}`
   } else {
     sorts = ''
   }
-  console.log(sorts)
+  console.log(sort)
   axios({
     method: 'get',
     url: `http://${data[0]}:${data[1]}/library/rule_client?rows=30&tab_type=${type}&page=${pageNum}&server_type=${serverType}${url}${sorts}`,
@@ -90,7 +90,8 @@ export function getList(obj, url, tableName, type, username, serverType = 'serve
     obj.$store.commit('LIBRARY_SET_LEFT_PANEL', ['dimension', type, []])
   })
 }
-export function librarDown(obj, url, filename) {
+export function librarDown(obj, url, fileName) {
+  const filename = fileName.split('.csv')[0]
   axios({
     method: 'get',
     url: `http://${url[0]}:${url[1]}/library/rule_down?filename=${filename}`,
@@ -100,10 +101,10 @@ export function librarDown(obj, url, filename) {
     if (res.status === 200) {
       obj.$store.commit('SET_NOTICE', '下载成功')
       obj.$store.commit('LIBRARY_GET_DOWN_FILE', res.data.result)
-      if (filename !== '模板.csv') {
-        saveFile(obj, filename, '/library')
+      if (fileName !== '模板.csv') {
+        saveFile(obj, fileName, '/library')
       } else {
-        saveFile(obj, filename, '/user')
+        saveFile(obj, fileName, '/user')
       }
     } else {
       obj.$store.commit('SET_NOTICE', '下载失败')
@@ -113,7 +114,8 @@ export function librarDown(obj, url, filename) {
     obj.$store.commit('SET_NOTICE', '下载失败')
   })
 }
-export function getLibrarySerach(obj, url, filename, value, servertype) {
+export function getLibrarySerach(obj, url, fileName, value, servertype) {
+  const filename = fileName.split('.csv')[0]
   axios({
     method: 'get',
     url: `http://${url[0]}:${url[1]}/library/rule_search?filename=${filename}&value=${value}&servertype=${servertype}`,
@@ -122,7 +124,7 @@ export function getLibrarySerach(obj, url, filename, value, servertype) {
   }).then((res) => {
     if (res.status === 200) {
       const library = res.data.result
-      const opt = { page: 0, countPage: 0, data: library.slice(1), pageList: [], tableName: filename };
+      const opt = { page: 0, countPage: 0, data: library.slice(1), pageList: [], tableName: fileName };
       obj.$store.commit('LIBRARY_SET_SERVER_TABLE', opt);
     } else {
       obj.$store.commit('SET_NOTICE', '下载失败')

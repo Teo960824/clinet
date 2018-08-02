@@ -28,7 +28,7 @@ export default function saveFile(obj, x, p) {
     // const data = obj.$store.state.Edit.file.map(x => x.join(',')).join('\n')
     let data = []
     if (p === '/library') {
-      data = obj.$store.state.Library.libraryTable.data.join('\n')
+      data = obj.$store.state.Library.libraryTable.download.join('\n')
     } else if (p === '/stat') {
       data = obj.$store.state.Stat.downloadTable.join('\n')
     } else if (p === '/user') {
@@ -38,7 +38,7 @@ export default function saveFile(obj, x, p) {
         //  x.splice(0, -3, 'cda')
       });
       const arr = []
-      obj.$store.state.Library.libraryTable.data.forEach((x) => {
+      obj.$store.state.Library.libraryTable.download.forEach((x) => {
         arr.push(x[0])
       })
       arr.splice(0, 1)

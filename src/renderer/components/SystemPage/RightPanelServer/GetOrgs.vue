@@ -93,7 +93,7 @@
 </template>
 
 <script>
-  import { sGetDepart, sGetOrg } from '../../../utils/Server'
+  import { sGetDepart, sGetOrg } from '../../../utils/ServerUser'
   export default {
     data() {
       return {

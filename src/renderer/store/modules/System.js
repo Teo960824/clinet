@@ -1,5 +1,8 @@
 const fs = require('fs');
 const state = {
+  // 连接状态
+  connectInfo: false,
+  // file
   // 页面工具栏选择
   toolbar: '',
   // 选择目录下的CSV文件列表
@@ -15,19 +18,17 @@ const state = {
   fieldIndex: null,
   server: '',
   port: '',
-  // 用户创建信息
-  registerInfo: { username: '', password: '', org: '', age: null, tel: '', email: '', name: '', type: 2 },
-  // 连接状态
-  connectInfo: false,
+  // server
   // 用户登录
   userLogin: { username: 'test@hitb.com.cn', password: '123456' },
-  // 用户修改
-  userUpdate: { org: '', password: '' },
-  // 人员修改
-  personUpdate: { name: '', org: '', age: '', tel: '', email: '' },
-  personId: null,
   // 用户状态
   user: { username: '', org: '', type: 2, login: false },
+  // 人员修改
+  personUpdate: { name: '', org: '', age: '', tel: '', email: '' },
+  // 用户创建信息
+  registerInfo: { username: '', password: '', org: '', age: null, tel: '', email: '', name: '', type: 2 },
+  // 用户ID
+  personId: null,
   // 机构信息
   orgs: [],
   org: [],
@@ -39,6 +40,7 @@ const state = {
   department: [],
   departmentInfo: { org: '', cherf_department: '', class: '', department: '', is_imp: false, is_spe: false, professor: '', wt_code: '', wt_name: '' },
   departmentId: null,
+  // drg
   wt4: [],
   wt4Page: 0,
   wt4Files: [],
@@ -51,11 +53,7 @@ const state = {
   localPage: 0,
   wt4Tables: [],
   wt4TablePage: 0,
-  targetIndex: [],
-  targetDimension: [],
-  serverStat: { wt4: [], index: [], dimension: [] },
-  serverTable: '',
-  // tableType: 'local',
+  // local
   computeVersion: ['CN', 'GB', 'BJ'],
   computeData: '',
   province: {},
@@ -77,7 +75,14 @@ const state = {
   shareFileName: '',
   targetArray: [],
   indexTable: '',
-  systemSection: []
+  systemSection: [],
+  // index
+  targetIndex: [],
+  targetDimension: [],
+  serverStat: { wt4: [], index: [], dimension: [] },
+  serverTable: '',
+
+
 };
 
 const mutations = {
@@ -88,7 +93,6 @@ const mutations = {
     state.otherLogin = m
   },
   SYSTEM_SET_TOOLBAR(state, toolbar) {
-    console.log(toolbar)
     state.toolbar = toolbar;
   },
   SYSTEM_SET_SERVER(state, m) {
@@ -145,10 +149,6 @@ const mutations = {
   SYSTEM_SET_USER(state, field) {
     state.user = field[1];
     state.userPower = field[1].type
-  },
-  // 用户修改信息
-  SYSTEM_UPDATE_USER(state, value) {
-    state.userUpdate = value
   },
   // 用户信息
   SYSTEM_INFO_USER(state, field) {
@@ -219,7 +219,6 @@ const mutations = {
   // 读取本地wt4文件目录
   SYSTEM_LOAD_WT4_FILES() {
     const files = fs.readdirSync(global.hitbdata.path.stat).filter(x => x.endsWith('.csv') && (x.startsWith('test_wt4_') || x.startsWith('wt4_')))
-    console.log(files);
     // const reg = /^$/
     // fs.filter(x => )
     state.wt4Files = files;

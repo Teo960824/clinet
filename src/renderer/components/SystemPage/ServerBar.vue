@@ -12,22 +12,12 @@
         <li class="nav-item active" v-on:click='getUsers()' id="server-user-setup">
           <a class="nav-link text-light" href="#"> 用户设置 <span class="sr-only">(current)</span></a>
         </li>
-
-        <!-- <li v-if="toolbar === 'getUsers' && user.login === false">
-          <a class="nav-link text-light" href="#" v-on:click="loginUser()" id="server-login">登录</a>
-        </li> -->
-        <!-- <li v-if="toolbar === 'getUsers' && user.login === false">
-          <a class="nav-link text-light" href="#" v-on:click="insertUserPage()">新建</a>
-        </li> -->
+        <li class="nav-item active" v-on:click='test()' id="server-user-setup">
+          <a class="nav-link text-light" href="#"> statCdaTest <span class="sr-only">(current)</span></a>
+        </li>
         <li v-if="toolbar === 'getUsers' && user.login === true" v-on:click="updateUserPage()" id="server-user-change">
           <a class="nav-link text-light" href="#">修改</a>
         </li>
-        <!-- <li v-if="toolbar === 'createUsers'">
-          <a class="nav-link text-light" href="#" v-on:click="insertUser()">注册</a>
-        </li>
-        <li v-if="toolbar === 'upUsers'" id = "server-user-ischange">
-          <a class="nav-link text-light" href="#" v-on:click="updateUser()">确认修改</a>
-        </li>-->
         <li class="nav-item active" v-on:click="docUser()" v-if="toolbar === 'getUsers' && user.login === true" id = "server-user-changepower">
           <a class="nav-link text-light" href="#"> 文件权限修改 <span class="sr-only">(current)</span></a>
         </li>
@@ -83,6 +73,7 @@
     sCreateOrg, sUpdateOrg, sGetDepart, sCreateDepart, sUpdateDepart, sUpHelp } from '../../utils/Server';
   // import { open } from '../../utils/BlockAccount'
   import loadFile from '../../utils/LoadFile';
+  import statCda from '../../utils/StatCda';
   export default {
     data() {
       return {
@@ -167,6 +158,9 @@
       }
     },
     methods: {
+      test: function () {
+        statCda(this)
+      },
       getServers: function () {
         loadFile(this, 'hitb_server.csv', 'system')
         this.$store.commit('SYSTEM_SET_TOOLBAR', 'getServers');
@@ -218,42 +212,8 @@
           }
         }
       },
-      // loginUser: function () {
-      //   const reg = /^([0-9A-Za-z\-_.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/g
-      //   const user = this.userLogin
-      //   if (reg.test(user.username)) {
-      //     this.$store.commit('SYSTEM_SET_SERVER', this.$store.state.System.file[1].split(','))
-      //     socketConnect(this, [this.server, this.port, user.username, user.password])
-      //   } else if (Array.from(user.username.split(' ')).length === 12) {
-      //     const key = Object.keys(global.hitbdata.blockchain)[0]
-      //     const server = global.hitbdata.blockchain[key][0];
-      //     this.$store.commit('BLOCK_SET_SERVER', server)
-      //     open(this, [server[0], server[1], user.username]);
-      //   }
-      // },
-      // insertUserPage: function () {
-      //   this.$store.commit('SYSTEM_SET_TOOLBAR', 'createUsers')
-      // },
-      // insertUser: function () {
-      //   this.$store.commit('SYSTEM_SET_SERVER', this.$store.state.System.file[1].split(','))
-      //   // 邮箱,密码,年龄.电话
-      //   const reg = /^([0-9A-Za-z\-_.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/g
-      //   let a = 1;
-      //   if (reg.test(this.registerInfo.email)) {
-      //     a = 1
-      //   } else {
-      //     a = 0
-      //     this.$store.commit('SET_NOTICE', '用户名或邮箱输入错误');
-      //   }
-      //   if (a === 1) {
-      //     sRegister(this, [this.server, this.port, this.registerInfo])
-      //   }
-      // },
       updateUserPage: function () {
         this.$store.commit('SYSTEM_SET_TOOLBAR', 'createUsers')
-      },
-      updateUser: function () {
-        sUpdateUser(this, [this.server, this.port], this.$store.state.System.user.id, this.upUserInfo)
       },
       docUser: function () {
         sUpdateUser(this, [this.server, this.port], this.$store.state.System.user.id, { is_show: !this.$store.state.System.user.is_show })
