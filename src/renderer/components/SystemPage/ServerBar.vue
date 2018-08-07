@@ -69,8 +69,8 @@
 </template>
 
 <script>
-  import { sGetOrg, sGetProvince, sGetUsers, sUpdateUser,
-    sCreateOrg, sUpdateOrg, sGetDepart, sCreateDepart, sUpdateDepart, sUpHelp } from '../../utils/Server';
+  import { sGetProvince, sUpHelp } from '../../utils/Server';
+  import { sGetUsers, sUpdateUser, sGetOrg, sCreateOrg, sUpdateOrg, sGetDepart, sCreateDepart, sUpdateDepart } from '../../utils/ServerUser';
   // import { open } from '../../utils/BlockAccount'
   import loadFile from '../../utils/LoadFile';
   import statCda from '../../utils/StatCda';

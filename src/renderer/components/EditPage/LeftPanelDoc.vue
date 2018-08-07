@@ -23,8 +23,8 @@
               <td style="width: 25%" v-if="index % 2 !== 0">{{ item[2] }}{{ item[3] }}{{ item[4] }}{{ item[5] }}{{ item[6] }}{{ item[7] }}{{ item[8] }}</td>
             </tr>
           </table>
-          <!-- 未定义-主诉-病史-体格检查 -->
-          <table v-else-if="['主诉', '病史', '现病史', '既往史', '家族史', '个人史', '月经史', '婚育史', '家庭史', '遗传史', '体格检查'].includes(key.split(',')[1])">
+          <!-- 未定义-主诉-病史-体格检查-辅助检查结果-处理意见-初步诊断 -->
+          <table v-else-if="['主诉', '病史', '现病史', '既往史', '家族史', '个人史', '月经史', '婚育史', '家庭史', '遗传史', '体格检查', '辅助检查结果', '处理意见', '初步诊断'].includes(key.split(',')[1])">
             <tr class="table-warning" v-bind:class="{'table-danger':flag == key.split(',')[0]}" v-on:click="changeIndex(key, '', true)"><td>{{key.split(',')[1]}}</td></tr>
             <tr><td>
               <ol class="breadcrumb" >

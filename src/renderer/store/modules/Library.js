@@ -26,7 +26,8 @@ const state = {
   serverDimension: { org: '', time: '', version: '' },
   libraryTable: { data: [], download: [] },
   serverSort: { field: '编码', type: 'asc' },
-  libraryTableInfo: { page: 1, countPage: 0, pageList: [], tableName: '', header: [], title: [] }
+  libraryTableInfo: { page: 1, countPage: 0, pageList: [], tableName: '', header: [], title: [] },
+  compRule: {},
 };
 
 const mutations = {
@@ -245,7 +246,10 @@ const mutations = {
   },
   LIBRARY_SET_SERVER_DIMENSIONS(state, value) {
     state.dimensions = value
-  }
+  },
+  LIBRARY_SET_COMP_RULE(state, value) {
+    state.compRule = value
+  },
 };
 
 const actions = {
@@ -274,6 +278,7 @@ const actions = {
     commit('STAT_CLEAR_SERVER_DIMENSION');
     commit('LIBRARY_SET_TABLE_INFO');
     commit('LIBRARY_CLEAR_SERVER_SORT');
+    commit('LIBRARY_SET_COMP_RULE');
   },
 };
 
