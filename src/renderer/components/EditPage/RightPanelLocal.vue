@@ -1,7 +1,7 @@
 <template>
   <div style="marginBottom: 10px">
     <div style="overflow:auto;">
-      <table id="edit-rightpanellocal-table" v-show="this.$store.state.Edit.chatType === false">
+      <table id="edit-rightpanellocal-table" v-show="chatType === false">
         <tr>
           <th colspan="10" class="table-info" id="edit-rightpanellocal-title"> {{title}}
             <a href="#" v-on:click="close(panelName)" style="float: right">✖</a>
@@ -16,7 +16,7 @@
         </tr>
       </table>
     </div>
-    <table id='aaa' v-show="chatType">
+    <table v-show="chatType === true">
       <div v-bind:style="{ height: height + 'px', overflow: 'auto' }" >
         <div v-for="(data, index) in socketRecord" v-bind:key='index'>
           <div style="width: 200px; margin: 0 auto"><span style="padding: 5px">{{data.time}}</span></div>
@@ -54,6 +54,7 @@
       },
       chatType: {
         get() {
+          console.log(this.$store.state.Edit.chatType)
           return this.$store.state.Edit.chatType
         }
       },

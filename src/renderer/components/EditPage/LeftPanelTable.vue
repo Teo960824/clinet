@@ -12,7 +12,7 @@
         <td v-if="lastNav !== '/edit' && index < 10" v-for="(field, index) in data" v-bind:key='index' v-on:click="onClickTd(data, index)" v-bind:class="{'table-danger':flagTd.find((n)=>n===index)}">{{data[index]}}</td>
         <td v-if="lastNav === '/edit'">{{data[1]}}</td>
         <td v-if="rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-del'+index"><a href="#" v-on:click="delDoc(index)">删除</a></td>
-        <td v-if="rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-edit'+index"><a href="#" v-on:click="loadDoc(data, index, 'edit')">编辑</a></td>
+        <td v-if="rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-edit'+index"><a href="#" v-on:click="loadDoc(index, 'edit')">编辑</a></td>
         <td v-if="lastNav !== '/library' && rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-ref'+index"><a href="#" v-on:click="loadDoc(data, index, 'show')">参考</a></td>
         <!-- <td v-if="!fileName.includes('@') || rightPanel !== 'block'" v-bind:id="'edit-leftpaneltable-upl'+index"><a href="#" v-on:click="uploadDoc(data, index)">上传</a></td> -->
         <td v-if="fileName.includes('@')" v-bind:id="'edit-leftpaneltable-dow'+index"><a href="#" v-on:click="downloadDoc(data, index)">下载</a></td>
@@ -167,8 +167,8 @@
         this.$store.commit('EDIT_UPDATE_DOC_HEADER', ['下载时间', currentdate]);
         this.$store.commit('EDIT_SET_DOC_STATE');
       },
-      loadDoc: function (data, index, type) {
-        loadEditDoc(this, data, index, type)
+      loadDoc: function (index, type) {
+        loadEditDoc(this, index, type)
       },
       close(data) {
         this.$store.commit('EDIT_DELETE_RIGHT_PANELS', data);

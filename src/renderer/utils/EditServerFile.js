@@ -1,6 +1,7 @@
 const axios = require('axios');
 const qs = require('qs');
 export function getEditFiles(obj, data, type, username, serverType = 'server') {
+  console.log(serverType)
   let url = ''
   if (type === 'user') {
     url = `http://${data[0]}:${data[1]}/edit/cda_user?server_type=${serverType}`
@@ -92,6 +93,7 @@ export function saveEdit(obj, data, fileName, content, username, saveType, docty
 }
 
 export function getDocTypes(obj, data, username) {
+  console.log(username)
   axios({
     method: 'get',
     url: `http://${data[0]}:${data[1]}/edit/mouldlist?username=${username}`,
@@ -135,6 +137,7 @@ export function getDocContent(obj, data, username, filename) {
 }
 
 export function getHelpTypes(obj, data) {
+  console.log(data)
   axios({
     method: 'get',
     url: `http://${data[0]}:${data[1]}/edit/helplist`,

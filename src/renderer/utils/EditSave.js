@@ -128,8 +128,11 @@ export function cacheEditDoc(obj) {
         string = `${string};${x}:${a}`
       }
     })
+    // console.log(string)
+    // console.log(doc[0])
     if (doc[0] && doc[0].includes('创建时间')) {
       doc.splice(0, 1, string);
+      // console.log(doc)
     } else {
       doc.splice(0, 0, string);
     }
@@ -165,7 +168,7 @@ export function cacheEditDoc(obj) {
 }
 
 export function newEditDoc(obj, n) {
-  obj.$store.commit('EDIT_SET_CHAT_TYPE', true);
+  // obj.$store.commit('EDIT_SET_CHAT_TYPE', false);
   obj.$store.commit('EDIT_SET_DOC_INDEX', [0, true])
   obj.$store.commit('EDIT_SET_FILE_INDEX', obj.$store.state.Edit.file.length)
   obj.$store.commit('EDIT_SET_LEFT_PANEL', 'doc')
@@ -198,7 +201,7 @@ export function newEditDoc(obj, n) {
 }
 
 // 读取文件
-export function loadEditDoc(obj, data, index, type) {
+export function loadEditDoc(obj, index, type) {
   let doc = []
   if (type === 'edit') {
     obj.$store.commit('EDIT_SET_RIGHT_PANELS', '编辑病案');
@@ -209,17 +212,19 @@ export function loadEditDoc(obj, data, index, type) {
     let h = []
     h = file[index]
     if (type === 'string') {
-      h.split(',').forEach((key, i) => {
-        if (data[i]) {
-          r.push(`${key} ${data[i]}`)
+      h.split(',').forEach((key) => {
+        const value = key.split(' ')
+        // r.push(`${key} ${data[i]}`)
+        if (value[1] === undefined) {
+          r.push(`${value[0]}`)
         } else {
-          r.push(`${key}`)
+          r.push(`${value[0]} ${value[1]}`)
         }
       });
     } else {
-      h.forEach((key, i) => {
-        r.push(`${key} ${data[i]}`)
-      });
+      // h.forEach((key) => {
+      //   r.push(`${key} ${data[i]}`)
+      // });
     }
     obj.$store.commit('EDIT_LOAD_DOC', r)
     const header = r[0]
@@ -256,13 +261,14 @@ export function loadEditDoc(obj, data, index, type) {
     document.getElementById('edit-editbar-input').focus()
     doc = obj.$store.state.Edit.doc
     editDocState(obj, doc)
-  } else {
-    obj.$store.commit('EDIT_SET_RIGHT_PANELS', '病案参考');
-    obj.$store.commit('EDIT_SET_FILE_INDEX', index)
-    obj.$store.commit('EDIT_SET_HELP_TYPE', '病案参考');
-    doc = obj.$store.state.Edit.docShow
-    editDocShow(obj, [obj.$store.state.System.server, obj.$store.state.System.port], data)
   }
+  //  else {
+  //   obj.$store.commit('EDIT_SET_RIGHT_PANELS', '病案参考');
+  //   obj.$store.commit('EDIT_SET_FILE_INDEX', index)
+  //   obj.$store.commit('EDIT_SET_HELP_TYPE', '病案参考');
+  //   doc = obj.$store.state.Edit.docShow
+  //   editDocShow(obj, [obj.$store.state.System.server, obj.$store.state.System.port], data)
+  // }
   obj.$store.commit('EDIT_SET_DOC_STATE')
 }
 
@@ -295,7 +301,8 @@ export function editBarEnter(obj, targetValue) {
             if (!global.hitbdata.cdhHeader.includes(v[0]) && obj.$store.state.Edit.rightPanels.includes('病案质控')) {
               obj.$store.commit('EDIT_ADD_DOC_CONTROL', v);
             }
-            if (obj.$store.state.Edit.rightPanels.includes('专家提示') && v[0].includes('症状')) {
+            if (obj.$store.state.Edit.rightPanels.includes('专家提示')) {
+              console.log(v)
               getExpertHint(obj, [obj.$store.state.System.server, obj.$store.state.System.port], v)
             }
           });
