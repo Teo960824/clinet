@@ -52,7 +52,8 @@ const state = {
   cdhFilePage: 0,
   secton: '',
   docControl: [],
-  expertHint: []
+  expertHint: [],
+  expertSection: null
 };
 
 const mutations = {
@@ -125,7 +126,7 @@ const mutations = {
     const x = message.map(m => m.split(' ').filter(i => i !== ''))
     state.doc = x;
     state.editBarValue = x[0]
-    if (global.hitbSections.includes(state.editBarValue)) {
+    if (global.hitbSections.length > 0 && global.hitbSections.includes(state.editBarValue)) {
       state.section = state.editBarValue[0]
     }
   },
@@ -164,7 +165,7 @@ const mutations = {
   },
   EDIT_SET_DOC_INDEX(state, m) {
     if (m[1] === true) {
-      state.docIndex = 0;
+      state.docIndex = m[0];
     } else if (m[1] === 'set') {
       state.docIndex = m[0];
     } else {
@@ -437,6 +438,7 @@ const mutations = {
   },
   EDIT_SET_EXPERT_HINT(state, value) {
     state.expertHint = value
+    state.expertSection = value.section
   },
 };
 

@@ -2,6 +2,7 @@
   <div>
     <right-bar></right-bar>
     <div v-bind:style="{ height: height + 'px', overflow: 'auto' }">
+      <h3 v-if="xs.length === 0" class="text-center">术语字典暂无数据</h3>
       <table>
         <tr v-for="(x, index) in xs"  v-if="index === 0" v-on:click="onClick(x, index)" v-bind:key="index" class="library-rightpanel">
           <th class="text-center" v-for="(data, xindex) in x" v-bind:key="xindex" v-if="tableType === 'local' || tableType === 'block'">

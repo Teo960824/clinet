@@ -39,15 +39,12 @@
         this.$store.commit('LIBRARY_GET_ROW', 0);
         this.$store.commit('LIBRARY_SET_FILE_INDEX', index);
         this.$store.commit('LIBRARY_CLEAR_SERVER_SORT');
-        if (this.$store.state.Library.tableType === 'server') {
-          this.$store.commit('LIBRARY_SET_TABLE_PAGE', 1);
-          getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], data, 1, null, null, 'library', 'server', this.$store.state.Library.serverSort)
-        } else if (this.$store.state.Library.tableType === 'block') {
-          this.$store.commit('LIBRARY_SET_TABLE_PAGE', 1);
-          getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], data, 1, null, null, 'library', 'block', this.$store.state.Library.serverSort)
-        } else {
+        if (this.$store.state.Library.tableType === 'local') {
           loadFile(this, data, 'library')
           this.$store.commit('LIBRARY_SET_TABLE_TYPE', 'local');
+        } else {
+          this.$store.commit('LIBRARY_SET_TABLE_PAGE', 1);
+          getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], data, 1, null, null, 'library', this.$store.state.Library.tableType, this.$store.state.Library.serverSort)
         }
       },
     },

@@ -54,7 +54,6 @@
       },
       chatType: {
         get() {
-          console.log(this.$store.state.Edit.chatType)
           return this.$store.state.Edit.chatType
         }
       },

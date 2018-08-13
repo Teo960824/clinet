@@ -138,7 +138,8 @@
         if (n.includes('你好')) {
           n = '已登录'
         }
-        if (n !== '数据采集-数据采集' && n !== '未登录...') {
+        if (n !== '数据采集-数据采集' && n !== '未登录...' && this.$store.state.Edit.doc.length > 0) {
+          console.log(this.$store.state.Edit.doc)
           cacheEditDoc(this)
         }
         switch (n) {

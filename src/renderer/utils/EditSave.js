@@ -73,7 +73,7 @@ export function saveEditDoc(obj, data) {
   //     obj.$store.commit('EDIT_SET_DELETE_LOCAL', obj.$store.state.Edit.fileIndex)
   //   }
   // }
-  // console.log(fileName)
+  console.log(fileName)
   if (fileName.includes('@')) {
     if (data === '保存模板') {
       if (!obj.$store.state.Edit.modelName) {
@@ -257,9 +257,13 @@ export function loadEditDoc(obj, index, type) {
       obj.$store.commit('EDIT_SET_RIGHT_TYPE', 'left')
     }
     obj.$store.commit('EDIT_SET_RIGHT_TYPE', 'left')
-    obj.$store.commit('EDIT_SET_DOC_INDEX', [0, true]);
     document.getElementById('edit-editbar-input').focus()
     doc = obj.$store.state.Edit.doc
+    if (doc[0][0].includes('创建时间')) {
+      obj.$store.commit('EDIT_SET_DOC_INDEX', [1, true]);
+    } else {
+      obj.$store.commit('EDIT_SET_DOC_INDEX', [0, true]);
+    }
     editDocState(obj, doc)
   }
   //  else {
@@ -274,12 +278,11 @@ export function loadEditDoc(obj, index, type) {
 
 export function editBarEnter(obj, targetValue) {
   if (obj.$store.state.Edit.editType === '病案编辑') {
-    if (obj.$store.state.Edit.helpType === '病案历史') {
-      getCaseHistory(obj, [obj.$store.state.System.server, obj.$store.state.System.port], obj.$store.state.Edit.doc, obj.$store.state.System.user.username)
+    if (obj.$store.state.Edit.section === '个人信息' && targetValue.includes('姓名')) {
+      obj.$store.commit('EDIT_SET_RIGHT_PANELS', '病案历史');
     }
-    if (obj.$store.state.Edit.rightPanels.includes('病案参考')) {
-      editDocShow(obj, [obj.$store.state.System.server, obj.$store.state.System.port], targetValue)
-    }
+    getCaseHistory(obj, [obj.$store.state.System.server, obj.$store.state.System.port], obj.$store.state.Edit.doc, obj.$store.state.System.user.username)
+    editDocShow(obj, [obj.$store.state.System.server, obj.$store.state.System.port], targetValue)
     if (targetValue.includes('~')) {
       obj.$store.commit('EDIT_SET_MODEL_NAME', targetValue.replace('~', ''));
       obj.$store.commit('EDIT_SET_BAR_VALUE', '');
@@ -301,10 +304,7 @@ export function editBarEnter(obj, targetValue) {
             if (!global.hitbdata.cdhHeader.includes(v[0]) && obj.$store.state.Edit.rightPanels.includes('病案质控')) {
               obj.$store.commit('EDIT_ADD_DOC_CONTROL', v);
             }
-            if (obj.$store.state.Edit.rightPanels.includes('专家提示')) {
-              console.log(v)
-              getExpertHint(obj, [obj.$store.state.System.server, obj.$store.state.System.port], v)
-            }
+            getExpertHint(obj, [obj.$store.state.System.server, obj.$store.state.System.port], v, obj.$store.state.Edit.section)
           });
         } else {
           obj.$store.commit('EDIT_DELETE_ITEM', n);
@@ -321,7 +321,7 @@ export function editBarEnter(obj, targetValue) {
       obj.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
       obj.$store.commit('SET_NOTICE', '编辑 -> 缓存 -> 选择文件 -> 保存');
     }
-  } else if (obj.$store.state.Edit.rightPanels.includes('病案编辑')) {
+  } else {
     message(obj, targetValue, obj.$store.state.System.user.username, 'message')
     obj.$store.commit('EDIT_SET_BAR_VALUE', '');
   }

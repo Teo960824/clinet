@@ -42,7 +42,6 @@ export function getLibrary(obj, data, tableName, pageNum, dimensionType, dimensi
   } else {
     sorts = ''
   }
-  console.log(sort)
   axios({
     method: 'get',
     url: `http://${data[0]}:${data[1]}/library/rule_client?rows=30&tab_type=${type}&page=${pageNum}&server_type=${serverType}${url}${sorts}`,
@@ -51,7 +50,12 @@ export function getLibrary(obj, data, tableName, pageNum, dimensionType, dimensi
   }).then((res) => {
     if (res.status === 200) {
       const library = res.data.library
-      const opt = { page: parseInt(res.data.page, 10), countPage: res.data.count, pageList: res.data.page_list, tableName: tableName };
+      const countPage = res.data.count
+      let page = parseInt(res.data.page, 10)
+      if (countPage === 0) {
+        page = 0
+      }
+      const opt = { page: page, countPage: res.data.count, pageList: res.data.page_list, tableName: tableName };
       obj.$store.commit('LIBRARY_SET_SERVER_TABLE', library.slice(1));
       obj.$store.commit('LIBRARY_SET_TABLE_INFO', opt)
       obj.$store.commit('LIBRARY_SET_SERVER_SORT', [res.data.sort_value, res.data.sort_type])
