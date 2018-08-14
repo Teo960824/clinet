@@ -164,6 +164,7 @@
           this.$store.commit('EDIT_SET_RIGHT_FOLDS', '远程文件');
           this.$store.commit('EDIT_SET_LEFT_PANEL', 'table');
           this.$store.commit('EDIT_SET_RIGHT_PANEL', 'server');
+          this.$store.commit('EDIT_SERVER_FILES', f);
           this.$store.commit('EDIT_SET_FILES_INDEX', 0);
           this.$store.commit('EDIT_SET_LEFT_PANEL', 'table')
         } else {

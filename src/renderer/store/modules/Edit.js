@@ -94,11 +94,11 @@ const mutations = {
     state.files.push(message);
   },
   EDIT_SAVE_DOC(state, m) {
-    if (state.lastNav !== '/edit') {
-      // const a = m[1].split(',')
-    } else {
-      state.file.splice(m[0], 1, m[1]);
-    }
+    // if (state.lastNav !== '/edit') {
+    //   // const a = m[1].split(',')
+    // } else {
+    state.file.splice(m[0], 1, m[1]);
+    // }
   },
   EDIT_SAVE_FILE(state, m) {
     state.file.splice(m[0], 1, m[1]);

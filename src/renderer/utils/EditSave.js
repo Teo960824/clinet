@@ -2,7 +2,7 @@ import saveFile from './SaveFile'
 import { saveEdit, getDocContent, editDocState, editDocShow, getCaseHistory, getExpertHint, clinetHelp } from './EditServerFile'
 import { join, message } from './Socket'
 import { sCompDrg } from './Server'
-import { getLibrary } from './LibraryServerFile'
+import { getLibrary, saveLibrary } from './LibraryServerFile'
 import { getStat } from './StatServerFile'
 
 
@@ -73,16 +73,32 @@ export function saveEditDoc(obj, data) {
   //     obj.$store.commit('EDIT_SET_DELETE_LOCAL', obj.$store.state.Edit.fileIndex)
   //   }
   // }
-  console.log(fileName)
-  if (fileName.includes('@')) {
+  if (obj.$store.state.Edit.lastNav === '/library') {
+    saveLibrary(obj, [obj.$store.state.System.server, obj.$store.state.System.port], obj.$store.state.Edit.file)
+  } else if (fileName.includes('@')) {
     if (data === '保存模板') {
       if (!obj.$store.state.Edit.modelName) {
         obj.$store.commit('SET_NOTICE', '请输入模板名称！')
       } else {
-        saveEdit(obj, [obj.$store.state.System.server, obj.$store.state.System.port], obj.$store.state.Edit.files[obj.$store.state.Edit.filesIndex], [doc.toString()], obj.$store.state.System.user.username, 1, obj.$store.state.Edit.docType, '模板')
+        saveEdit(obj,
+          [obj.$store.state.System.server, obj.$store.state.System.port],
+          obj.$store.state.Edit.files[obj.$store.state.Edit.filesIndex],
+          [doc.toString()],
+          obj.$store.state.System.user.username,
+          1,
+          obj.$store.state.Edit.docType,
+          '模板')
       }
     } else if (data === '保存病案') {
-      saveEdit(obj, [obj.$store.state.System.server, obj.$store.state.System.port], obj.$store.state.Edit.files[obj.$store.state.Edit.filesIndex], [doc.toString()], obj.$store.state.Edit.serverId, obj.$store.state.System.user.username, 1, obj.$store.state.Edit.docType, '病案')
+      saveEdit(obj,
+        [obj.$store.state.System.server, obj.$store.state.System.port],
+        obj.$store.state.Edit.files[obj.$store.state.Edit.filesIndex],
+        [doc.toString()],
+        obj.$store.state.System.user.username,
+        1,
+        obj.$store.state.Edit.docType,
+        '病案',
+        obj.$store.state.Edit.serverId)
     }
     obj.$store.commit('EDIT_SET_DELETE_SERVER', obj.$store.state.Edit.filesIndex)
   } else {
@@ -128,38 +144,37 @@ export function cacheEditDoc(obj) {
         string = `${string};${x}:${a}`
       }
     })
-    // console.log(string)
-    // console.log(doc[0])
-    if (doc[0] && doc[0].includes('创建时间')) {
-      doc.splice(0, 1, string);
-      // console.log(doc)
-    } else {
-      doc.splice(0, 0, string);
+    const summary = []
+    const diag = []
+    if (obj.$store.state.Edit.lastNav === '/edit') {
+      if (doc[0] && doc[0].includes('创建时间')) {
+        doc.splice(0, 1, string);
+      } else {
+        doc.splice(0, 0, string);
+      }
+      doc.forEach((x) => {
+        const b = x.split(';')
+        let creatTime = ''
+        b.forEach((x) => {
+          if (x.includes('创建时间')) {
+            creatTime = x
+          }
+          if (x.includes('诊断')) {
+            diag.push(x)
+          }
+        })
+        const diag1 = []
+        diag.forEach((x) => {
+          diag1.push(x.replace(/ /g, ':'))
+        })
+        if (x.includes('创建时间') || x.includes('诊断')) {
+          summary.push([fileIndex, creatTime, diag1.toString()])
+        }
+      })
+      obj.$store.commit('EDIT_ADD_DOC_SUMMARY', summary);
     }
     obj.$store.commit('EDIT_SET_IS_SAVE_LOCAL', fileIndex);
     obj.$store.commit('EDIT_SAVE_DOC', [fileIndex, doc.toString()]);
-    const summary = []
-    const diag = []
-    doc.forEach((x) => {
-      const b = x.split(';')
-      let creatTime = ''
-      b.forEach((x) => {
-        if (x.includes('创建时间')) {
-          creatTime = x
-        }
-        if (x.includes('诊断')) {
-          diag.push(x)
-        }
-      })
-      const diag1 = []
-      diag.forEach((x) => {
-        diag1.push(x.replace(/ /g, ':'))
-      })
-      if (x.includes('创建时间') || x.includes('诊断')) {
-        summary.push([fileIndex, creatTime, diag1.toString()])
-      }
-    })
-    obj.$store.commit('EDIT_ADD_DOC_SUMMARY', summary);
     // saveFile(obj, '未保存病案.cda', '/edit')
   } else {
     obj.$store.commit('SET_NOTICE', '请先打开一个文件，然后选择编辑一个文档，或者新建一个文档！')
@@ -228,7 +243,7 @@ export function loadEditDoc(obj, index, type) {
     }
     obj.$store.commit('EDIT_LOAD_DOC', r)
     const header = r[0]
-    if (header.includes('创建时间')) {
+    if (header.length > 0 && header.includes('创建时间')) {
       const a = header.split(';')
       const d = a.map((x) => {
         const b = x.split(':')
@@ -259,7 +274,7 @@ export function loadEditDoc(obj, index, type) {
     obj.$store.commit('EDIT_SET_RIGHT_TYPE', 'left')
     document.getElementById('edit-editbar-input').focus()
     doc = obj.$store.state.Edit.doc
-    if (doc[0][0].includes('创建时间')) {
+    if (doc && doc[0][0].includes('创建时间')) {
       obj.$store.commit('EDIT_SET_DOC_INDEX', [1, true]);
     } else {
       obj.$store.commit('EDIT_SET_DOC_INDEX', [0, true]);
@@ -304,7 +319,9 @@ export function editBarEnter(obj, targetValue) {
             if (!global.hitbdata.cdhHeader.includes(v[0]) && obj.$store.state.Edit.rightPanels.includes('病案质控')) {
               obj.$store.commit('EDIT_ADD_DOC_CONTROL', v);
             }
-            getExpertHint(obj, [obj.$store.state.System.server, obj.$store.state.System.port], v, obj.$store.state.Edit.section)
+            if (obj.$store.state.Edit.lastNav === '/edit') {
+              getExpertHint(obj, [obj.$store.state.System.server, obj.$store.state.System.port], v, obj.$store.state.Edit.section)
+            }
           });
         } else {
           obj.$store.commit('EDIT_DELETE_ITEM', n);

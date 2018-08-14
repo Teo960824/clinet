@@ -140,7 +140,9 @@
         this.$store.commit('EDIT_SET_BAR_VALUE', value)
         this.$store.commit('EDIT_SET_DOC_INDEX', [parseInt(index, 10), 'set']);
         document.getElementById('edit-editbar-input').focus()
-        this.$store.commit('EDIT_SET_SECTION', section.split(',')[1])
+        if (section !== undefined) {
+          this.$store.commit('EDIT_SET_SECTION', section.split(',')[1])
+        }
       },
       // getDocState: function () {
       //   const doc = this.$store.state.Edit.doc

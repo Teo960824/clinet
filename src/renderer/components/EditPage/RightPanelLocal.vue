@@ -151,7 +151,8 @@
               break;
             case '/library':
               this.$store.commit('LIBRARY_SET_TABLE_PAGE', 1);
-              getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], data, 1, null, null, 'edit', ['asc', '编码'])
+              this.$store.commit('LIBRARY_CLEAR_SERVER_SORT');
+              getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], data, 1, null, null, 'edit', this.$store.state.Library.tableType, this.$store.state.Library.serverSort)
               break;
             case '/stat':
               this.$store.commit('STAT_SET_TABLE_PAGE', 1)

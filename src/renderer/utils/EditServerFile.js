@@ -93,7 +93,6 @@ export function saveEdit(obj, data, fileName, content, username, saveType, docty
 }
 
 export function getDocTypes(obj, data, username) {
-  console.log(username)
   axios({
     method: 'get',
     url: `http://${data[0]}:${data[1]}/edit/mouldlist?username=${username}`,
