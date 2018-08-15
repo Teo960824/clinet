@@ -39,7 +39,7 @@ export function getLibrary(obj, data, tableName, pageNum, dimensionType, dimensi
   }
   let sorts = ''
   if (sort.field !== '') {
-    sorts = `&sort_type=${sort.type}&sort_value=${sort.field}`
+    sorts = `&order_type=${sort.type}&order=${sort.field}`
   } else {
     sorts = ''
   }
@@ -59,7 +59,7 @@ export function getLibrary(obj, data, tableName, pageNum, dimensionType, dimensi
       const opt = { page: page, countPage: res.data.count, pageList: res.data.page_list, tableName: tableName };
       obj.$store.commit('LIBRARY_SET_SERVER_TABLE', library.slice(1));
       obj.$store.commit('LIBRARY_SET_TABLE_INFO', opt)
-      obj.$store.commit('LIBRARY_SET_SERVER_SORT', [res.data.sort_value, res.data.sort_type])
+      obj.$store.commit('LIBRARY_SET_SERVER_SORT', [res.data.order, res.data.order_type])
       obj.$store.commit('LIBRARY_SET_LIBRARY_LIST', res.data.list);
       obj.$store.commit('LIBRARY_SET_COUNT_PAGE', res.data.count);
       obj.$store.commit('SET_NOTICE', `当前${obj.$store.state.Library.libraryTableInfo.page}页,共${obj.$store.state.Library.libraryTableInfo.countPage}页`);
@@ -155,16 +155,10 @@ export function saveLibrary(obj, data, content) {
   const sort = obj.$store.state.Library.serverSort;
   // 去除文件名中的.csv
   const type = tableName.split('.csv')[0]
-  let sorts = ''
-  if (sort.field !== '') {
-    sorts = `&sort_type=${sort.type}&sort_value=${sort.field}`
-  } else {
-    sorts = ''
-  }
   axios({
     method: 'post',
     url: `http://${data[0]}:${data[1]}/library/client_save`,
-    data: qs.stringify({ data: JSON.stringify(content), username: user.username, tab_type: type, rows: 30, page: pageNum, sorts: sorts, server_type: serverType }),
+    data: qs.stringify({ data: JSON.stringify(content), username: user.username, tab_type: type, rows: 30, page: pageNum, order: sort.field, order_type: sort.type, server_type: serverType }),
     headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
     responseType: 'json'
   }).then((res) => {
