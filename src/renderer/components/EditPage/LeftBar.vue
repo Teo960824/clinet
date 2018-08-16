@@ -9,7 +9,7 @@
         <li class="nav-item active" id="edit-leftbar-back" v-on:click="lastNav()" v-if="this.$store.state.Edit.lastNav !== '/edit'">
           <a class="nav-link text-light" href="#"> 返回 <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" v-if="this.$store.state.Edit.lastNav === '/edit'">
           <a class="nav-link dropdown-toggle text-light" href="#" id="edit-leftbar-choice" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
             {{docType}}
           </a>
@@ -17,6 +17,9 @@
             <a v-for="(data, index) in docTypes" v-bind:key='index' class="dropdown-item" href="#" v-on:click="newDoc(data)"  v-bind:id="'edit-leftbar-'+data">{{data}}</a>
             <div class="dropdown-divider"></div>
           </div>
+        </li>
+        <li class="nav-item" v-on:click="newDoc()" v-if="this.$store.state.Edit.lastNav === '/library'">
+          <a class="nav-link text-light" href="#">新建</a>
         </li>
         <li class="nav-item" id="edit-leftbar-newdoc1" v-on:click="show()">
           <a class="nav-link text-light" href="#" v-if="this.$store.state.Edit.leftPanel == 'table'">编辑</a>

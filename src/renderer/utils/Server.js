@@ -118,6 +118,7 @@ export function sGetWt4(obj, data, page, type) {
     }
   }).catch((err) => {
     console.log(err);
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('SYSTEM_SET_WT4', [{}, '连接失败', false])
   })
 }
@@ -150,6 +151,7 @@ export function sGetCompRule(obj, data, table, rule) {
     }
   }).catch((err) => {
     console.log(err);
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('SYSTEM_GET_COMPRULE', [{}, '连接失败', false])
   })
 }
@@ -198,6 +200,7 @@ export function sCompDrg(obj, data, dataWt4, version, type = '') {
       }
     }).catch((err) => {
       console.log(err)
+      obj.$store.commit('SET_NOTICE', '连接服务器错误')
       obj.$store.commit('SYSTEM_GET_WT4_COMP', [{}, '连接失败', true])
     })
   } else {
@@ -229,6 +232,7 @@ export function sGetTarget(obj, data, type) {
     }
   }).catch((err) => {
     console.log(err)
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('SYSTEM_GET_TARGET', {})
   })
 }
@@ -243,6 +247,7 @@ export function sGetTargetKey(obj, data, type, username) {
     obj.$store.commit('SYSTEM_GET_TARGET_LIST_KEY', res.data)
   }).catch((err) => {
     console.log(err)
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('SYSTEM_GET_TARGET', {})
   })
 }
@@ -262,6 +267,7 @@ function fileInsert(obj, data) {
     }
   }).catch((err) => {
     console.log(err)
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('SYSTEM_PROVINCE', [])
   })
 }
@@ -281,6 +287,7 @@ function fileUploadDoc(obj, data, res) {
     }
   }).catch((err) => {
     console.log(err)
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('SYSTEM_PROVINCE', [])
   })
 }
@@ -320,6 +327,7 @@ export function sGetProvince(obj, data) {
     }
   }).catch((err) => {
     console.log(err)
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('SYSTEM_PROVINCE', [])
   })
 }
@@ -334,6 +342,7 @@ export function sSaveDefined(obj, data) {
   }).then((res) => {
     console.log(res)
   }).catch((err) => {
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     console.log(err)
   })
 }
@@ -347,6 +356,7 @@ export function sUpHelp(obj, data, name, content) {
   }).then((res) => {
     console.log(res)
   }).catch((err) => {
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     console.log(err)
   })
 }
@@ -368,6 +378,7 @@ export function share(obj, data, type, fileName, username, content) {
     }
     // console.log(res)
   }).catch((err) => {
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     console.log(err)
   })
   if (type === 'stat') {

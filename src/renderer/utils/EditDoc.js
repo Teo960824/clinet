@@ -4,7 +4,7 @@
 
 function editDoc(x, sectionList) {
   const obj = {}
-  let key = '标题'
+  let key = ''
   let n = 0
   obj[key] = []
   x.forEach((x) => {

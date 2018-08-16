@@ -26,6 +26,7 @@ export function getEditFiles(obj, data, type, username, serverType = 'server') {
     }
   }).catch((err) => {
     console.log(err);
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('EDIT_SERVER_FILES', [])
   })
 }
@@ -61,6 +62,7 @@ export function getEdit(obj, data, filename, serverType = 'server', type = '') {
     }
   }).catch((err) => {
     console.log(err);
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('EDIT_LOAD_FILE', [])
   })
 }
@@ -219,7 +221,7 @@ export function getCaseHistory(obj, data, name, username) {
 }
 
 export function editDocState(obj, doc) {
-  if (doc[0][0]) {
+  if (doc[0] !== undefined && doc[0][0]) {
     const value = doc[0][0].split(';')
     const header = value.map((x) => {
       const a = x.split(':')
@@ -309,7 +311,7 @@ export function getExpertHint(obj, data, value, section) {
     }
   }).catch((err) => {
     console.log(err);
-    obj.$store.commit('SET_NOTICE', '专家提示查询失败')
     obj.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
+    obj.$store.commit('SET_NOTICE', '专家提示查询失败')
   })
 }

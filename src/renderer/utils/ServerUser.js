@@ -30,6 +30,7 @@ export function sRegister(obj, data, user) {
         // obj.$store.commit('SYSTEM_REGISTER_USER', [res.data, '连接失败', false])
       }
     }).catch((err) => {
+      obj.$store.commit('SET_NOTICE', '连接服务器错误')
       console.log(err);
       // obj.$store.commit('SYSTEM_REGISTER_USER', [{}, '连接失败', false])
     })
@@ -50,6 +51,7 @@ export function sGetUsers(obj, data, page) {
       }
     })
     .catch((err) => {
+      obj.$store.commit('SET_NOTICE', '连接服务器错误')
       console.log(err);
     });
 }
@@ -69,6 +71,7 @@ export function sUpdateUser(obj, data, id, user) {
     }
   }).catch((err) => {
     console.log(err)
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('SYSTEM_SET_USER', ['更新用户信息失败', { username: '', login: false }])
   })
 }
@@ -92,6 +95,7 @@ export function sGetOrg(obj, data, userOrg, page) {
     })
     .catch((err) => {
       console.log(err);
+      obj.$store.commit('SET_NOTICE', '连接服务器错误')
       obj.$store.commit('SYSTEM_GET_ORGS', [])
     });
 }
@@ -121,6 +125,7 @@ export function sCreateOrg(obj, data, org) {
       }
     }).catch((err) => {
       console.log(err);
+      obj.$store.commit('SET_NOTICE', '连接服务器错误')
       obj.$store.commit('SYSTEM_NEW_ORG', [{}, '连接失败', false])
     })
   } else {
@@ -155,6 +160,7 @@ export function sUpdateOrg(obj, data, id, org) {
     }
   }).catch((err) => {
     console.log(err);
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('SYSTEM_NEW_ORG', [{}, '连接失败', false])
   })
 }
@@ -179,6 +185,7 @@ export function sGetDepart(obj, data, org, page) {
     })
     .catch((err) => {
       console.log(err);
+      obj.$store.commit('SET_NOTICE', '连接服务器错误')
       obj.$store.commit('SYSTEM_GET_DEPARTMENTS', [])
     });
 }

@@ -11,6 +11,7 @@ export default function statCda(obj, data = ['127.0.0.1', '80']) {
       obj.$store.commit('LIBRARY_SET_COMP_RULE', res.data)
     }
   }).catch((err) => {
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     console.log(err);
   })
   // get_rule

@@ -19,6 +19,7 @@ export function getLibraryFiles(obj, data, serverType = 'server') {
     }
   }).catch((err) => {
     console.log(err);
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('LIBRARY_SERVER_FILES', [])
   })
 }
@@ -75,6 +76,7 @@ export function getLibrary(obj, data, tableName, pageNum, dimensionType, dimensi
     }
   }).catch((err) => {
     console.log(err);
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('LIBRARY_SET_SERVER_TABLE', {})
   })
 }
@@ -97,6 +99,7 @@ export function getList(obj, url, tableName, type, username, serverType = 'serve
     }
   }).catch((err) => {
     console.log(err)
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('LIBRARY_SET_LEFT_PANEL', ['dimension', type, []])
   })
 }

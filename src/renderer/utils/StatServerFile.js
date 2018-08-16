@@ -31,6 +31,7 @@ export function getStatFiles(obj, data, filename, username, serverType = 'server
     }
   }).catch((err) => {
     console.log(err);
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     obj.$store.commit('STAT_SERVER_FILES', [])
   })
 }
@@ -118,6 +119,7 @@ export function getStat(obj, data, opt, tableType, serverType = 'server') {
       }
     }
   }).catch((err) => {
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     console.log(err);
   })
 }
@@ -243,6 +245,7 @@ export function downloadStat(obj, data, opt, tableType, serverType = 'server') {
       saveFile(obj, tableName, '/stat')
     }
   }).catch((err) => {
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     console.log(err);
   })
 }
@@ -259,6 +262,7 @@ export function sCustom(obj, data, value, username) {
       // saveFile(obj, tableName, '/stat')
     }
   }).catch((err) => {
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     console.log(err);
   })
 }
@@ -276,6 +280,7 @@ export function sGetCustom(obj, data, username, tableName) {
       // saveFile(obj, tableName, '/stat')
     }
   }).catch((err) => {
+    obj.$store.commit('SET_NOTICE', '连接服务器错误')
     console.log(err);
   })
 }
