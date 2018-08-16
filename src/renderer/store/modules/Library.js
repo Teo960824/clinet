@@ -6,9 +6,6 @@ const state = {
   table: [],
   tableSel: [],
   localTables: [],
-  localTable: [],
-  tablePage: 1,
-  countPage: 0,
   leftPanel: 'file',
   dimension: [],
   dimensionType: null,
@@ -17,14 +14,20 @@ const state = {
   dimensionVersion: [],
   field: '',
   fieldIndex: [],
-  tableHeader: [],
   fileIndex: null,
   tableType: 'local',
   serverTable: { page: 1, countPage: 0, data: [], pageList: [], tableName: '' },
   dimensionSearch: { time: 0, version: 0, org: 0 },
   rowHeight: null,
   dimensionServer: '',
-  title: []
+  fileTypes: ['本地', '远程', '区块链'],
+  dropdownTypes: ['年份', '版本', '全部'],
+  libraryList: { org: [], time: [], version: [] },
+  serverDimension: { org: '', time: '', version: '' },
+  libraryTable: { data: [], download: [] },
+  serverSort: { field: '编码', type: 'asc' },
+  libraryTableInfo: { page: 1, countPage: 0, pageList: [], tableName: '', header: [], title: [] },
+  compRule: {},
 };
 
 const mutations = {
@@ -34,12 +37,25 @@ const mutations = {
   LIBRARY_LOAD_FILE(state, message) {
     state.file = message;
     state.table = message.map(x => x.split(','))
-    state.tableHeader = state.table.slice(0, 1)
+    state.libraryTableInfo.header = state.table.slice(0, 1)
     state.tableSel = state.table
     state.tableSel.splice(0, 1)
-    const time = state.dimensionSearch.time = state.tableHeader[0].indexOf('year')
-    const version = state.dimensionSearch.version = state.tableHeader[0].indexOf('version')
-    const org = state.dimensionSearch.org = state.tableHeader[0].indexOf('org')
+    let time = null
+    let version = null
+    let org = null
+    state.dimensionOrg = [...new Set(state.table.map(a => a[org]))]
+    if (state.libraryTableInfo.header[0].includes('year')) {
+      time = state.libraryTableInfo.header[0].indexOf('year')
+      version = state.libraryTableInfo.header[0].indexOf('version')
+      org = state.libraryTableInfo.header[0].indexOf('org')
+    } else if (state.libraryTableInfo.header[0].includes('年份')) {
+      time = state.libraryTableInfo.header[0].indexOf('年份')
+      version = state.libraryTableInfo.header[0].indexOf('版本')
+      org = state.libraryTableInfo.header[0].indexOf('机构')
+    }
+    state.dimensionSearch.time = time
+    state.dimensionSearch.version = version
+    state.dimensionSearch.org = org
     state.dimensionOrg = [...new Set(state.table.map(a => a[org]))]
     state.dimensionTime = [...new Set(state.table.map(a => a[time]))]
     state.dimensionVersion = [...new Set(state.table.map(a => a[version]))]
@@ -54,37 +70,63 @@ const mutations = {
     state.countPage = page
     for (let i = 1; i <= page; i += 1) {
       const f = []
-      f.push(state.tableHeader[0])
+      f.push(state.libraryTableInfo.header[0])
       for (let j = 1; j <= 35; j += 1) {
         f.push(state.tableSel[(i) * j])
       }
       state.localTables[i] = f
     }
-    state.localTable = state.localTables[state.tablePage].slice(1)
+    state.libraryTable.data = state.localTables[state.tablePage]
   },
   LIBRARY_SERVER_FILES(state, opt) {
     state.files = opt.data;
   },
   LIBRARY_TABLE_PAGE(state, m) {
-    console.log(m[0]);
     if (m[1]) {
-      state.tablePage = 1;
+      state.libraryTableInfo.page = 1;
     } else {
-      state.tablePage += m[0];
+      state.libraryTableInfo.page += m[0];
     }
     const page = Math.ceil(state.tableSel.length / 35)
-    if (state.tablePage > page && state.tableType !== 'server') {
-      state.tablePage = page
-    } else if (state.tablePage < 1) {
-      state.tablePage = 1
+    if (state.libraryTableInfo.page > page && state.tableType !== 'server') {
+      state.libraryTableInfo.page = page
+    } else if (state.libraryTableInfo.page < 1) {
+      state.libraryTableInfo.page = 1
     }
-    state.localTable = state.localTables[state.tablePage].slice(1)
+    // .slice(1)
+    if (state.localTables[state.libraryTableInfo.page] !== undefined) {
+      state.libraryTable.data = state.localTables[state.libraryTableInfo.page]
+    }
+    // console.log(state.localTables[state.libraryTableInfo.page])
+    // state.libraryTable.data = state.localTables[state.libraryTableInfo.page]
+  },
+  LIBRARY_SET_TABLE_INFO(state, opt) {
+    state.libraryTableInfo = opt
+  },
+  LIBRARY_SET_LIBRARY_LIST(state, data) {
+    state.libraryList = data
+  },
+  // STAT_CLEAR_SERVER_DIMENSION(state, value) {
+  //   state.serverDimension[value[1]] = value[0]
+  //   console.log(state.serverDimension)
+  // },
+  LIBRARY_SET_SERVER_DIMENSION(state, opt) {
+    switch (opt[1]) {
+      case 'org':
+        state.serverDimension.org = opt[0]
+        break;
+      case 'time':
+        state.serverDimension.year = opt[0]
+        break;
+      case 'version':
+        state.serverDimension.version = opt[0]
+        break;
+      default:
+        break;
+    }
   },
   LIBRARY_SET_TABLE_PAGE(state, page) {
-    state.tablePage = page;
-  },
-  LIBRARY_SET_SERVER_DIMENSION(state, index) {
-    state.dimensionServer = index
+    state.libraryTableInfo.page = page;
   },
   LIBRARY_SET_LEFT_PANEL(state, opt) {
     if (state.tableType === 'local') {
@@ -110,7 +152,6 @@ const mutations = {
     }
   },
   LIBRARY_SET_DIMENSION(state, opt) {
-    console.log(opt);
     switch (opt[0]) {
       case 'org':
         // state.dimensionOrg.push(opt[1])
@@ -138,17 +179,24 @@ const mutations = {
     state.countPage = page
     for (let i = 1; i <= page; i += 1) {
       const f = []
-      f.push(state.tableHeader[0])
+      f.push(state.ibraryTableInfo.header[0])
       for (let j = 1; j <= 35; j += 1) {
         f.push(state.tableSel[(i) * j])
       }
       state.localTables[i] = f
     }
     state.tablePage = 1
-    state.localTable = state.localTables[state.tablePage].slice(1)
+    state.libraryTable.data = state.localTables[state.tablePage].slice(1)
   },
   LIBRARY_GET_FIELD(state, field) {
     state.field = field;
+  },
+  LIBRARY_SET_SERVER_SORT(state, opt) {
+    state.serverSort.field = opt[0]
+    state.serverSort.type = opt[1]
+  },
+  LIBRARY_CLEAR_SERVER_SORT(state) {
+    state.serverSort = { field: '编码', type: 'asc' }
   },
   LIBRARY_GET_FIELD_INDEX(state, index) {
     if (state.fieldIndex.includes(index)) {
@@ -164,7 +212,7 @@ const mutations = {
     state.tableType = index;
   },
   LIBRARY_SET_SERVER_TABLE(state, opt) {
-    state.serverTable = opt
+    state.libraryTable.data = opt
   },
   LIBRARY_GET_SEARCH_TABLE(state, data) {
     state.localTables = {}
@@ -173,13 +221,13 @@ const mutations = {
     state.countPage = page
     for (let i = 1; i < page; i += 1) {
       const f = []
-      f.push(state.tableHeader[0])
+      f.push(state.ibraryTableInfo.header[0])
       for (let j = 1; j <= 35; j += 1) {
         f.push(a[(i) * j])
       }
       state.localTables[i] = f
     }
-    state.localTable = state.localTables[state.tablePage].slice(1)
+    state.libraryTable.data = state.localTables[state.tablePage].slice(1)
   },
   LIBRARY_GET_ROW(state, data) {
     state.rowHeight = data
@@ -187,67 +235,21 @@ const mutations = {
   LIBRARY_SET_COUNT_PAGE(state, n) {
     state.countPage = n
   },
-  LIBRARY_SET_SERVER_TABLE_TITLE(state, n) {
-    // state.countPage = n
-    let title = []
-    switch (n.split('.csv')[0]) {
-      case 'test_mdc':
-      case 'test_adrg':
-        title = ['ID', '编码', '名称', 'MDC', '机构', '版本', '年份', 'plat']
-        break;
-      case 'test_drg':
-        title = ['ID', '编码', '名称', 'MDC', 'ADRG', '机构', '版本', '年份', 'plat']
-        break;
-      case 'test_icd10':
-      case 'test_icd9':
-        title = ['ID', '编码', '名称', 'p_type', '版本', '年份', 'plat', 'dissect', 'property', 'option', 'codes']
-        break;
-      case 'test_department':
-        title = ['编码', '内部编码', '内部名称', '主治医生', '副主治医生', '所属机构', 'sickroom_range', '床位数', '科室数', '是否启用']
-        break;
-      case 'test_org':
-        title = ['名称', '等级', '类型', '科室数', '医师数', '主任', '医院编码']
-        break;
-      case 'mdc':
-        title = ['编码', 'ICD10_a', 'ICD10_aa', 'ICD9_a', 'ICD9_a', '名称', '版本', '年份']
-        break;
-      case 'adrg':
-        title = ['编码', 'drgs_1', 'icd10_a', 'icd10_aa', 'icd10_acc', 'icd10_b', 'icd10_bb', 'icd10_bcc', 'icd9_a', 'icd9_aa', 'icd9_acc', 'icd9_b', 'icd9_bb', 'icd9_bcc', '名称', '版本', '年份']
-        break;
-      case 'drg':
-        title = ['ADRG', '编码', '名称', '版本', '年份']
-        break;
-      case 'icd9':
-        title = ['ADRG', '编码', 'codes', 'dissect', '名称', '选择', 'p_type', 'property', '版本', '年份']
-        break;
-      case 'icd10':
-        title = ['ADRG', 'cc', '编码', 'codes', 'dissect', 'mcc', '名称', '版本', '年份']
-        break;
-      case '基本信息':
-      case '街道乡镇代码':
-      case '民族':
-      case '区县编码':
-      case '手术血型':
-      case '科别代码':
-      case '病理诊断编码':
-      case '出入院编码':
-      case '肿瘤编码':
-      case '医保诊断依据':
-        title = ['编码', '名称', '类型', '年份']
-        break;
-      case '中药':
-        title = ['序号', '用量', '功效', '适应症', '归经', '名称', '别名', '注意事项', '性味', '毒性', '分类']
-        break;
-      case '中成药':
-        title = ['药品分类代码', '限医疗机构等级', '药品编号', '药品类型', '药品名称', '其他名称', '医疗', '其他限制', '其他规格', '药品分类', '人员限制']
-        break;
-      case '西药':
-        title = ['剂型', '英文名称', '三级分类', '报销限制内容', '一级分类', '二级分类', '中文名称']
-        break;
-      default:
-    }
-    state.title = title
-  }
+  LIBRARY_SET_FILE_TYPES(state, value) {
+    state.fileTypes = value
+  },
+  LIBRARY_SET_DROPDOWN_TYPES(state, value) {
+    state.dropdownTypes = value
+  },
+  LIBRARY_GET_DOWN_FILE(state, value) {
+    state.libraryTable.download = value
+  },
+  LIBRARY_SET_SERVER_DIMENSIONS(state, value) {
+    state.dimensions = value
+  },
+  LIBRARY_SET_COMP_RULE(state, value) {
+    state.compRule = value
+  },
 };
 
 const actions = {
@@ -268,6 +270,15 @@ const actions = {
     commit('LIBRARY_SET_SERVER_DIMENSION');
     commit('LIBRARY_SET_COUNT_PAGE');
     commit('LIBRARY_SET_SERVER_TABLE_TITLE');
+    commit('LIBRARY_SET_FILE_TYPES');
+    commit('LIBRARY_SET_DROPDOWN_TYPES');
+    commit('LIBRARY_GET_DOWN_FILE');
+    commit('LIBRARY_SET_SERVER_DIMENSIONS');
+    commit('LIBRARY_SET_LIBRARY_LIST');
+    commit('STAT_CLEAR_SERVER_DIMENSION');
+    commit('LIBRARY_SET_TABLE_INFO');
+    commit('LIBRARY_CLEAR_SERVER_SORT');
+    commit('LIBRARY_SET_COMP_RULE');
   },
 };
 

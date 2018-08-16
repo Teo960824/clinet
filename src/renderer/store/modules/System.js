@@ -1,5 +1,8 @@
 const fs = require('fs');
 const state = {
+  // 连接状态
+  connectInfo: false,
+  // file
   // 页面工具栏选择
   toolbar: '',
   // 选择目录下的CSV文件列表
@@ -15,19 +18,17 @@ const state = {
   fieldIndex: null,
   server: '',
   port: '',
-  // 用户创建信息
-  registerInfo: { username: '', password: '', org: '', age: null, tel: '', email: '', name: '', type: 2 },
-  // 连接状态
-  connectInfo: false,
+  // server
   // 用户登录
   userLogin: { username: 'test@hitb.com.cn', password: '123456' },
-  // 用户修改
-  userUpdate: { org: '', password: '' },
-  // 人员修改
-  personUpdate: { name: '', org: '', age: '', tel: '', email: '' },
-  personId: null,
   // 用户状态
   user: { username: '', org: '', type: 2, login: false },
+  // 人员修改
+  personUpdate: { name: '', org: '', age: '', tel: '', email: '' },
+  // 用户创建信息
+  registerInfo: { username: '', password: '', org: '', age: null, tel: '', email: '', name: '', type: 2 },
+  // 用户ID
+  personId: null,
   // 机构信息
   orgs: [],
   org: [],
@@ -39,6 +40,7 @@ const state = {
   department: [],
   departmentInfo: { org: '', cherf_department: '', class: '', department: '', is_imp: false, is_spe: false, professor: '', wt_code: '', wt_name: '' },
   departmentId: null,
+  // drg
   wt4: [],
   wt4Page: 0,
   wt4Files: [],
@@ -51,11 +53,7 @@ const state = {
   localPage: 0,
   wt4Tables: [],
   wt4TablePage: 0,
-  targetIndex: [],
-  targetDimension: [],
-  serverStat: { wt4: [], index: [], dimension: [] },
-  serverTable: '',
-  // tableType: 'local',
+  // local
   computeVersion: ['CN', 'GB', 'BJ'],
   computeData: '',
   province: {},
@@ -64,17 +62,27 @@ const state = {
   persons: {},
   pageInfo: { org: '1', department: '1' },
   targetList: [],
+  targetKey: [],
   checkData: [],
   checkDataAll: [],
   checkDataNum: 0,
   checkDataPage: 0,
+  checkDataAllPage: { page: 0, num: 0 },
   // 文件上传信息
   upLoadFile: [],
   loadTable: 0,
   otherLogin: false,
   shareFileName: '',
   targetArray: [],
-  indexTable: ''
+  indexTable: '',
+  systemSection: [],
+  // index
+  targetIndex: [],
+  targetDimension: [],
+  serverStat: { wt4: [], index: [], dimension: [] },
+  serverTable: '',
+
+
 };
 
 const mutations = {
@@ -85,7 +93,6 @@ const mutations = {
     state.otherLogin = m
   },
   SYSTEM_SET_TOOLBAR(state, toolbar) {
-    console.log(toolbar)
     state.toolbar = toolbar;
   },
   SYSTEM_SET_SERVER(state, m) {
@@ -140,13 +147,8 @@ const mutations = {
   },
   // 用户登录后信息
   SYSTEM_SET_USER(state, field) {
-    console.log(field)
     state.user = field[1];
     state.userPower = field[1].type
-  },
-  // 用户修改信息
-  SYSTEM_UPDATE_USER(state, value) {
-    state.userUpdate = value
   },
   // 用户信息
   SYSTEM_INFO_USER(state, field) {
@@ -217,7 +219,6 @@ const mutations = {
   // 读取本地wt4文件目录
   SYSTEM_LOAD_WT4_FILES() {
     const files = fs.readdirSync(global.hitbdata.path.stat).filter(x => x.endsWith('.csv') && (x.startsWith('test_wt4_') || x.startsWith('wt4_')))
-    console.log(files);
     // const reg = /^$/
     // fs.filter(x => )
     state.wt4Files = files;
@@ -376,7 +377,9 @@ const mutations = {
         break;
     }
     state.checkData = state.checkDataAll.map(n => n.slice(state.checkDataNum * 10, (state.checkDataNum * 10) + 10))
+    state.checkDataAllPage.name = Math.floor(state.checkDataAll / 10)
     const [header, ...body] = state.checkData
+    state.checkDataAllPage.page = Math.floor(state.body.length / 20)
     const bodys = body.slice(state.checkDataPage * 20, (state.checkDataPage * 20) + 20);
     const c = [header, ...bodys]
     if (c.length !== 1) {
@@ -388,6 +391,12 @@ const mutations = {
   },
   SYSTEM_SET_INDEX_TABLE(state, value) {
     state.indexTable = value
+  },
+  SYSTEM_SECTION(state, value) {
+    state.systemSection = value
+  },
+  SYSTEM_GET_TARGET_LIST_KEY(state, value) {
+    state.targetKey = value
   },
 };
 
@@ -435,11 +444,13 @@ const actions = {
     commit('SYSTEM_GET_PAGEINFO');
     commit('SYSTEM_SET_SEARCH');
     commit('SYSTEM_GET_TARGET_LIST');
+    commit('SYSTEM_GET_TARGET_LIST_KEY')
     commit('SYSTEM_GET_CHECKDATA');
     commit('SYSTEM_GET_CHECKDATA_PAGE');
     commit('SYSTEM_SET_SERVER_LOAD_TABLE');
     commit('SYSTEM_GET_SHARE_FILE_NAME');
     commit('SYSTEM_SET_INDEX_TABLE');
+    commit('SYSTEM_SECTION');
   },
 };
 

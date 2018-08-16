@@ -119,14 +119,13 @@
         }
       },
       checkPage: function (value) {
-        console.log(this.$store.state.System.checkData.length)
-        if (this.$store.state.System.checkData[0].length !== 10 && value === 'right') {
+        if (this.$store.state.System.checkDataAllPage.num === this.$store.state.System.checkDataNum && value === 'right') {
           this.$store.commit('SET_NOTICE', '当前已经是最后一页')
         } else if (this.$store.state.System.checkDataNum <= 0 && value === 'left') {
           this.$store.commit('SET_NOTICE', '当前已经是第一页')
         } else if (value === 'up' && this.$store.state.System.checkDataPage <= 0) {
           this.$store.commit('SET_NOTICE', '当前已经是第一页')
-        } else if (value === 'down' && this.$store.state.System.checkData.length !== 21) {
+        } else if (value === 'down' && this.$store.state.System.checkDataAllPage.page === this.$store.state.System.checkDataPage) {
           this.$store.commit('SET_NOTICE', '当前已经是最后一页')
         } else {
           this.$store.commit('SYSTEM_GET_CHECKDATA_PAGE', value)

@@ -106,5 +106,5 @@ export default function chartBar(id, opt = null) {
       series: series
     };
   }
-  myChart.setOption(option, true);
+  myChart.setOption(option, true)
 }

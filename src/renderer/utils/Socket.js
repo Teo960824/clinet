@@ -14,6 +14,7 @@ export function socketConnect(obj, data, user) {
     .receive('ok', () => {
       username = user.username
       obj.$store.commit('SET_NOTICE', '远程服务用户登录成功')
+      obj.$store.commit('EDIT_SET_RIGHT_PANEL', 'server')
     })
     .receive('error', (err) => {
       obj.$store.commit('SET_NOTICE', err.reason)
@@ -33,6 +34,7 @@ export function socketConnect(obj, data, user) {
     if (r.invite === username) {
       obj.$store.commit('EDIT_SET_CHAT_TYPE', true);
       obj.$store.commit('SET_NOTICE', `${r.message}`)
+      obj.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
       obj.$store.commit('EDIT_SET_SOCKET_RECORD', { message: r.message, type: 'info', time: r.time, room: r.room, create_room_time: r.create_room_time });
       createRoomTime = r.create_room_time;
       roomOwner = r.room_owner;
@@ -72,18 +74,31 @@ export function join(obj, filename, username) {
   })
 }
 
-
 export function invite(obj, filename, username = '') {
   channel2.push('邀请加入', { body: '', room: obj.$store.state.System.user.username, username: username, create_room_time: createRoomTime, invite: username, room_owner: obj.$store.state.System.user.username })
   obj.$store.commit('SET_NOTICE', '邀请成功')
+  obj.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
 }
 
 export function message(obj, message, username = '', type = 'message') {
   channel.push('新消息', { body: message, username: username, type: type, create_room_time: createRoomTime })
   obj.$store.commit('SET_NOTICE', '消息发送成功')
+  obj.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
 }
 
 export function leave(obj, username = '') {
   channel.push('离开房间', { body: '离开房间', username: username, create_room_time: createRoomTime });
-  obj.$store.commit('SET_NOTICE', '已离开房间')
+  // 当离开聊天房间后,立即加入公共房间
+  channel.on('已离开房间', () => {
+    channel2 = socket.channel('online:lobby', { username: username })
+    channel2.join()
+      .receive('ok', () => {
+        obj.$store.commit('SET_NOTICE', '已离开房间')
+      })
+  })
+}
+
+export function offline(obj, username = '') {
+  channel2.push('用户下线', { username: username })
+  obj.$store.commit('SYSTEM_SET_USER', ['更新用户信息成功', { username: '', org: '', type: 2, login: false }]);
 }

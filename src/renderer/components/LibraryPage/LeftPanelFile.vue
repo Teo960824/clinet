@@ -34,21 +34,17 @@
     },
     methods: {
       loadFile: function (data, index) {
-        console.log(data);
-        this.$store.commit('LIBRARY_SET_SERVER_TABLE_TITLE', data);
-        // console.log(this.$store.state.Library.tableType);
+        // this.$store.commit('LIBRARY_SET_SERVER_TABLE_TITLE', data);
         this.$store.commit('SYSTEM_GET_SHARE_FILE_NAME', this.$store.state.Library.files[index]);
         this.$store.commit('LIBRARY_GET_ROW', 0);
         this.$store.commit('LIBRARY_SET_FILE_INDEX', index);
-        if (this.$store.state.Library.tableType === 'server') {
-          this.$store.commit('LIBRARY_SET_TABLE_PAGE', 1);
-          getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], data, 1, null, null, 'library', 'server')
-        } else if (this.$store.state.Library.tableType === 'block') {
-          this.$store.commit('LIBRARY_SET_TABLE_PAGE', 1);
-          getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], data, 1, null, null, 'library', 'block')
-        } else {
+        this.$store.commit('LIBRARY_CLEAR_SERVER_SORT');
+        if (this.$store.state.Library.tableType === 'local') {
           loadFile(this, data, 'library')
           this.$store.commit('LIBRARY_SET_TABLE_TYPE', 'local');
+        } else {
+          this.$store.commit('LIBRARY_SET_TABLE_PAGE', 1);
+          getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], data, 1, null, null, 'library', this.$store.state.Library.tableType, this.$store.state.Library.serverSort)
         }
       },
     },

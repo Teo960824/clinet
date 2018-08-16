@@ -30,16 +30,16 @@
       setDimension: function (data, index) {
         if (this.$store.state.Library.tableType === 'server') {
           this.flag = index
-          this.$store.commit('LIBRARY_SET_DIMENSION', [this.$store.state.Stat.dimensionType, data]);
+          this.$store.commit('LIBRARY_SET_DIMENSION', [this.$store.state.Library.dimensionType, data]);
           this.$store.commit('LIBRARY_SET_SERVER_DIMENSION', data)
           this.$store.commit('LIBRARY_TABLE_PAGE', 0)
-          getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, 1, this.$store.state.Library.dimensionType, null, 'edit')
+          getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.libraryTableInfo.tableName, 1, this.$store.state.Library.dimensionType, data, 'edit', 'server', this.$store.state.Library.serverSort)
           // getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.tableName, page: 0, username: this.$store.state.System.user.username, type: this.$store.state.Stat.dimensionType, value: this.$store.state.Stat.dimensionServer })
         } else {
           this.$store.commit('LIBRARY_TABLE_PAGE', 0)
           this.flag = index
           this.$store.commit('LIBRARY_SET_DIMENSION', [this.$store.state.Library.dimensionType, data]);
-          this.$store.commit('SET_NOTICE', `当前页数${this.$store.state.Library.tablePage},共${this.$store.state.Library.countPage}页`)
+          this.$store.commit('SET_NOTICE', `当前页数${this.$store.state.libraryTableInfo.tablePage},共${this.$store.state.libraryTableInfo.countPage}页`)
         }
       },
     },

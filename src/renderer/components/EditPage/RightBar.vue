@@ -29,10 +29,14 @@
           <a class="nav-link text-light" href="#"> 辅助 <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active" v-on:click='localData()' id="edit-rightbar-local">
-          <a class="nav-link text-light" href="#"> 本地 <span class="sr-only">(current)</span></a>
+          <a class="nav-link text-light" href="#"> 本地 <span class="sr-only">(current)</span>
+            <span style="color: red"><b>{{isSaveLocal}}</b></span>
+          </a>
         </li>
         <li class="nav-item active" v-on:click='serverData()' id="edit-rightbar-server">
-          <a class="nav-link text-light" href="#"> 远程 <span class="sr-only">(current)</span></a>
+          <a class="nav-link text-light" href="#"> 远程 {{isSaveServer}}<span class="sr-only">(current)</span>
+            <span style="color: red"><b>{{isSaveServer}}</b></span>
+          </a>
         </li>
         <li class="nav-item active" v-on:click='blockData()' id="edit-rightbar-block">
           <a class="nav-link text-light" href="#"> 区块链 <span class="sr-only">(current)</span></a>
@@ -52,19 +56,41 @@
 </template>
 
 <script>
-  import { getEditFiles, getEdit, clinetHelp, getDocTypes, getHelpTypes, getCaseHistory } from '../../utils/EditServerFile'
-  import { getStat } from '../../utils/StatServerFile'
-  import { getLibrary } from '../../utils/LibraryServerFile'
-  import { sCompDrg } from '../../utils/Server'
+  import { getEditFiles, getEdit, getDocTypes, getHelpTypes } from '../../utils/EditServerFile'
+  import { rightBarHelp, editPage } from '../../utils/EditSave'
   export default {
     data() {
       return {
         name: this.$route.name,
         rightItem: '',
-        helpType: '编辑器使用帮助'
+        // helpType: '编辑器使用帮助'
       };
     },
     computed: {
+      isSaveLocal: {
+        get() {
+          let length = null
+          if (this.$store.state.Edit.isSaveLocal.length > 0) {
+            length = this.$store.state.Edit.isSaveLocal.length
+          }
+          return length
+        }
+      },
+      isSaveServer: {
+        get() {
+          let length = null
+          if (this.$store.state.Edit.isSaveServer.length > 0) {
+            length = this.$store.state.Edit.isSaveServer.length
+          }
+          return length
+        }
+      },
+      helpType: {
+        get() {
+          return this.$store.state.Edit.helpType
+        },
+        set() {}
+      },
       helpTypes: {
         get() {
           return this.$store.state.Edit.helpTypes
@@ -73,39 +99,12 @@
     },
     methods: {
       help: function (n) {
-        if (n) {
-          this.$store.commit('EDIT_SET_RIGHT_PANELS', n);
-          this.$store.commit('SET_NOTICE', n);
-          if (n === 'DRG分析') {
-            if (this.$store.state.System.wt4Tables.length > 1) {
-              sCompDrg(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.System.wt4Tables, 'BJ', 'getLocalData')
-            } else {
-              this.$store.commit('SET_NOTICE', '请选择分析数据！');
-            }
-          } else if (n === '编辑器使用帮助' || n === '在线交流') {
-            this.$store.commit('SET_NOTICE', n);
-            this.helpType = n
-            this.$store.commit('EDIT_SET_HELP_TYPE', n);
-            this.$store.commit('EDIT_SET_RIGHT_PANEL', 'help');
-          } else if (this.$store.state.Edit.rightPanel === 'server') {
-            clinetHelp(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.System.user.username)
-          } else if (this.$store.state.Edit.rightPanel === '输入框提示') {
-            if (this.$store.state.Edit.rightPanel === 'server') {
-              if (!this.$store.state.Edit.rightCdh) {
-                this.$store.commit('SET_NOTICE', '输入提示无内容！');
-              } else if (!global.hitbdata.cdh) {
-                this.$store.commit('SET_NOTICE', '输入提示无内容！');
-              }
-            }
-          } else if (n === '病案历史') {
-            getCaseHistory(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Edit.doc, this.$store.state.System.user.username)
-          }
-        }
+        rightBarHelp(this, n)
       },
       localData: function () {
         this.$store.commit('EDIT_SET_RIGHT_PANELS', '本地文件');
         this.$store.commit('EDIT_SET_DOC_TYPES', ['自定义文档', '病案首页（卫统四CSV）', '入院申请', '首次病程', '病程记录', '病案首页', '门诊病案', '健康体检']);
-        this.$store.commit('EDIT_SET_HELP_TYPES', ['输入框提示', '病案参考', '病案历史', '在线交流', 'DRG分析', 'HIS接口'])
+        this.$store.commit('EDIT_SET_HELP_TYPES', ['输入框提示', '病案参考', '病案历史', '在线交流', 'DRG分析', 'HIS接口', '病案质控', '专家提示'])
         this.$store.commit('EDIT_SET_CHAT_TYPE', false);
         this.$store.commit('EDIT_SET_RIGHT_PANEL', 'local');
         this.$store.commit('EDIT_SET_LEFT_PANEL', 'table');
@@ -154,61 +153,7 @@
         this.$store.commit('EDIT_SET_RIGHT_PANEL', 'block');
       },
       page: function (n) {
-        if (this.$store.state.Edit.rightType === 'left') {
-          let page = 0
-          let countPage = 0
-          switch (this.$store.state.Edit.lastNav) {
-            case '/library':
-              page = this.$store.state.Library.tablePage
-              countPage = this.$store.state.Library.countPage
-              break;
-            case '/stat':
-              page = this.$store.state.Stat.tablePage
-              countPage = this.$store.state.Stat.countPage
-              break;
-            default:
-              page = this.$store.state.Edit.filePage
-              break;
-          }
-          if (page === 1 && n === -1) {
-            this.$store.commit('SET_NOTICE', '当前已是第一页')
-          } else if (countPage === page && n === 1 && ['/stat', '/library'].includes(this.$store.state.Edit.lastNav)) {
-            this.$store.commit('SET_NOTICE', '当前已是尾页');
-          } else {
-            switch (this.$store.state.Edit.lastNav) {
-              case '/library':
-                if (this.$store.state.Library.tableType === 'server') {
-                  this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
-                  getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableName, this.$store.state.Library.tablePage, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'edit', 'server')
-                } else {
-                  this.$store.commit('LIBRARY_TABLE_PAGE', [n]);
-                  this.$store.commit('EDIT_LOAD_FILE', this.$store.state.Library.localTable)
-                  this.$store.commit('SET_NOTICE', `当前${this.$store.state.Library.tablePage}页,共${this.$store.state.Library.countPage}页`)
-                }
-                break;
-              case '/stat':
-                if (this.$store.state.Stat.tableType === 'server') {
-                  this.$store.commit('STAT_TABLE_PAGE', n);
-                  getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.serverTable.tableName, page: this.$store.state.Stat.tablePage, username: this.$store.state.System.user.username, type: this.$store.state.Stat.dimensionType, value: this.$store.state.Stat.dimensionServer }, 'edit')
-                } else {
-                  this.$store.commit('STAT_TABLE_PAGE', n);
-                  this.$store.commit('SET_NOTICE', `当前${this.$store.state.Stat.tablePage}页,共${this.$store.state.Stat.countPage}页`)
-                }
-                break;
-              default:
-                this.$store.commit('EDIT_SET_FILE_PAGE', n);
-                this.$store.commit('SET_NOTICE', '下一页')
-                break;
-            }
-          }
-        } else if (this.$store.state.Edit.rightPanel === 'edit') {
-          if (this.$store.state.Edit.filesPage === 0 && n === -1) {
-            this.$store.commit('SET_NOTICE', '当前已是第一页')
-          } else {
-            this.$store.commit('EDIT_SET_FILES_PAGE', n);
-            this.$store.commit('SET_NOTICE', '下一页')
-          }
-        }
+        editPage(this, n)
       },
       rightEnter(e) {
         if (this.$store.state.Edit.rightPanel === 'local') {

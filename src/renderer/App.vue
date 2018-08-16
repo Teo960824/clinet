@@ -5,8 +5,26 @@
 </template>
 
 <script>
+  import saveFile from './utils/SaveFile'
   export default {
     name: 'clinet',
+    mounted: function () {
+      window.addEventListener('beforeunload', e => this.windowClose(e))
+    },
+    methods: {
+      windowClose(e) {
+        console.log(e)
+        let x = ''
+        let p = ''
+        if (this.$store.state.Edit.lastNav === '/stat') {
+          x = this.$store.state.Stat.fileName
+        } else {
+          x = '未保存病案.cda'
+        }
+        p = this.$store.state.Edit.lastNav
+        saveFile(this, x, p)
+      }
+    }
   };
 </script>
 

@@ -81,6 +81,7 @@
   import NavBar from './HomePage/NavBar';
   import NoticeBar from './HomePage/NoticeBar';
   import { socketConnect } from '../utils/Socket';
+  import { sectionFile } from '../utils/LoadFile';
   export default {
     name: 'login-page',
     components: { NavBar, NoticeBar },
@@ -109,11 +110,10 @@
       },
       login() {
         const server = global.hitbdata.server['远程测试服务器'][0];
-        console.log(this.loginName)
-        console.log(this.loginPassword)
         if (this.loginName && this.loginPassword) {
           socketConnect(this, [server[0], server[1]], { username: this.loginName, password: this.loginPassword });
         }
+        sectionFile(this)
         this.$store.commit('SET_NAVBAR', 'edit');
         this.$store.commit('HAS_DATA');
         this.$router.push('/home');

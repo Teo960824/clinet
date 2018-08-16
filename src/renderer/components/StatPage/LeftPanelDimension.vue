@@ -36,22 +36,19 @@
     },
     methods: {
       setDimension: function (data, index) {
-        let table = []
         if (this.$store.state.Stat.tableType === 'server') {
           this.flag = index
-          this.$store.commit('STAT_SET_DIMENSION', [this.$store.state.Stat.dimensionType, data]);
+          this.$store.commit('STAT_SET_DIMENSION', [this.$store.state.Stat.dimension.type, data]);
           this.$store.commit('STAT_SET_SERVER_DIMENSION', data)
           this.$store.commit('STAT_TABLE_PAGE', 0)
-          getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.serverTable.tableName, page: 1, username: this.$store.state.System.user.username, type: this.$store.state.Stat.dimensionType, value: this.$store.state.Stat.dimensionServer }, 'stat')
-          table = this.$store.state.Stat.serverTable.data
+          getStat(this, [this.$store.state.System.server, this.$store.state.System.port], { tableName: this.$store.state.Stat.statTableInfo.tableName, page: 1, username: this.$store.state.System.user.username, dimension: this.$store.state.Stat.dimension, order: this.$store.state.Stat.tableSort }, 'stat')
         } else {
           this.$store.commit('STAT_TABLE_PAGE', 0)
-          this.$store.commit('SET_NOTICE', `当前页数${this.$store.state.Stat.tablePage},共${this.$store.state.Stat.countPage}页`)
+          this.$store.commit('SET_NOTICE', `当前页数${this.$store.state.Stat.statTableInfo.tablePage},共${this.$store.state.Stat.statTableInfo.countPage}页`)
           this.flag = index
-          this.$store.commit('STAT_SET_DIMENSION', [this.$store.state.Stat.dimensionType, data]);
-          table = this.$store.state.Stat.localTable
+          this.$store.commit('STAT_SET_DIMENSION', [this.$store.state.Stat.dimension.type, data]);
         }
-        chartData(this, table, this.$store.state.Stat.selectedRow, this.$store.state.Stat.selectedCold)
+        chartData(this, this.$store.state.Stat.statTable.data, this.$store.state.Stat.selectedRow, this.$store.state.Stat.selectedCold)
         switch (this.$store.state.Stat.chartLeft) {
           case '柱状图':
             chartBar('chartLeft', this.$store.state.Stat.chartData)

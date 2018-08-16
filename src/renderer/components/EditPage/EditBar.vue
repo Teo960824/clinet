@@ -1,8 +1,13 @@
 <template>
   <div>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div class="alert alert-warning" id="edit-bar-prompt" role="alert" style="width: 100%; position: fixed; bottom: 40px">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" v-if="this.$store.state.Edit.hintType === 'notice'">
+      <div v-bind:style="isShowStyle" class="alert alert-warning" id="edit-bar-prompt" role="alert" style="width: 100%; position: fixed; bottom: 40px">
         <span v-on:click='inviteUser(hint)'>{{hint}}</span>
+      </div>
+    </nav>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" v-if="this.$store.state.Edit.hintType === 'hint'">
+      <div class="alert alert-warning" id="edit-bar-prompt" role="alert" style="width: 100%; position: fixed; bottom: 40px">
+        <span v-for="(data, index) in hint" v-bind:key='index' v-bind:style="isShowStyle">{{data}}</span>
       </div>
     </nav>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-bottom">
@@ -23,16 +28,23 @@
       v-on:keydown.ctrl.up="itemUp()" v-on:keydown.ctrl.down="itemDown()"
       v-on:keyup.space="space()" v-on:keyup.left="space()" v-on:keyup.right="space()"
       v-on:keyup.ctrl.0="hintUp()" v-on:keyup.ctrl.110="hintDown()"
-      v-on:keyup.ctrl.97="hintSet(1)" v-on:keyup.ctrl.98="hintSet(2)"
-      v-on:keyup.ctrl.99="hintSet(3)" v-on:keyup.ctrl.100="hintSet(4)" v-on:keyup.ctrl.101="hintSet(5)"
-      v-on:keyup.ctrl.102="hintSet(6)" v-on:keyup.ctrl.103="hintSet(7)" v-on:keyup.ctrl.104="hintSet(8)"
-      v-on:keyup.ctrl.105="hintSet(9)" v-on:keyup.ctrl.space="changeEditType()" v-on:keyup.shift.46="empty()">
+      v-on:keyup.ctrl.97="hintSet(1)" v-on:keyup.ctrl.49="hintSet(1)"
+      v-on:keyup.ctrl.98="hintSet(2)" v-on:keyup.ctrl.50="hintSet(2)"
+      v-on:keyup.ctrl.99="hintSet(3)" v-on:keyup.ctrl.51="hintSet(3)"
+      v-on:keyup.ctrl.100="hintSet(4)" v-on:keyup.ctrl.52="hintSet(4)"
+      v-on:keyup.ctrl.101="hintSet(5)" v-on:keyup.ctrl.53="hintSet(5)"
+      v-on:keyup.ctrl.102="hintSet(6)" v-on:keyup.ctrl.54="hintSet(6)"
+      v-on:keyup.ctrl.103="hintSet(7)" v-on:keyup.ctrl.55="hintSet(7)"
+      v-on:keyup.ctrl.104="hintSet(8)" v-on:keyup.ctrl.56="hintSet(8)"
+      v-on:keyup.ctrl.105="hintSet(9)" v-on:keyup.ctrl.57="hintSet(9)"
+      v-on:keyup.ctrl.space="changeEditType()" v-on:keyup.shift.46="empty()">
     </nav>
   </div>
 </template>
 
 <script>
-  import { message, join } from '../../utils/Socket'
+  import { join } from '../../utils/Socket'
+  import { editBarEnter } from '../../utils/EditSave'
   export default {
     // mounted: function () {
     //   this.$nextTick(() => {
@@ -97,7 +109,7 @@
             this.$store.commit('EDIT_SET_BAR_VALUE', value);
             let n = this.$store.state.Edit.docIndex
             if (this.$store.state.Edit.selectedType !== 'col') {
-              const vs = value.split('，').filter(i => i !== '');
+              const vs = value.split(',').filter(i => i !== '');
               if (vs.length > 0) {
                 vs.forEach((element, index) => {
                   const v = element.split(' ').filter(i => i !== '');
@@ -111,69 +123,15 @@
                   }
                 });
               } else {
-                this.$store.commit('EDIT_DELETE_ITEM', n);
+                this.$store.commit('EDIT_UPDATE_DOC', [n, ' ', false]);
+                // this.$store.commit('EDIT_DELETE_ITEM', n);
               }
             }
           }
         }
       },
       enter(e) {
-        if (this.$store.state.Edit.editType === '病案编辑') {
-          if (e.target.value.includes('~')) {
-            this.$store.commit('EDIT_SET_MODEL_NAME', e.target.value.replace('~', ''));
-            this.$store.commit('EDIT_SET_BAR_VALUE', '');
-          } else {
-            let n = this.$store.state.Edit.docIndex
-            let value = e.target.value
-            if (this.$store.state.Edit.selectedType !== 'col') {
-              const vs = value.split('，').filter(i => i !== '');
-              if (vs.length > 0) {
-                vs.forEach((element, index) => {
-                  const v = element.split(' ').filter(i => i !== '');
-                  if (index > 0) {
-                    this.$store.commit('EDIT_UPDATE_DOC', [n, v, true]);
-                  } else {
-                    this.$store.commit('EDIT_UPDATE_DOC', [n, v]);
-                  }
-                  this.$store.commit('EDIT_SET_DOC_INDEX', [1]);
-                  n += 1
-                });
-              } else {
-                this.$store.commit('EDIT_DELETE_ITEM', n);
-              }
-              if (this.$store.state.Edit.helpType === '在线交流') {
-                message(this, e.target.value, this.$store.state.System.user.username, 'doc')
-              }
-            } else {
-              value = value.replace(/,/g, '，')
-              const cv = value.split(' ').filter(i => i !== '');
-              const col = this.$store.state.Edit.selectedCol[0]
-              this.$store.commit('EDIT_UPDATE_FILE', [col, cv[1]]);
-            }
-            this.$store.commit('SET_NOTICE', '编辑 -> 缓存 -> 选择文件 -> 保存');
-          }
-        } else {
-          message(this, e.target.value, this.$store.state.System.user.username, 'message')
-          this.$store.commit('EDIT_SET_BAR_VALUE', '');
-        }
-        const date = new Date();
-        let month = date.getMonth() + 1;
-        let strDate = date.getDate();
-        if (month >= 1 && month <= 9) {
-          month = `0${month}`;
-        }
-        if (strDate >= 0 && strDate <= 9) {
-          strDate = `0${strDate}`
-        }
-        const currentdate = `${date.getFullYear()}-${month}-${strDate} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-        const obj = {}
-        obj['创建时间'] = ''
-        obj['修改时间'] = currentdate
-        obj['缓存时间'] = ''
-        obj['保存时间'] = ''
-        obj['标题'] = ''
-        obj['病人'] = ''
-        this.$store.commit('EDIT_SET_DOC_HEADER', obj);
+        editBarEnter(this, e.target.value)
       },
       addItem() {
         // if (this.$store.state.Edit.fileType === 'cda') {
@@ -182,9 +140,17 @@
       },
       up() {
         this.$store.commit('EDIT_SET_DOC_INDEX', [-1]);
+        const value = this.$store.state.Edit.editBarValue
+        if (global.hitbSections.includes(value[0])) {
+          this.$store.commit('EDIT_SET_SECTION', value[0]);
+        }
       },
       down() {
         this.$store.commit('EDIT_SET_DOC_INDEX', [1]);
+        const value = this.$store.state.Edit.editBarValue
+        if (global.hitbSections.includes(value[0])) {
+          this.$store.commit('EDIT_SET_SECTION', value[0]);
+        }
       },
       itemUp() {
         if (this.$store.state.Edit.docIndex > 0 && this.$store.state.Edit.fileType === 'cda') {
@@ -215,14 +181,28 @@
         }
       },
       space() {
+        this.$store.commit('EDIT_SET_HINT_TYPE', 'hint');
         const aa = document.getElementById('edit-editbar-input')
         const start = aa.selectionStart;
         if (start > 0 && this.$store.state.Edit.editBarValue[start - 1] === ' ') {
           const value = this.$store.state.Edit.editBarValue.slice(0, start)
           const value1 = value.replace(/\s/ig, '')
+          const searchKeys = []
+          global.hitbdata.cdhHeader.forEach((n) => {
+            if (n.includes(value1)) {
+              searchKeys.push(n)
+            }
+          })
+          const obj = {}
+          searchKeys.forEach((n) => {
+            obj[n] = global.hitbdata.cdh[n]
+          })
+          this.$store.commit('EDIT_SET_CDH', 'search');
+          this.$store.commit('EDIT_GET_RIGHT_CDH', obj);
           if (global.hitbdata.cdh[value1] !== undefined) {
-            this.$store.commit('EDIT_SET_HINT', global.hitbdata.cdh[value1]);
             this.$store.commit('EDIT_SET_HINT_TYPE', 'hint');
+            this.$store.commit('EDIT_SET_HINT', global.hitbdata.cdh[value1]);
+            // this.$store.commit('EDIT_SET_HINT_TYPE', 'hint');
           } else {
             this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
             this.$store.commit('SET_NOTICE', '无提示信息');
@@ -248,6 +228,7 @@
           this.$store.commit('EDIT_SET_HINT_PAGE', 'up');
         } else if (this.$store.state.Home.notice === '当前提示已为第一页') {
           this.$store.commit('SET_NOTICE', '');
+          this.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
           this.$store.commit('EDIT_SET_HINT_PAGE', '0');
         } else {
           this.$store.commit('SET_NOTICE', '当前提示已为最后一页');

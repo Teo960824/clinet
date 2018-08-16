@@ -7,7 +7,7 @@ const state = {
   docShow: [],
   docIndex: 0,
   docShowIndex: 0,
-  filesIndex: null,
+  filesIndex: 0,
   fileIndex: null,
   leftPanel: 'table',
   rightPanel: 'local',
@@ -21,7 +21,7 @@ const state = {
   hintType: 'notice',
   hint: [],
   helpType: '编辑器使用帮助',
-  helpTypes: ['输入框提示', '病案参考', '病案历史', '在线交流', 'DRG分析', 'HIS接口'],
+  helpTypes: ['输入框提示', '病案参考', '病案历史', '在线交流', 'DRG分析', 'HIS接口', '病案质控', '专家提示'],
   serverType: 'user',
   docType: '自定义文档',
   docTypes: ['自定义文档', '病案首页（卫统四CSV）', '入院申请', '首次病程', '病程记录', '病案首页', '门诊病案', '健康体检'],
@@ -38,9 +38,22 @@ const state = {
   rightType: null,
   loadFileName: '',
   downFile: [],
-  docHeader: null,
+  docHeader: { 创建时间: null, 修改时间: null, 缓存时间: null, 保存时间: null, 上传时间: null, 发布时间: null, 下载时间: null, 标题: null, 病人: null },
   serverId: null,
-  docState: null
+  docState: null,
+  serverCdh: [],
+  isSaveLocal: [],
+  isSaveServer: [],
+  docHis: [],
+  docSummary: [],
+  editCdh: null,
+  editRightCdh: null,
+  cdhFile: {},
+  cdhFilePage: 0,
+  secton: '',
+  docControl: [],
+  expertHint: [],
+  expertSection: null
 };
 
 const mutations = {
@@ -81,14 +94,17 @@ const mutations = {
     state.files.push(message);
   },
   EDIT_SAVE_DOC(state, m) {
-    if (state.lastNav !== '/edit') {
-      // const a = m[1].split(',')
-    } else {
-      state.file.splice(m[0], 1, m[1]);
-    }
+    // if (state.lastNav !== '/edit') {
+    //   // const a = m[1].split(',')
+    // } else {
+    state.file.splice(m[0], 1, m[1]);
+    // }
   },
   EDIT_SAVE_FILE(state, m) {
     state.file.splice(m[0], 1, m[1]);
+  },
+  EDIT_SERVER_CDH(state, m) {
+    state.serverCdh = m;
   },
   EDIT_LOAD_FILES() {
     const files = fs.readdirSync(global.hitbdata.path.user).filter(x => x.endsWith('.cda'))
@@ -110,6 +126,9 @@ const mutations = {
     const x = message.map(m => m.split(' ').filter(i => i !== ''))
     state.doc = x;
     state.editBarValue = x[0]
+    if (global.hitbSections.length > 0 && global.hitbSections.includes(state.editBarValue)) {
+      state.section = state.editBarValue[0]
+    }
   },
   EDIT_LOAD_DOC_SHOW(state, message) {
     const x = message.map(m => m.split(' ').filter(i => i !== ''))
@@ -146,7 +165,7 @@ const mutations = {
   },
   EDIT_SET_DOC_INDEX(state, m) {
     if (m[1] === true) {
-      state.docIndex = 0;
+      state.docIndex = m[0];
     } else if (m[1] === 'set') {
       state.docIndex = m[0];
     } else {
@@ -283,31 +302,163 @@ const mutations = {
   EDIT_SET_LOAD_FILENAME(state, value) {
     state.loadFileName = value
   },
+  EDIT_UPDATE_DOC_HEADER(state, value) {
+    state.docHeader[value[0]] = value[1]
+  },
   EDIT_SET_DOC_HEADER(state, value) {
     state.docHeader = value
   },
   EDIT_SET_DOC_STATE(state) {
     const obj1 = state.docHeader
-    obj1['修改时间'] = obj1['修改时间'].replace(/-/g, '/')
-    obj1['修改时间'] = new Date(Date.parse(obj1['修改时间']))
-    obj1['缓存时间'] = obj1['缓存时间'].replace(/-/g, '/')
-    obj1['缓存时间'] = new Date(Date.parse(obj1['缓存时间']))
-    obj1['保存时间'] = obj1['保存时间'].replace(/-/g, '/')
-    obj1['保存时间'] = new Date(Date.parse(obj1['保存时间']))
-    if (obj1['修改时间'] > obj1['缓存时间']) {
+    let a = obj1['修改时间']
+    let b = obj1['缓存时间']
+    let c = obj1['保存时间']
+    if (a && b && c) {
+      a = a.replace(/-/g, '/')
+      a = new Date(Date.parse(a))
+      b = b.replace(/-/g, '/')
+      b = new Date(Date.parse(b))
+      c = c.replace(/-/g, '/')
+      c = new Date(Date.parse(c))
+    }
+    if (a > b) {
       state.docState = '未缓存'
-    } else if (obj1['缓存时间'] > obj1['保存时间']) {
+    } else if (b > c) {
       state.docState = '未保存'
-    } else if (obj1['保存时间'] > obj1['缓存时间']) {
+    } else if (c > b) {
       state.docState = '已保存'
     } else {
       state.docState = '正在编辑...'
     }
-  }
+  },
+  EDIT_SET_IS_SAVE_LOCAL(state, value) {
+    if (state.docState !== '') {
+      if (!state.isSaveLocal.includes(value)) {
+        state.isSaveLocal.push(value)
+      }
+    }
+  },
+  EDIT_SET_DELETE_LOCAL(state, value) {
+    const index = state.isSaveLocal.indexOf(value)
+    if (state.isSaveLocal.includes(value)) {
+      state.isSaveLocal.splice(index, 1)
+    }
+  },
+  EDIT_SET_IS_SAVE_SERVER(state, value) {
+    if (state.docState !== '') {
+      if (!state.isSaveServer.includes(value)) {
+        state.isSaveServer.push(value)
+      }
+    }
+  },
+  EDIT_SET_DELETE_SERVER(state, value) {
+    if (state.docState !== '') {
+      if (state.isSaveServer.includes(value)) {
+        state.isSaveServer.splice(value, 1)
+      }
+    }
+  },
+  EDIT_SET_DOC_HIS(state, value) {
+    state.docHis = value
+  },
+  EDIT_SET_DOC_SUMMARY(state, value) {
+    state.docSummary = value
+  },
+  EDIT_ADD_DOC_SUMMARY(state, value) {
+    state.docSummary.splice(value[0][0], 1, value[0])
+  },
+  EDIT_DELETE_DOC_SUMMARY(state, value) {
+    state.docSummary.splice(value, 1);
+    state.doc = [];
+  },
+  EDIT_UPDATE_DOC_SUMMARY(state, value) {
+    let index = null
+    state.docSummary[value[0]].forEach((x, key) => {
+      if (typeof (x) !== 'number') {
+        if (x.includes('上传时间')) {
+          index = key
+        }
+      }
+    })
+    if (index) {
+      state.docSummary[value[0]].splice(index, 1, value[1])
+    } else {
+      state.docSummary[value[0]].push(value[1])
+    }
+  },
+  EDIT_SET_CDH(state, value) {
+    state.editCdh = value
+  },
+  EDIT_GET_RIGHT_CDH(state, value) {
+    state.editRightCdh = value
+  },
+  EDIT_GET_CDH_FILE(state, m = 0) {
+    const t = {}
+    let arrays = []
+    state.cdhFilePagecount = Math.floor(global.hitbdata.cdhFile.length / 100)
+    switch (m) {
+      case 0:
+        arrays = global.hitbdata.cdhFile.slice(m, m + 100)
+        break;
+      case 1:
+        state.cdhFilePage += 1
+        arrays = global.hitbdata.cdhFile.slice((state.cdhFilePage * 100), ((state.cdhFilePage * 100) + 100))
+        break;
+      case -1:
+        state.cdhFilePage -= 1
+        arrays = global.hitbdata.cdhFile.slice((state.cdhFilePage * 100), ((state.cdhFilePage * 100) + 100))
+        break;
+      default:
+    }
+    arrays.forEach((n) => {
+      const [a, ...b] = n.split(' ')
+      t[a] = b;
+    })
+    state.cdhFile = t
+  },
+  EDIT_SET_SECTION(state, value) {
+    if (value) {
+      state.section = value
+    } else {
+      state.section = state.editBarValue[0]
+    }
+  },
+  EDIT_ADD_DOC_CONTROL(state, value) {
+    if (!value[1]) {
+      state.docControl.push(`${value[0]}`)
+    } else {
+      state.docControl.push(`${value[0]}:${value[1]}`)
+    }
+  },
+  EDIT_DELETE_DOC_CONTROL(state, value) {
+    state.docControl.splice(value, 1);
+  },
+  EDIT_SET_DOC_CONTROL(state, value) {
+    state.docControl = value
+  },
+  EDIT_SET_EXPERT_HINT(state, value) {
+    state.expertHint = value
+    state.expertSection = value.section
+  },
 };
 
 const actions = {
   someAsyncTask({ commit }) {
+    commit('EDIT_SET_EXPERT_HINT');
+    commit('EDIT_SET_DOC_CONTROL');
+    commit('EDIT_UPDATE_DOC_SUMMARY');
+    commit('EDIT_ADD_DOC_CONTROL');
+    commit('EDIT_DELETE_DOC_CONTROL');
+    commit('EDIT_SET_SECTION');
+    commit('EDIT_DELETE_DOC_SUMMARY');
+    commit('EDIT_ADD_DOC_SUMMARY');
+    commit('EDIT_SET_DOC_SUMMARY');
+    commit('EDIT_SET_DOC_HIS');
+    commit('EDIT_SET_IS_SAVE_LOCAL');
+    commit('EDIT_SET_DELETE_LOCAL');
+    commit('EDIT_SET_IS_SAVE_SERVER');
+    commit('EDIT_SET_DELETE_SERVER');
+    commit('EDIT_UPDATE_DOC_HEADER');
     commit('EDIT_SET_DOC_STATE');
     commit('EDIT_SET_DOC_HEADER');
     commit('EDIT_SERVER_ID');
@@ -365,6 +516,10 @@ const actions = {
     commit('EDIT_SET_EDIT_TYPE');
     commit('EDIT_SET_LOAD_FILENAME');
     commit('EDIT_LOAD_FILE_DOWN');
+    commit('EDIT_SERVER_CDH');
+    commit('EDIT_SET_CDH');
+    commit('EDIT_GET_RIGHT_CDH');
+    commit('EDIT_GET_CDH_FILE');
   },
 };
 

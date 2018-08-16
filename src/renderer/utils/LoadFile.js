@@ -37,10 +37,10 @@ export default function loadFile(obj, x, p, e = null) {
         obj.$store.commit('SET_NOTICE', '目录不能导入，请选择文件！');
       } else if (stat.size < 1000 * 5000) {
         obj.$store.commit('SET_NOTICE', '正在读取文件，请等待！');
-        const fRead = fs.createReadStream(file);
-        const fReadline = readline.createInterface({ input: fRead });
+        const fRead = fs.createReadStream(file);
+        const fReadline = readline.createInterface({ input: fRead });
         const f = [];
-        fReadline.on('close', () => {
+        fReadline.on('close', () => {
           switch (p) {
             case 'user':
               obj.$store.commit('EDIT_LOAD_FILE', f);
@@ -52,7 +52,7 @@ export default function loadFile(obj, x, p, e = null) {
                 obj.$store.commit('EDIT_SET_LEFT_PANEL', 'table')
               } else {
                 // obj.$store.commit('STAT_SET_COL_NUM', f[0].split(',').length);
-                obj.$store.commit('STAT_LOAD_FILE', f);
+                obj.$store.commit('STAT_SET_TABLE', ['local', f]);
               }
               break
             case 'library':
@@ -101,7 +101,7 @@ export default function loadFile(obj, x, p, e = null) {
           obj.$store.commit('EDIT_SET_FILE_TYPE', 'csv')
           obj.$store.commit('SET_NOTICE', 'CSV文件读取成功！');
         });
-        fReadline.on('line', (line) => {
+        fReadline.on('line', (line) => {
           f.push(line)
         })
       } else {
@@ -119,22 +119,48 @@ export default function loadFile(obj, x, p, e = null) {
       } else if (stat.size < 1000 * 5000) {
         // console.log(stat);
         obj.$store.commit('SET_NOTICE', '正在读取文件，请等待！');
-        const fRead = fs.createReadStream(file);
-        const fReadline = readline.createInterface({ input: fRead });
+        const fRead = fs.createReadStream(file);
+        const fReadline = readline.createInterface({ input: fRead });
         const f = [];
-        fReadline.on('close', () => {
+        fReadline.on('close', () => {
           const fileInfo = {};
-          f[0].split(',')[0].split(';').forEach((v) => {
-            fileInfo[v.split(':')[0]] = v.split(':')[1]
-          })
-          console.log(fileInfo);
+          if (f[0]) {
+            f[0].split(',')[0].split(';').forEach((v) => {
+              fileInfo[v.split(':')[0]] = v.split(':')[1]
+            })
+          }
           obj.$store.commit('EDIT_LOAD_FILE', f);
           obj.$store.commit('EDIT_LOAD_FILE_DOWN', f);
-          obj.$store.commit('EDIT_SET_LEFT_PANEL', 'table')
+          // obj.$store.commit('EDIT_SET_LEFT_PANEL', 'table')
           obj.$store.commit('EDIT_SET_FILE_TYPE', 'cda')
           obj.$store.commit('SET_NOTICE', 'CDA文件读取成功！');
+          const summary = []
+          f.forEach((x, index) => {
+            const a = x.split(',')
+            let isDiag = false
+            const arr = a.map((x) => {
+              const bool = x.includes('诊断')
+              return bool
+            })
+            if (arr.includes(true)) {
+              isDiag = true
+            }
+            if (a[0].includes('创建时间') || isDiag) {
+              const b = a[0].split(';')
+              b.forEach((x) => {
+                if (x.includes('创建时间') || x.includes('诊断')) {
+                  if (x[1] && !x[1].includes(null)) {
+                    summary.push([index, x])
+                  }
+                }
+              })
+            } else {
+              summary.push([index])
+            }
+          })
+          obj.$store.commit('EDIT_SET_DOC_SUMMARY', summary);
         });
-        fReadline.on('line', (line) => {
+        fReadline.on('line', (line) => {
           f.push(line)
         })
       } else {
@@ -144,5 +170,25 @@ export default function loadFile(obj, x, p, e = null) {
   } else {
     obj.$store.commit('SYSTEM_LOAD_FILE', []);
     obj.$store.commit('SET_NOTICE', '选择的不是CSV文件，不能导入！');
+  }
+}
+export function sectionFile(obj) {
+  const file = path.format({
+    dir: global.hitbdata.path.system,
+    base: 'hitb_sections.cda'
+  });
+
+  if (fs.existsSync(file)) {
+    fs.lstat(file, () => {
+      const fRead = fs.createReadStream(file);
+      const fReadline = readline.createInterface({ input: fRead });
+      const f = [];
+      fReadline.on('close', () => {
+        obj.$store.commit('SYSTEM_SECTION', f)
+      });
+      fReadline.on('line', (line) => {
+        f.push(line)
+      })
+    })
   }
 }

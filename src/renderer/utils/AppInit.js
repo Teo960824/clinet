@@ -146,7 +146,6 @@ export default function appInit() {
       console.log(err)
     })
   }
-
   // 导入数据，系统表结构
   const tableFile = path.format({
     dir: hitbdataSystem,
@@ -185,6 +184,37 @@ export default function appInit() {
   }
 
   // 读取提示的cdh文件
+  function a(value) {
+    const fRead = fs.createReadStream(value);
+    const fReadline = readline.createInterface({ input: fRead });
+    const f = []; // 将CSV文件逐行读到数组中
+    const t = {}; // 将数组逐行转换为js对象
+    const header = []
+    fReadline.on('close', () => {
+      // if (value.endsWith('.csv')) {
+      f.shift();
+      global.hitbdata.cdhFile = f;
+      f.forEach((line) => {
+        const x = line.split(' ');
+        const [a, ...rest] = x;
+        header.push(a)
+        t[a] = rest;
+        global.hitbdata.cdh = t;
+      })
+      global.hitbdata.cdhHeader = header;
+    });
+    fReadline.on('line', (line) => {
+      f.push(line)
+    })
+  }
+  const cdhFile = path.format({
+    dir: hitbdataLibrary,
+    base: 'cdh.cdh'
+  })
+  if (fs.existsSync(cdhFile)) {
+    a(cdhFile)
+  }
+
   const editFile = path.format({
     dir: hitbdataSystem,
     base: 'hitb_edit.cdh'
@@ -201,25 +231,26 @@ export default function appInit() {
       });
   }
   if (fs.existsSync(editFile)) {
-    fs.lstat(editFile, (err) => {
-      if (!err) {
-        const fRead = fs.createReadStream(editFile);
-        const fReadline = readline.createInterface({ input: fRead });
-        const f = [];
-        fReadline.on('close', () => {
-          const obj = {}
-          f.forEach((x) => {
-            const s = x.split(' ').filter(i => i !== '');
-            const k = s.shift()
-            obj[k] = s
-          })
-          global.hitbdata.cdh = obj
-        });
-        fReadline.on('line', (line) => {
-          f.push(line)
-        })
-      }
-    })
+    a(editFile)
+    // fs.lstat(editFile, (err) => {
+    //   if (!err) {
+    //     const fRead = fs.createReadStream(editFile);
+    //     const fReadline = readline.createInterface({ input: fRead });
+    //     const f = [];
+    //     fReadline.on('close', () => {
+    //       const obj = {}
+    //       f.forEach((x) => {
+    //         const s = x.split(' ').filter(i => i !== '');
+    //         const k = s.shift()
+    //         obj[k] = s
+    //       })
+    //       global.hitbdata.cdh = obj
+    //     });
+    //     fReadline.on('line', (line) => {
+    //       f.push(line)
+    //     })
+    //   }
+    // })
   }
 
   // 读取模板的cda文件
@@ -489,10 +520,83 @@ export default function appInit() {
         console.log(error);
       });
   }
+
   // 用户本地文件
   const cdaFile = path.format({
     dir: hitbdataUser,
     base: '2018年度病案.cda'
   });
   if (!fs.existsSync(cdaFile)) { fs.writeFileSync(cdaFile, '') }
+  // 未保存病案
+  const notSaveDoc = path.format({
+    dir: hitbdataUser,
+    base: '未保存病案.cda'
+  });
+  if (fs.existsSync(notSaveDoc)) {
+    fs.lstat(notSaveDoc, (err) => {
+      if (!err) {
+        const fRead = fs.createReadStream(notSaveDoc);
+        const fReadline = readline.createInterface({ input: fRead });
+        const f = [];
+        fReadline.on('close', () => {
+          global.hitbDoc = f
+        });
+        fReadline.on('line', (line) => {
+          f.push(line)
+        })
+      }
+    })
+  }
+
+  // 本地Section文件
+  const sections = path.format({
+    dir: hitbdataSystem,
+    base: 'hitb_sections.cda'
+  });
+  if (fs.existsSync(sections)) {
+    fs.lstat(sections, (err) => {
+      if (!err) {
+        const fRead = fs.createReadStream(sections);
+        const fReadline = readline.createInterface({ input: fRead });
+        const f = [];
+        fReadline.on('close', () => {
+          global.hitbSections = f
+        });
+        fReadline.on('line', (line) => {
+          f.push(line)
+        })
+      }
+    })
+  }
+  if (!fs.existsSync(sections)) {
+    axios.get('/static/hitb_sections.cda')
+      .then((res) => {
+        fs.writeFile(sections, res.data, (err) => {
+          console.log(err)
+        })
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  // 本地病案质控
+  const controls = path.format({
+    dir: hitbdataUser,
+    base: '病案质控.cda'
+  });
+  if (fs.existsSync(controls)) {
+    fs.lstat(controls, (err) => {
+      if (!err) {
+        const fRead = fs.createReadStream(controls);
+        const fReadline = readline.createInterface({ input: fRead });
+        const f = [];
+        fReadline.on('close', () => {
+          global.hitbControls = f
+        });
+        fReadline.on('line', (line) => {
+          f.push(line)
+        })
+      }
+    })
+  }
 }

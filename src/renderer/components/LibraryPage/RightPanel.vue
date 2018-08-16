@@ -2,18 +2,22 @@
   <div>
     <right-bar></right-bar>
     <div v-bind:style="{ height: height + 'px', overflow: 'auto' }">
-      <!-- <table v-if ="this.$store.state.Library.tableType === 'local'">
-        <tr v-for="(data, index) in xs" v-bind:key='index' v-on:click="onClick(data, index)" v-bind:class="{'table-danger':rowHeight == index && index !== 0}" class="library-rightpanel">
-          <td v-for="(field, index) in data" v-bind:key='index'>{{data[index]}}</td>
-        </tr>
-        v-if ="this.$store.state.Library.tableType === 'server' || this.$store.state.Library.tableType === 'block'"
-      </table> -->
+      <h3 v-if="xs.length === 0" class="text-center">术语字典暂无数据</h3>
       <table>
-        <tr>
-          <td v-for="(field, index) in this.$store.state.Library.title" v-bind:key='index'>{{field}}</td>
+        <tr v-for="(x, index) in xs"  v-if="index === 0" v-on:click="onClick(x, index)" v-bind:key="index" class="library-rightpanel">
+          <th class="text-center" v-for="(data, xindex) in x" v-bind:key="xindex" v-if="tableType === 'local' || tableType === 'block'">
+            {{data}}
+          </th>
+          <th class="text-center" v-for="(data, xindex) in x" v-bind:key="xindex" v-if="tableType === 'server'">
+            <a class="oi oi-sort-ascending" v-if="serverSort.type === 'asc' && serverSort.field == data" ></a>
+            <a class="oi oi-sort-ascending" href="#" v-else style="color:#7bb8d1" v-on:click="onClickSort(data, 'asc')" v-bind:id="'library-table-asc'+xindex"></a>
+            &nbsp;&nbsp;&nbsp;&nbsp;{{data}}&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="oi oi-sort-descending"  v-if="serverSort.type === 'desc' && serverSort.field == data"></a>
+            <a class="oi oi-sort-descending" href="#" v-else style="color:#7bb8d1" v-on:click="onClickSort(data, 'desc')" v-bind:id="'library-table-desc'+xindex"></a>
+          </th>
         </tr>
-        <tr v-for="(data, index) in xs" v-bind:key='index' v-on:click="onClick(data, index)" v-bind:class="{'table-danger': rowHeight == index}" class="library-rightpanel">
-          <td v-for="(field, index) in data" v-bind:key='index'>{{data[index]}}</td>
+        <tr v-for="(data, index) in xs" v-bind:key='index' class="library-right-table-tr" v-if="index > 0">
+          <td v-for="(field, index) in data"  v-bind:key='index' class="library-right-table-td"  v-if="index < 11">{{data[index]}}</td>
         </tr>
       </table>
       <nav aria-label="Page navigation example" v-if="this.$store.state.Library.tableType === 'server'">
@@ -40,34 +44,38 @@
     },
     created: function () {
       this.height = document.body.clientHeight - 100
-      // console.log(document.body.clientHeight);
     },
     computed: {
       page: {
         get() {
-          return { pageList: this.$store.state.Library.serverTable.pageList, page: this.$store.state.Library.serverTable.page }
+          return { pageList: this.$store.state.Library.libraryTableInfo.pageList, page: this.$store.state.Library.libraryTableInfo.page }
+        }
+      },
+      serverSort: {
+        get() {
+          return this.$store.state.Library.serverSort
         }
       },
       xs: {
         get() {
-          let table = []
-          switch (this.$store.state.Library.tableType) {
-            case 'local': {
-              table = this.$store.state.Library.localTable;
-              break;
-            }
-            case 'server': {
-              table = this.$store.state.Library.serverTable.data
-              break;
-            }
-            case 'block': {
-              table = this.$store.state.Library.serverTable.data
-              break;
-            }
-            default: {
-              break;
-            }
-          }
+          const table = this.$store.state.Library.libraryTable.data
+          // switch (this.$store.state.Library.tableType) {
+          //   case 'local': {
+          //     table = this.$store.state.Library.localTable;
+          //     break;
+          //   }
+          //   case 'server': {
+          //     table = this.$store.state.Library.serverTable.data
+          //     break;
+          //   }
+          //   case 'block': {
+          //     table = this.$store.state.Library.serverTable.data
+          //     break;
+          //   }
+          //   default: {
+          //     break;
+          //   }
+          // }
           return table
         }
       },
@@ -79,6 +87,11 @@
       fieldIndex: {
         get() {
           return this.$store.state.Library.fieldIndex
+        }
+      },
+      tableType: {
+        get() {
+          return this.$store.state.Library.tableType
         }
       }
     },
@@ -93,7 +106,15 @@
       serverPage: function (data) {
         const page = parseInt(data, 10)
         this.$store.commit('LIBRARY_SET_TABLE_PAGE', page);
-        getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.serverTable.tableNam, page, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'library', 'block')
+        getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.libraryTableInfo.tableName, page, this.$store.state.Library.dimensionType, this.$store.state.Library.dimensionServer, 'library', this.$store.state.Library.tableType, this.$store.state.Library.serverSort)
+        // getLibrary(obj, data, tableName, pageNum, dimensionType, dimensionServer, type1, serverType = 'server'
+      },
+      sort: function (type, value) {
+        getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.libraryTableInfo.tableName, 1, 'filter', this.$store.state.Library.serverDimension, 'library', this.$store.state.Library.tableType, [type, value])
+      },
+      onClickSort: function (field, type) {
+        this.$store.commit('LIBRARY_SET_SERVER_SORT', [field, type])
+        getLibrary(this, [this.$store.state.System.server, this.$store.state.System.port], this.$store.state.Library.libraryTableInfo.tableName, 1, 'filter', this.$store.state.Library.serverDimension, 'library', this.$store.state.Library.tableType, this.$store.state.Library.serverSort)
       }
     },
   };

@@ -31,6 +31,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+
   }
 
   main {
@@ -38,6 +39,7 @@
     justify-content: space-between;
     margin-top: 25px;
     padding: 0;
+    font-family: '黑体';
   }
 
   main > div { flex-basis: 100%; }
