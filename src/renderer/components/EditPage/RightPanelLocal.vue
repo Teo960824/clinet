@@ -139,7 +139,7 @@
             break
         }
         if (this.$store.state.Edit.rightPanel === 'server' || this.$store.state.Edit.rightPanel === 'block') {
-          // this.$store.commit('EDIT_SET_LEFT_PANEL', 'table');
+          this.$store.commit('EDIT_SET_LEFT_PANEL', 'table');
           switch (this.$store.state.Edit.lastNav) {
             case '/edit':
               if (this.$store.state.Edit.serverType === 'file') {

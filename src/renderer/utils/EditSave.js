@@ -218,8 +218,8 @@ export function newEditDoc(obj, n) {
 // 读取文件
 export function loadEditDoc(obj, index, type) {
   let doc = []
+  obj.$store.commit('EDIT_SET_RIGHT_PANELS', '编辑病案');
   if (type === 'edit') {
-    obj.$store.commit('EDIT_SET_RIGHT_PANELS', '编辑病案');
     obj.$store.commit('EDIT_SET_FILE_INDEX', index)
     const r = []
     const file = obj.$store.state.Edit.file

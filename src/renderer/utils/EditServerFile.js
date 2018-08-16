@@ -1,7 +1,6 @@
 const axios = require('axios');
 const qs = require('qs');
 export function getEditFiles(obj, data, type, username, serverType = 'server') {
-  console.log(serverType)
   let url = ''
   if (type === 'user') {
     url = `http://${data[0]}:${data[1]}/edit/cda_user?server_type=${serverType}`
@@ -136,7 +135,6 @@ export function getDocContent(obj, data, username, filename) {
 }
 
 export function getHelpTypes(obj, data) {
-  console.log(data)
   axios({
     method: 'get',
     url: `http://${data[0]}:${data[1]}/edit/helplist`,
@@ -312,5 +310,6 @@ export function getExpertHint(obj, data, value, section) {
   }).catch((err) => {
     console.log(err);
     obj.$store.commit('SET_NOTICE', '专家提示查询失败')
+    obj.$store.commit('EDIT_SET_HINT_TYPE', 'notice');
   })
 }
